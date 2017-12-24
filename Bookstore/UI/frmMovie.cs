@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -12,14 +12,16 @@ namespace Bookstore
 {
     public partial class frmMovie : Form, Iuser_interface
     {
-        public frmMovie()
+		List<Movie>	movieList;
+
+		public frmMovie()
         {
             InitializeComponent();
         }
 
         private void frmMovie_Load(object sender, EventArgs e)
         {
-            List<Movie>                     movieList = Movies.GetMovies();
+            /*List<Movie>*/                     movieList = Movies.GetMovies();
             movieDataGridView.DataSource =              movieList;
 
             List<Genre>                     genreList = Genres.GetGenres();
@@ -76,7 +78,7 @@ namespace Bookstore
             {
                 int     movie_number;
                 Int32.TryParse(txtMovieNumber.Text.Trim(), out movie_number);
-                Movie   objMovie =  Movies.GetMovie(movie_number);
+                Movie   objMovie =  Movies.GetMovie(movie_number);//TODO need to add try
                 if (objMovie != null)
                 {
                     MessageBox.Show("Movie " + lblMovieNumber.Text + " " + movie_number + " already exists.", "Invalid " + lblMovieNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -109,7 +111,7 @@ namespace Bookstore
                     if (status)
                     {
                         MessageBox.Show(MsgBoxHelper.Inserted("Movie"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        List<Movie> movieList =         Movies.GetMovies();
+                        /*List<Movie>*/ movieList =         Movies.GetMovies();
                         movieDataGridView.DataSource =  movieList;//TODO genre not -1?
                     }
                     else
@@ -197,7 +199,7 @@ namespace Bookstore
                     if (status)
                     {
                         MessageBox.Show(MsgBoxHelper.Updated("Movie"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        List<Movie> movieList =         Movies.GetMovies();
+                        /*List<Movie>*/ movieList =         Movies.GetMovies();
                         movieDataGridView.DataSource =  movieList;//TODO genre not -1?
                     }
                     else
@@ -231,7 +233,7 @@ namespace Bookstore
                     if (status)
                     {
                         MessageBox.Show(MsgBoxHelper.Deleted("Movie"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        List<Movie> movieList =         Movies.GetMovies();
+                        /*List<Movie>*/ movieList =         Movies.GetMovies();
                         movieDataGridView.DataSource =  movieList;//TODO genre not -1?
                     }
                     else
