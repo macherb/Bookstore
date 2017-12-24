@@ -12,18 +12,16 @@ namespace Bookstore
 {
     public partial class frmRental : Form, Iuser_interface
     {
-        Rentals rentalList;
+        List<Rental>	rentalList;
 
         public frmRental()
         {
-            rentalList =    new Rentals();
-
             InitializeComponent();
         }
 
         private void frmRental_Load(object sender, EventArgs e)
         {
-            List<Rental>                    rentalList =    Rentals.GetRentals();
+            /*List<Rental>*/                    rentalList =    Rentals.GetRentals();
             rentalDataGridView.DataSource =                 rentalList;
 
             List<Movie>                     movieList =     Movies.GetMovies();
@@ -94,7 +92,7 @@ namespace Bookstore
                     if (status)
                     {
                         MessageBox.Show(MsgBoxHelper.Inserted("Rental"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        List<Rental> rentalList =       Rentals.GetRentals();
+                        /*List<Rental>*/ rentalList =       Rentals.GetRentals();
                         rentalDataGridView.DataSource = rentalList;//TODO movie and member not -1?
                     }
                     else
@@ -178,7 +176,7 @@ namespace Bookstore
                     if (status)
                     {
                         MessageBox.Show(MsgBoxHelper.Updated("Rental"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        List<Rental> rentalList =       Rentals.GetRentals();
+                        /*List<Rental>*/ rentalList =       Rentals.GetRentals();
                         rentalDataGridView.DataSource = rentalList;//TODO movie and member not -1?
                     }
                     else
@@ -218,7 +216,7 @@ namespace Bookstore
                     if (status)
                     {
                         MessageBox.Show(MsgBoxHelper.Deleted("Rental"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        List<Rental> rentalList =       Rentals.GetRentals();
+                        /*List<Rental>*/ rentalList =       Rentals.GetRentals();
                         rentalDataGridView.DataSource = rentalList;//movie and member not -1?
                     }
                     else
