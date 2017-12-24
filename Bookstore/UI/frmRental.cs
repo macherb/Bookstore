@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -63,8 +63,27 @@ namespace Bookstore
         {
             if (CheckAll())
             {
-                //TODO make sure Rental doesn't exist
-                Rental                          objRental = new Rental();
+				Rental objRental;
+
+				try
+				{
+					objRental = Rentals.GetRental((int)cmbMovieNumber.SelectedValue, (int)cmbMemberNumber.SelectedValue, dtpMediaCheckoutDate.Value);//TODO
+					if (objRental != null)
+					{
+						MessageBox.Show(lblMovieNumber.Text + " and " + lblMemberNumber.Text + " and " + lblMediaCheckoutDate.Text + " already exists.",
+										"Invalid " + lblMovieNumber.Text + " and/or " + lblMemberNumber.Text + " and/or " + lblMediaCheckoutDate.Text,
+										MessageBoxButtons.OK,
+										MessageBoxIcon.Error);
+						return;
+					}
+				}
+				catch (Exception ex)
+				{
+					MessageBox.Show(ex.Message, "Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
+
+				//TODO make sure Rental doesn't exist
+				objRental =									new Rental();
                 objRental.movie_number =                    (int)cmbMovieNumber.SelectedValue;
                 objRental.member_number =                   (int)cmbMemberNumber.SelectedValue;
                 objRental.media_checkout_date =             dtpMediaCheckoutDate.Value;
