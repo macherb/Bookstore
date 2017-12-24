@@ -21,22 +21,29 @@ namespace Bookstore
 
         private void frmRental_Load(object sender, EventArgs e)
         {
-            /*List<Rental>*/                    rentalList =    Rentals.GetRentals();
-            rentalDataGridView.DataSource =                 rentalList;
+			try
+			{
+	            /*List<Rental>*/                    rentalList =    Rentals.GetRentals();
+		        rentalDataGridView.DataSource =                 rentalList;
 
-            List<Movie>                     movieList =     Movies.GetMovies();
-            cmbMovieNumber.DataSource =                     movieList;
-            cmbMovieNumber.DisplayMember =                  "movie_title";
-            cmbMovieNumber.ValueMember =                    "movie_number";
-            cmbMovieNumber.SelectedIndex =                  -1;
+			    List<Movie>                     movieList =     Movies.GetMovies();
+				cmbMovieNumber.DataSource =                     movieList;
+				cmbMovieNumber.DisplayMember =                  "movie_title";
+				cmbMovieNumber.ValueMember =                    "movie_number";
+				cmbMovieNumber.SelectedIndex =                  -1;
 
-            List<Member>                    memberList =    Members.GetMembers();
-            cmbMemberNumber.DataSource =                    memberList;
-            cmbMemberNumber.DisplayMember =                 "login_name";
-            cmbMemberNumber.ValueMember =                   "number";
-            cmbMemberNumber.SelectedIndex =                 -1;
+				List<Member>                    memberList =    Members.GetMembers();
+				cmbMemberNumber.DataSource =                    memberList;
+				cmbMemberNumber.DisplayMember =                 "login_name";
+				cmbMemberNumber.ValueMember =                   "number";
+				cmbMemberNumber.SelectedIndex =                 -1;
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message, "Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
 
-            ToolTip toolTip = new ToolTip();
+			ToolTip toolTip = new ToolTip();
 
             toolTip.SetToolTip(btnAdd, "Add Movie, Member, Checkout and Return");
             toolTip.SetToolTip(btnBrowse, "Browse by Movie, Member and Checkout");
