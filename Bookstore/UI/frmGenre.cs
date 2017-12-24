@@ -20,10 +20,17 @@ namespace Bookstore
 
         private void frmGenre_Load(object sender, EventArgs e)
         {
-            List<Genre>                     genreList = Genres.GetGenres();
-            genreDataGridView.DataSource =              genreList;
+			try
+			{
+	            List<Genre>                     genreList = Genres.GetGenres();
+			    genreDataGridView.DataSource =              genreList;
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message, "Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
 
-            ToolTip toolTip = new ToolTip();
+			ToolTip toolTip = new ToolTip();
 
             toolTip.SetToolTip(btnAdd, "Add Genre Name");
             toolTip.SetToolTip(btnBrowse, "Browse by Genre Number");
