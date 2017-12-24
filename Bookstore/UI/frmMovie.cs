@@ -21,16 +21,23 @@ namespace Bookstore
 
         private void frmMovie_Load(object sender, EventArgs e)
         {
-            /*List<Movie>*/                     movieList = Movies.GetMovies();
-            movieDataGridView.DataSource =              movieList;
+			try
+			{
+	            /*List<Movie>*/                     movieList = Movies.GetMovies();
+		        movieDataGridView.DataSource =              movieList;
 
-            List<Genre>                     genreList = Genres.GetGenres();
-            cmbGenreID.DataSource =                     genreList;
-            cmbGenreID.DisplayMember =                  "name";
-            cmbGenreID.ValueMember =                    "id";
-            cmbGenreID.SelectedIndex =                  -1;
+			    List<Genre>                     genreList = Genres.GetGenres();
+				cmbGenreID.DataSource =                     genreList;
+				cmbGenreID.DisplayMember =                  "name";
+			    cmbGenreID.ValueMember =                    "id";
+		        cmbGenreID.SelectedIndex =                  -1;
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message, "Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
 
-            ToolTip toolTip = new ToolTip();
+			ToolTip toolTip = new ToolTip();
 
             toolTip.SetToolTip(btnAdd, "Add all Movie fields");
             toolTip.SetToolTip(btnFind, "Browse by Movie Number");
