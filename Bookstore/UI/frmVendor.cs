@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -19,10 +19,17 @@ namespace Bookstore
 
         private void frmVendor_Load(object sender, EventArgs e)
         {
-            List<Vendor>                    vendorList = Vendors.GetVendors();
-            vendorDataGridView.DataSource =              vendorList;
+			try
+			{
+	            List<Vendor>                    vendorList = Vendors.GetVendors();
+			    vendorDataGridView.DataSource =              vendorList;
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message, "Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
 
-            ToolTip toolTip = new ToolTip();
+			ToolTip toolTip = new ToolTip();
 
             toolTip.SetToolTip(btnAdd, "Add Vendor Name");
             toolTip.SetToolTip(btnBrowse, "Browse by Vendor Number");
