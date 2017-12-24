@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -25,16 +25,23 @@ namespace Bookstore
 
         private void frmMember_Load(object sender, EventArgs e)
         {
-            List<Member>                    memberList =    Members.GetMembers();
-            memberDataGridView.DataSource =                 memberList;
+			try
+			{
+	            List<Member>                    memberList =    Members.GetMembers();
+		        memberDataGridView.DataSource =                 memberList;
 
-            List<Subscription>              subscriptionList =  Subscriptions.GetSubscriptions();
-            cmbSubscriptionID.DataSource =                      subscriptionList;
-            cmbSubscriptionID.DisplayMember =                   "name";
-            cmbSubscriptionID.ValueMember =                     "id";
-            cmbSubscriptionID.SelectedIndex =                   -1;
+			    List<Subscription>              subscriptionList =  Subscriptions.GetSubscriptions();
+				cmbSubscriptionID.DataSource =                      subscriptionList;
+				cmbSubscriptionID.DisplayMember =                   "name";
+			    cmbSubscriptionID.ValueMember =                     "id";
+		        cmbSubscriptionID.SelectedIndex =                   -1;
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message, "Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
 
-            ToolTip toolTip = new ToolTip();
+			ToolTip toolTip = new ToolTip();
 
             toolTip.SetToolTip(btnAdd, "Add all Member fields");
             toolTip.SetToolTip(btnBrowse, "Browse by Member Number");
