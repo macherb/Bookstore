@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,6 +25,7 @@ namespace Bookstore
         public string   email           { get; set; }
         public int      contact_method  { get; set; }
         public int      subscription_id { get; set; }
+        public string   name            { get; set; }//TODO needs to be special parameter
         public string   photo           { get; set; }
 
         #endregion
