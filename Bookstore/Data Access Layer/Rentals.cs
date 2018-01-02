@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -24,15 +24,29 @@ namespace Bookstore
         public static List<Rental> GetRentals()
         {
             List<Rental>    rentals =       new List<Rental>();
-            string          third =         string.Empty,
+            string          secondary =     string.Empty,
                             SQLStatement;
             SqlCommand      objCommand;
             SqlDataReader   rentalReader;
 
             for (int i = 1; i < parameters.Length; i++)
-                third +=                    ", " + parameters[i];
-            SQLStatement = SQLHelper.Select("Rental",  parameters[0], third);
+                secondary +=                ", Rental." + parameters[i];
+            /*SQLStatement =                  SQLHelper.Select(
+                                                            "Rental",
+                                                            "Movie.movie_title",
+                                                            secondary + ", Movie.movie_number"
+                                                            ) + " INNER JOIN Movie ON Rental.movie_number = Movie.movie_number";*/
 
+            SQLStatement =                  SQLHelper.Select(
+                                                            "Rental",
+                                                            "Rental",
+                                                            "Movie",
+                                                            parameters[0],
+                                                            secondary,
+                                                            "movie_title",//TODO needs to be special parameter
+                                                            parameters[0],//TODO needs to be special parameter
+                                                            "movie_number"//TODO needs to be special parameter
+                                                            );
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
             try
@@ -50,19 +64,20 @@ namespace Bookstore
                         {
                             while (rentalReader.Read())
                             {
-                                Rental      objRental =         new Rental();
-                                int         movie_number,
-                                            member_number;
-                                DateTime    media_checkout_date,
-                                            media_return_date;
-                                Int32.TryParse(                 rentalReader[parameters[0]].ToString(), out movie_number        );
-                                objRental.movie_number =        movie_number;
-                                Int32.TryParse(                 rentalReader[parameters[1]].ToString(), out member_number       );
-                                objRental.member_number =       member_number;
-                                DateTime.TryParse(              rentalReader[parameters[2]].ToString(), out media_checkout_date );
-                                objRental.media_checkout_date = media_checkout_date;
-                                DateTime.TryParse(              rentalReader[parameters[3]].ToString(), out media_return_date   );
-                                objRental.media_return_date =   media_return_date;
+                                Rental                          objRental =         new Rental();
+                                int                             movie_number,
+                                                                member_number;
+                                DateTime                        media_checkout_date,
+                                                                media_return_date;
+                                Int32.TryParse(                                     rentalReader[parameters[0]].ToString(), out movie_number        );
+                                objRental.movie_number =                            movie_number;
+                                Int32.TryParse(                                     rentalReader[parameters[1]].ToString(), out member_number       );
+                                objRental.member_number =                           member_number;
+                                DateTime.TryParse(                                  rentalReader[parameters[2]].ToString(), out media_checkout_date );
+                                objRental.media_checkout_date =                     media_checkout_date;
+                                DateTime.TryParse(                                  rentalReader[parameters[3]].ToString(), out media_return_date   );
+                                objRental.media_return_date =                       media_return_date;
+                                objRental.movie_title =                             rentalReader["movie_title"].ToString();//TODO needs to be special parameter
                                 rentals.Add(objRental);
                             }
                         }
@@ -88,31 +103,31 @@ namespace Bookstore
         public static Rental GetRental(int parameter1, int parameter2, DateTime parameter3)//string parameter)
         {
             Rental          objRental =     null;
-            string          third =         string.Empty,
+            string          secondary =     string.Empty,
                             SQLStatement;
             SqlCommand      objCommand;
             SqlDataReader   rentalReader;
 
             for (int i = 1; i < parameters.Length; i++)
-                third +=                    ", " + parameters[i];
-            SQLStatement = SQLHelper.Select("Rental", parameters[0], third) + " WHERE ";
+                secondary +=                ", Rental." + parameters[i];
+            SQLStatement =                  SQLHelper.Select("Rental", "Rental", parameters[0], secondary) + " WHERE ";
             if (parameter1 > -1)
             {
-                SQLStatement +=             parameters[0] + " = @" + parameters[0];
+                SQLStatement +=             "Rental." + parameters[0] + " = @" + parameters[0];
                 if ((parameter2 > -1) || (parameter3 > new DateTime(1753, 1, 1, 0, 0, 0)))
                     SQLStatement +=         " AND ";
             }
 
             if (parameter2 > -1)
             {
-                SQLStatement +=             parameters[1] + " = @" + parameters[1];
+                SQLStatement +=             "Rental." + parameters[1] + " = @" + parameters[1];
                 if (parameter3 > new DateTime(1753, 1, 1, 0, 0, 0))
                     SQLStatement +=         " AND ";
             }
 
             if (parameter3 > new DateTime(1753, 1, 1, 0, 0, 0))
             {
-                SQLStatement +=             parameters[2] + " = @" + parameters[2];
+                SQLStatement +=             "Rental." + parameters[2] + " = @" + parameters[2];
             }
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
@@ -139,24 +154,24 @@ namespace Bookstore
                             int i= 0;
                             while (rentalReader.Read())
                             {
-                                objRental =                         new Rental();
-                                int         movie_number,
-                                            member_number;
-                                DateTime    media_checkout_date =   new DateTime(1753, 1, 1, 0, 0, 0),
-                                            media_return_date =     new DateTime(1753, 1, 1, 0, 0, 0);
+                                objRental =                                             new Rental();
+                                int                             movie_number,
+                                                                member_number;
+                                DateTime                        media_checkout_date =   new DateTime(1753, 1, 1, 0, 0, 0),
+                                                                media_return_date =     new DateTime(1753, 1, 1, 0, 0, 0);
 
-                                Int32.TryParse(                     rentalReader[parameters[0]].ToString(), out movie_number        );
-                                objRental.movie_number =            movie_number;
-                                Int32.TryParse(                     rentalReader[parameters[1]].ToString(), out member_number       );
-                                objRental.member_number =           member_number;
-                                DateTime.TryParse(                  rentalReader[parameters[2]].ToString(), out media_checkout_date );
-                                objRental.media_checkout_date =     media_checkout_date;
-                                DateTime.TryParse(              rentalReader[parameters[3]].ToString(), out media_return_date   );
-                                objRental.media_return_date =   media_return_date;
+                                Int32.TryParse(                                         rentalReader[parameters[0]].ToString(), out movie_number        );
+                                objRental.movie_number =                                movie_number;
+                                Int32.TryParse(                                         rentalReader[parameters[1]].ToString(), out member_number       );
+                                objRental.member_number =                               member_number;
+                                DateTime.TryParse(                                      rentalReader[parameters[2]].ToString(), out media_checkout_date );
+                                objRental.media_checkout_date =                         media_checkout_date;
+                                DateTime.TryParse(                                      rentalReader[parameters[3]].ToString(), out media_return_date   );
+                                objRental.media_return_date =                           media_return_date;
                                 i++;
                             }
                             if (i > 1)
-                                objRental = null;//TODO tell them more than one Rental was found
+                                objRental =                                             null;//TODO tell them more than one Rental was found
                         }
                     }
                     objConn.Close();
@@ -179,15 +194,15 @@ namespace Bookstore
         /// <param name="rental">accepts a custom object of that type as a parameter</param>
         public static bool AddRental(Rental rental)
         {
-            string      third =         string.Empty,
+            string      secondary =     string.Empty,
                         SQLStatement;
             int         rowsAffected;
             SqlCommand  objCommand;
             bool        result =        false;
 
             for (int i = 1; i < parameters.Length; i++)
-                third +=                ", @" + parameters[i];
-            SQLStatement = SQLHelper.Insert("Rental", parameters[0], third);
+                secondary +=            ", @" + parameters[i];
+            SQLStatement =              SQLHelper.Insert("Rental", parameters[0], secondary);
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -207,10 +222,10 @@ namespace Bookstore
                         objCommand.Parameters.AddWithValue('@' + parameters[3], rental.media_return_date    );
                         //Step #3: return false if record was not added successfully
                         //         return true if record was added successfully  
-                        rowsAffected = objCommand.ExecuteNonQuery();
+                        rowsAffected =  objCommand.ExecuteNonQuery();
                         if (rowsAffected > 0)
                         {
-                            result = true;   //Record was added successfully
+                            result =    true;   //Record was added successfully
                         }
                     }
                     objConn.Close();
@@ -233,19 +248,19 @@ namespace Bookstore
         /// <param name="rental">accepts a custom object of that type as a parameter</param>
         public static bool UpdateRental(Rental rental)
         {
-            string      third =         string.Empty,
+            string      secondary =     string.Empty,
                         SQLStatement;
-            string[]    first = { parameters[0] + " = @" + parameters[0], parameters[1] + " = @" + parameters[1], parameters[2] + " = @" + parameters[2] };
+            string[]    primary =       { parameters[0] + " = @" + parameters[0], parameters[1] + " = @" + parameters[1], parameters[2] + " = @" + parameters[2] };
             SqlCommand  objCommand;
             int         rowsAffected;
             bool        result =        false;
 
 //            for (int i = 1; i < parameters.Length; i++)
-//                third +=                ", " + parameters[i] + " = @" + parameters[i];
-            SQLStatement = SQLHelper.Update(  "Rental",
-                                                        first,
-                                                        ", " + parameters[3] + " = @" + parameters[3]//TODO only if not blank
-                                                     );//TODO
+//                secondary +=            ", " + parameters[i] + " = @" + parameters[i];
+            SQLStatement =              SQLHelper.Update(  "Rental",
+                                                            primary,
+                                                            ", " + parameters[3] + " = @" + parameters[3]//TODO only if not blank
+                                                        );//TODO
             //TODO exclude one of the WHERE's
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -265,10 +280,10 @@ namespace Bookstore
                         objCommand.Parameters.AddWithValue('@' + parameters[3], rental.media_return_date    );//TODO only if not blank
                         //Step #3: return false if record was not added successfully
                         //         return true if record was added successfully           
-                        rowsAffected = objCommand.ExecuteNonQuery();
+                        rowsAffected =  objCommand.ExecuteNonQuery();
                         if (rowsAffected > 0)
                         {
-                            result = true;   //Record was added successfully
+                            result =    true;   //Record was added successfully
                         }
                     }
                     objConn.Close();
@@ -291,10 +306,10 @@ namespace Bookstore
         /// <param name="rental">accepts a custom object of that type as a parameter</param>
         public static bool DeleteRental(Rental rental)
         {
-            string      SQLStatement = SQLHelper.Delete(  "Rental",
+            string      SQLStatement = SQLHelper.Delete("Rental",
                                                         parameters[0],
                                                         " AND " + parameters[1] + " = @" + parameters[1] + " AND " + parameters[2] + " = @" + parameters[2]
-                                                     );
+                                                       );
             SqlCommand  objCommand;
             int         rowsAffected;
             bool        result =        false;
@@ -316,10 +331,10 @@ namespace Bookstore
                         objCommand.Parameters.AddWithValue('@' + parameters[2], rental.media_checkout_date  );
                         //Step #3: return false if record was not added successfully
                         //         return true if record was added successfully
-                        rowsAffected = objCommand.ExecuteNonQuery();
+                        rowsAffected =  objCommand.ExecuteNonQuery();
                         if (rowsAffected > 0)
                         {
-                            result = true;   //Record was added successfully
+                            result =    true;   //Record was added successfully
                         }
                     }
                     objConn.Close();
