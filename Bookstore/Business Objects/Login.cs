@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -27,7 +27,7 @@ namespace Bookstore
         /// </summary>
         public bool IsValid()
         {
-            string SQLStatement = SQLHelper.Select("Member", "password", "") + " WHERE login_name = @Credentials";
+            string SQLStatement = SQLHelper.Select("Member", "Member", "password", "") + " WHERE login_name = @Credentials";
             SqlCommand objCommand;
             SqlDataReader memberReader;
             bool    result =    false;
