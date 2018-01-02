@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -24,7 +24,7 @@ namespace Bookstore
         public static List<Vendor> GetVendors()
         {
             List<Vendor>    vendors =       new List<Vendor>();
-            string          SQLStatement = SQLHelper.Select("Vendor", parameters[0], ", " + parameters[1]);
+            string          SQLStatement = SQLHelper.Select("Vendor", "Vendor", parameters[0], ", Vendor." + parameters[1]);//TODO should be loop
             SqlCommand      objCommand;
             SqlDataReader   vendorReader;
 
@@ -75,7 +75,7 @@ namespace Bookstore
         public static Vendor GetVendor(int parameter)//(string parameter)
         {
             Vendor          objVendor =        null;
-            string          SQLStatement = SQLHelper.Select("Vendor", parameters[0], ", " + parameters[1]) + " WHERE " + parameters[0] + " = @" + parameters[0];
+            string          SQLStatement = SQLHelper.Select("Vendor", "Vendor", parameters[0], ", Vendor." + parameters[1]) + " WHERE Vendor." + parameters[0] + " = @" + parameters[0];//TODO should be loop
             SqlCommand      objCommand;
             SqlDataReader   vendorReader;
 
@@ -126,7 +126,7 @@ namespace Bookstore
         public static bool AddVendor(Vendor vendor)
         {
             string          SQLStatement1 = "SELECT MAX(id) AS max_vendor FROM Vendor",//Helper.Select("Vendor", "MAX(" + parameters[0] + ") AS max_vendor", ""),//"SELECT MAX(id) FROM Vendor",
-                            SQLStatement2 = SQLHelper.Insert("Vendor", parameters[0], ", @" + parameters[1]);
+                            SQLStatement2 = SQLHelper.Insert("Vendor", parameters[0], ", @" + parameters[1]);//TODO should be loop
             //TODO what if MAX is nothing?
             int             rowsAffected,
                             max;
@@ -192,7 +192,7 @@ namespace Bookstore
         public static bool UpdateVendor(Vendor vendor)
         {
             string[]    first = { parameters[0] + " = @" + parameters[0] };
-            string      SQLStatement =  SQLHelper.Update("Vendor", first, ", " + parameters[1] + " = @" + parameters[1]);
+            string      SQLStatement =  SQLHelper.Update("Vendor", first, ", " + parameters[1] + " = @" + parameters[1]);//TODO should be loop
             SqlCommand  objCommand;
             int         rowsAffected;
             bool        result =        false;
