@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -24,14 +24,14 @@ namespace Bookstore
         public static List<Movie> GetMovies()
         {
             List<Movie>     movies =        new List<Movie>();
-            string          third =         string.Empty,
+            string          secondary =     string.Empty,
                             SQLStatement;
             SqlCommand      objCommand;
             SqlDataReader   movieReader;
 
             for (int i = 1; i < parameters.Length; i++)
-                third +=                    ", " + parameters[i];
-            SQLStatement = SQLHelper.Select("Movie", parameters[0], third);
+                secondary +=                ", Movie." + parameters[i];
+            SQLStatement =                  SQLHelper.Select("Movie", "Movie", parameters[0], secondary);
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -99,14 +99,14 @@ namespace Bookstore
         public static Movie GetMovie(int parameter)//string parameter)
         {
             Movie           objMovie =      null;
-            string          third =         string.Empty,
+            string          secondary =     string.Empty,
                             SQLStatement;
             SqlCommand      objCommand;
             SqlDataReader   movieReader;
 
             for (int i = 1; i < parameters.Length; i++)
-                third +=                    ", " + parameters[i];
-            SQLStatement = SQLHelper.Select("Movie", parameters[0], third) + " WHERE " + parameters[0] + " = @" + parameters[0];
+                secondary +=                ", Movie." + parameters[i];
+            SQLStatement =                  SQLHelper.Select("Movie", "Movie", parameters[0], secondary) + " WHERE Movie." + parameters[0] + " = @" + parameters[0];
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -133,22 +133,22 @@ namespace Bookstore
                                                                 copies_on_hand;
                                 float                           movie_retail_cost;
 
-                                Int32.TryParse(                             movieReader[parameters[ 0]].ToString(), out movie_number        );
-                                objMovie.movie_number =                     movie_number;
-                                objMovie.movie_title =                      movieReader[parameters[ 1]].ToString();
-                                objMovie.Description =                      movieReader[parameters[ 2]].ToString();
-                                Int32.TryParse(                             movieReader[parameters[ 3]].ToString(), out movie_year_made     );
-                                objMovie.movie_year_made =                  movie_year_made;
-                                Int32.TryParse(                             movieReader[parameters[ 4]].ToString(), out genre_id            );
-                                objMovie.genre_id =                         genre_id;
-                                objMovie.movie_rating =                     movieReader[parameters[ 5]].ToString();
-                                objMovie.media_type =                       movieReader[parameters[ 6]].ToString();
-                                float.TryParse(                             movieReader[parameters[ 7]].ToString(), out movie_retail_cost   );
-                                objMovie.movie_retail_cost =                movie_retail_cost;
-                                Int32.TryParse(                             movieReader[parameters[ 8]].ToString(), out copies_on_hand      );
-                                objMovie.copies_on_hand =                   copies_on_hand;
-                                objMovie.image =                            movieReader[parameters[ 9]].ToString();
-                                objMovie.trailer =                          movieReader[parameters[10]].ToString();
+                                Int32.TryParse(                 movieReader[parameters[ 0]].ToString(), out movie_number        );
+                                objMovie.movie_number =         movie_number;
+                                objMovie.movie_title =          movieReader[parameters[ 1]].ToString();
+                                objMovie.Description =          movieReader[parameters[ 2]].ToString();
+                                Int32.TryParse(                 movieReader[parameters[ 3]].ToString(), out movie_year_made     );
+                                objMovie.movie_year_made =      movie_year_made;
+                                Int32.TryParse(                 movieReader[parameters[ 4]].ToString(), out genre_id            );
+                                objMovie.genre_id =             genre_id;
+                                objMovie.movie_rating =         movieReader[parameters[ 5]].ToString();
+                                objMovie.media_type =           movieReader[parameters[ 6]].ToString();
+                                float.TryParse(                 movieReader[parameters[ 7]].ToString(), out movie_retail_cost   );
+                                objMovie.movie_retail_cost =    movie_retail_cost;
+                                Int32.TryParse(                 movieReader[parameters[ 8]].ToString(), out copies_on_hand      );
+                                objMovie.copies_on_hand =       copies_on_hand;
+                                objMovie.image =                movieReader[parameters[ 9]].ToString();
+                                objMovie.trailer =              movieReader[parameters[10]].ToString();
                             }
                         }
                     }
@@ -172,15 +172,15 @@ namespace Bookstore
         /// <param name="movie">accepts a custom object of that type as a parameter</param>
         public static bool AddMovie(Movie movie)
         {
-            string      third =         string.Empty,
+            string      secondary =     string.Empty,
                         SQLStatement;
             int         rowsAffected;
             SqlCommand  objCommand;
             bool        result =        false;
 
             for (int i = 1; i < parameters.Length; i++)
-                third +=                    ", @" + parameters[i];
-            SQLStatement = SQLHelper.Insert("Movie", parameters[0], third);
+                secondary +=            ", @" + parameters[i];
+            SQLStatement =              SQLHelper.Insert("Movie", parameters[0], secondary);
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -210,7 +210,7 @@ namespace Bookstore
                         rowsAffected =  objCommand.ExecuteNonQuery();
                         if (rowsAffected > 0)
                         {
-                            result = true;   //Record was added successfully
+                            result =    true;   //Record was added successfully
                         }
                     }
                     objConn.Close();
@@ -233,16 +233,16 @@ namespace Bookstore
         /// <param name="movie">accepts a custom object of that type as a parameter</param>
         public static bool UpdateMovie(Movie movie)
         {
-            string[] first = { parameters[0] + " = @" + parameters[0] };
-            string third =         string.Empty,
+            string[]    primary =       { parameters[0] + " = @" + parameters[0] };
+            string      secondary =     string.Empty,
                         SQLStatement;
             SqlCommand  objCommand;
             int         rowsAffected;
             bool        result =        false;
 
             for (int i = 1; i < parameters.Length; i++)
-                third +=                ", " + parameters[i] + " = @" + parameters[i];
-            SQLStatement = SQLHelper.Update("Movie", first, third);
+                secondary +=            ", " + parameters[i] + " = @" + parameters[i];
+            SQLStatement =              SQLHelper.Update("Movie", primary, secondary);
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -272,7 +272,7 @@ namespace Bookstore
                         rowsAffected =  objCommand.ExecuteNonQuery();
                         if (rowsAffected > 0)
                         {
-                            result = true;   //Record was added successfully
+                            result =    true;   //Record was added successfully
                         }
                     }
                     objConn.Close();
@@ -295,7 +295,7 @@ namespace Bookstore
         /// <param name="movie">accepts a custom object of that type as a parameter</param>
         public static bool DeleteMovie(Movie movie)
         {
-            string      SQLStatement = SQLHelper.Delete("Movie", parameters[0], string.Empty);
+            string      SQLStatement =  SQLHelper.Delete("Movie", parameters[0], string.Empty);
             SqlCommand  objCommand;
             int         rowsAffected;
             bool        result =        false;
@@ -315,10 +315,10 @@ namespace Bookstore
                         objCommand.Parameters.AddWithValue('@' + parameters[0], movie.movie_number);
                         //Step #3: return false if record was not added successfully
                         //         return true if record was added successfully
-                        rowsAffected = objCommand.ExecuteNonQuery();
+                        rowsAffected =  objCommand.ExecuteNonQuery();
                         if (rowsAffected > 0)
                         {
-                            result = true;   //Record was added successfully
+                            result =    true;   //Record was added successfully
                         }
                     }
                     objConn.Close();
