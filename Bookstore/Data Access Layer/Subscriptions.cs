@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -24,7 +24,7 @@ namespace Bookstore
         public static List<Subscription> GetSubscriptions()
         {
             List<Subscription>    subscriptions =       new List<Subscription>();
-            string          SQLStatement = SQLHelper.Select("Subscription", parameters[0], ", " + parameters[1] + ", " + parameters[2]);
+            string          SQLStatement = SQLHelper.Select("Subscription", "Subscription", parameters[0], ", Subscription." + parameters[1] + ", Subscription." + parameters[2]);//TODO should be loop
             SqlCommand      objCommand;
             SqlDataReader   subscriptionReader;
 
@@ -78,7 +78,7 @@ namespace Bookstore
         public static Subscription GetSubscription(int parameter)//(string parameter)
         {
             Subscription          objSubscription =        null;
-            string          SQLStatement = SQLHelper.Select("Subscription", parameters[0], ", " + parameters[1] + ", " + parameters[2]) + " WHERE " + parameters[0] + " = @" + parameters[0];
+            string          SQLStatement = SQLHelper.Select("Subscription", "Subscription", parameters[0], ", Subscription." + parameters[1] + ", Subscription." + parameters[2]) + " WHERE Subscription." + parameters[0] + " = @" + parameters[0];//TODO should be loop
             SqlCommand      objCommand;
             SqlDataReader   subscriptionReader;
 
@@ -132,7 +132,7 @@ namespace Bookstore
         public static bool AddSubscription(Subscription subscription)
         {
             string          SQLStatement1 = "SELECT MAX(id) AS max_subscription FROM Subscription",//Helper.Select("Subscription", "MAX(" + parameters[0] + ") AS max_subscription", ""),//"SELECT MAX(id) FROM Subscription",
-                            SQLStatement2 = SQLHelper.Insert("Subscription", parameters[0], ", @" + parameters[1] + ", @" + parameters[2]);
+                            SQLStatement2 = SQLHelper.Insert("Subscription", parameters[0], ", @" + parameters[1] + ", @" + parameters[2]);//TODO should be loop
             //TODO what if MAX is nothing?
             int             rowsAffected,
                             max;
@@ -199,7 +199,7 @@ namespace Bookstore
         public static bool UpdateSubscription(Subscription subscription)
         {
             string[]    first = { parameters[0] + " = @" + parameters[0] };
-            string      SQLStatement = SQLHelper.Update("Subscription", first, ", " + parameters[1] + " = @" + parameters[1] + ", " + parameters[2] + " = @" + parameters[2]);
+            string      SQLStatement = SQLHelper.Update("Subscription", first, ", " + parameters[1] + " = @" + parameters[1] + ", " + parameters[2] + " = @" + parameters[2]);//TODO should be loop
             SqlCommand  objCommand;
             int         rowsAffected;
             bool        result =        false;
