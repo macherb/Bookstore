@@ -31,18 +31,30 @@ namespace Bookstore
 
             for (int i = 1; i < parameters.Length; i++)
                 secondary +=                ", Member." + parameters[i];
-            //SQLStatement =                  SQLHelper.Select("Member", "Member",  parameters[0], secondary);
-
             SQLStatement =                  SQLHelper.Select(
+                                                            "Member",
+                                                            SQLHelper.Join(
+                                                                            "Member",
+                                                                            " FROM " + "(" + "Member", 
+                                                                            "Subscription",
+                                                                            ", Subscription." + "name",//TODO extra2 needs to be special parameter [1]
+                                                                            parameters[14],//TODO joiner1 needs to be special parameter (foreign)
+                                                                            "id"//TODO joiner2 needs to be special parameter [0]
+                                                                          ),
+                                                            parameters[0],
+                                                            secondary
+                                                            );
+
+            /*SQLStatement =                  SQLHelper.Select(
                                                             "Member",
                                                             "Member",
                                                             "Subscription",
                                                             parameters[0],
                                                             secondary,
-                                                            "name",//TODO needs to be special parameter
+                                                            ", Subscription.name",//TODO needs to be special parameter
                                                             parameters[14],//TODO needs to be special parameter
                                                             "id"//TODO needs to be special parameter
-                                                            );
+                                                            );*/
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
             try
@@ -85,7 +97,7 @@ namespace Bookstore
                                 Int32.TryParse(                         memberReader[parameters[14]].ToString(), out subscription_id);
                                 objMember.subscription_id =             subscription_id;
                                 objMember.photo =                       memberReader[parameters[15]].ToString();
-                                objMember.name =                        memberReader["name"].ToString();//TODO needs to be special parameter
+                                objMember.name =                        memberReader["name"].ToString();//TODO extra2 needs to be special parameter [1]
                                 members.Add(objMember);
                             }
                         }
@@ -118,7 +130,7 @@ namespace Bookstore
 
             for (int i = 1; i < parameters.Length; i++)
                 secondary +=                ", Member." + parameters[i];
-            SQLStatement =                  SQLHelper.Select("Member", "Member", parameters[0], secondary) + " WHERE Member." + parameters[0] + " = @" + parameters[0];
+            SQLStatement =                  SQLHelper.Select("Member", " FROM " + "Member", parameters[0], secondary) + " WHERE Member." + parameters[0] + " = @" + parameters[0];
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
