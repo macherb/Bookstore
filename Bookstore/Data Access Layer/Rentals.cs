@@ -31,11 +31,40 @@ namespace Bookstore
 
             for (int i = 1; i < parameters.Length; i++)
                 secondary +=                ", Rental." + parameters[i];
+            SQLStatement =                  SQLHelper.Select(
+                                                            "Rental",
+                                                            SQLHelper.Join(
+                                                                            "Rental",
+                                                                            SQLHelper.Join(
+                                                                                            "Rental",
+                                                                                            " FROM " + "((" + "Rental",//TODO call future function that uses parenthesis counter
+                                                                                            "Member",
+                                                                                            ", Member." + "login_name",//TODO extra2 needs to be special parameter [10]
+                                                                                            parameters[1],//TODO joiner1 needs to be special parameter (foreign)
+                                                                                            "number"//TODO joiner2 needs to be special parameter [0]
+                                                                                          ),
+                                                                            "Movie",
+                                                                            ", Movie." + "movie_title",//extra2 TODO needs to be special parameter [1]
+                                                                            parameters[0],//TODO joiner1 needs to be special parameter (foreign)
+                                                                            "movie_number"//TODO joiner2 needs to be special parameter [0]
+                                                                          ),
+                                                            parameters[0],//TODO should be flipped?
+                                                            secondary
+                                                            );
+
             /*SQLStatement =                  SQLHelper.Select(
                                                             "Rental",
-                                                            "Movie.movie_title",
-                                                            secondary + ", Movie.movie_number"
-                                                            ) + " INNER JOIN Movie ON Rental.movie_number = Movie.movie_number";*/
+                                                            SQLHelper.Join(
+                                                                            "Rental",
+                                                                            " FROM " + "(" + "Rental",
+                                                                            "Movie",
+                                                                            ", Movie.movie_title",//TODO needs to be special parameter
+                                                                            parameters[0],//TODO needs to be special parameter
+                                                                            "movie_number"//TODO needs to be special parameter
+                                                                          ),
+                                                            parameters[0],
+                                                            secondary
+                                                            );
 
             SQLStatement =                  SQLHelper.Select(
                                                             "Rental",
@@ -43,10 +72,10 @@ namespace Bookstore
                                                             "Movie",
                                                             parameters[0],
                                                             secondary,
-                                                            "movie_title",//TODO needs to be special parameter
+                                                            ", Movie.movie_title",//TODO needs to be special parameter
                                                             parameters[0],//TODO needs to be special parameter
                                                             "movie_number"//TODO needs to be special parameter
-                                                            );
+                                                            );*/
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
             try
@@ -77,7 +106,8 @@ namespace Bookstore
                                 objRental.media_checkout_date =                     media_checkout_date;
                                 DateTime.TryParse(                                  rentalReader[parameters[3]].ToString(), out media_return_date   );
                                 objRental.media_return_date =                       media_return_date;
-                                objRental.movie_title =                             rentalReader["movie_title"].ToString();//TODO needs to be special parameter
+                                objRental.movie_title =                             rentalReader["movie_title"].ToString();//TODO needs to be special parameter [1]
+                                objRental.login_name =                              rentalReader["login_name"].ToString();//TODO needs to be special parameter [10]
                                 rentals.Add(objRental);
                             }
                         }
@@ -103,14 +133,14 @@ namespace Bookstore
         public static Rental GetRental(int parameter1, int parameter2, DateTime parameter3)//string parameter)
         {
             Rental          objRental =     null;
-            string          secondary =     string.Empty,
+            string          secondary =     string.Empty,//TODO should be flipped?
                             SQLStatement;
             SqlCommand      objCommand;
             SqlDataReader   rentalReader;
 
             for (int i = 1; i < parameters.Length; i++)
                 secondary +=                ", Rental." + parameters[i];
-            SQLStatement =                  SQLHelper.Select("Rental", "Rental", parameters[0], secondary) + " WHERE ";
+            SQLStatement =                  SQLHelper.Select("Rental", " FROM " + "Rental", parameters[0], secondary) + " WHERE ";
             if (parameter1 > -1)
             {
                 SQLStatement +=             "Rental." + parameters[0] + " = @" + parameters[0];
@@ -194,7 +224,7 @@ namespace Bookstore
         /// <param name="rental">accepts a custom object of that type as a parameter</param>
         public static bool AddRental(Rental rental)
         {
-            string      secondary =     string.Empty,
+            string      secondary =     string.Empty,//TODO should be flipped?
                         SQLStatement;
             int         rowsAffected;
             SqlCommand  objCommand;
@@ -308,7 +338,7 @@ namespace Bookstore
         {
             string      SQLStatement = SQLHelper.Delete("Rental",
                                                         parameters[0],
-                                                        " AND " + parameters[1] + " = @" + parameters[1] + " AND " + parameters[2] + " = @" + parameters[2]
+                                                        " AND " + parameters[1] + " = @" + parameters[1] + " AND " + parameters[2] + " = @" + parameters[2]//TODO copy from update
                                                        );
             SqlCommand  objCommand;
             int         rowsAffected;
