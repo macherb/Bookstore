@@ -27,7 +27,7 @@ namespace Bookstore
         /// </summary>
         public bool IsValid()
         {
-            string SQLStatement = SQLHelper.Select("Member", "Member", "password", "") + " WHERE login_name = @Credentials";
+            string SQLStatement = SQLHelper.Select("Member", " FROM " + "Member", "password", "") + " WHERE Member.login_name = @Credentials";
             SqlCommand objCommand;
             SqlDataReader memberReader;
             bool    result =    false;
