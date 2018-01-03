@@ -13,10 +13,19 @@ namespace Bookstore
 
     class SQLHelper
     {
-        /// <summary>
+        /*/// <summary>
         /// SQL statement that SELECT's primary and secondary fields from a table
         /// </summary>
         /// <param name="tableName1">The name of the table to SELECT from</param>
+        /// <param name="primary">The primary field to SELECT</param>
+        /// <param name="secondary">The secondary field(s) to SELECT</param>
+        /// <returns>An SQL SELECT statement</returns>*/
+
+        /// <summary>
+        /// SQL statement that SELECT's primary and secondary fields from a table
+        /// </summary>
+        /// <param name="tableName1a">The name of the table to SELECT from</param>
+        /// <param name="tableName1b">The name of the table to SELECT from with any JOIN's</param>
         /// <param name="primary">The primary field to SELECT</param>
         /// <param name="secondary">The secondary field(s) to SELECT</param>
         /// <returns>An SQL SELECT statement</returns>
@@ -24,22 +33,23 @@ namespace Bookstore
             
             string primary, 
             string secondary
-
+            //TODO if adding for where, need first as second, don't select primary
             )
         {
             return  "SELECT " +
                     tableName1a + "." + primary + secondary + 
                     "" +
-                    " FROM " + 
+                    ///" FROM " + 
                     //"(" + 
                     tableName1b + 
                     "" +
                     ""
                     //+ ")"
                     ;
+            //TODO reset parenthesis counter
         }
 
-        /// <summary>
+        /*/// <summary>
         /// 
         /// </summary>
         /// <param name="tableName1a"></param>
@@ -55,12 +65,12 @@ namespace Bookstore
             string tableName2, 
             string primary, //TODO can combine with "table1a."
             string secondary, 
-            string extra2, //TODO can combine with ", table2."
+            string extra2, 
             string joiner1, string joiner2)
         {
             return  "SELECT " +
                     tableName1a + "." + primary + secondary +
-                    ", " + tableName2 + "." + extra2 + //, 3.extra3
+                    extra2 + //, 3.extra3
                     " FROM " + 
                     "(" + 
                     tableName1b + //(1 INNER JOIN 3 ON 1.joiner1_3 = 3.joiner1_3)
@@ -68,6 +78,31 @@ namespace Bookstore
                     tableName1a + "." + joiner1 + " = " + tableName2 + "." + joiner2
                     + ")"
                     ;
+        }*/
+
+        /// <summary>
+        /// Everything necessary to JOIN two tables, and get the field(s) you want
+        /// </summary>
+        /// <param name="tableName1a">The name of the table to JOIN</param>
+        /// <param name="tableName1b">The extra(s) from other JOIN's with the name of the table to JOIN and any additional JOIN's</param>
+        /// <param name="tableName2">The name of the table to be JOIN'ed</param>
+        /// <param name="extra2">Extra field(s) to SELECT from the second table</param>
+        /// <param name="joiner1">The field from the first table to JOIN</param>
+        /// <param name="joiner2">The field from the second table to JOIN</param>
+        /// <returns>...and the extra field(s) from the second table FROM the first table JOIN the second table ON first table's joiner equals second table's joiner</returns>
+        public static string Join(string tableName1a, //can be combined with joiner1?
+            string tableName1b, 
+            string tableName2, 
+            string extra2, 
+            string joiner1, string joiner2)
+        {
+            return  //", " + tableName2 + "." + 
+                    extra2 + 
+                    tableName1b + //extra3 + " FROM ((tableName1b + " INNER JOIN 3 ON 1.joiner1_3 = 3.joiner1_3)
+                    " INNER JOIN " + tableName2 + " ON " + 
+                    tableName1a + "." + joiner1 + " = " + tableName2 + "." + joiner2
+                    + ")";
+            //TODO increment parenthesis counter
         }
 
         /// <summary>
@@ -89,7 +124,7 @@ namespace Bookstore
         /// <param name="primary">The primary field to UPDATE, and identify the row to UPDATE</param>
         /// <param name="secondary">The secondary field(s) to UPDATE</param>
         /// <returns>An SQL UPDATE statement</returns>
-        public static string Update(string tableName, string[] primary, string secondary)
+        public static string Update(string tableName, string[] primary, string secondary)//TODO primary1 not necessary, get rid of ", " in secondary
         {
             string  primary1 =  primary[0],
                     primary2 =  primary[0];
