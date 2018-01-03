@@ -24,7 +24,7 @@ namespace Bookstore
         public static List<Genre> GetGenres()
         {
             List<Genre>     genres =        new List<Genre>();
-            string          SQLStatement =  SQLHelper.Select("Genre", "Genre", parameters[0], ", Genre." + parameters[1]);
+            string          SQLStatement =  SQLHelper.Select("Genre", " FROM " + "Genre", parameters[0], ", Genre." + parameters[1]);
             SqlCommand      objCommand;
             SqlDataReader   genreReader;
 
@@ -75,7 +75,7 @@ namespace Bookstore
         public static Genre GetGenre(int parameter)//string parameter)
         {
             Genre           objGenre =      null;
-            string          SQLStatement = SQLHelper.Select("Genre", "Genre", parameters[0], ", Genre." + parameters[1]) + " WHERE Genre." + parameters[0] + " = @" + parameters[0];
+            string          SQLStatement = SQLHelper.Select("Genre", " FROM " + "Genre", parameters[0], ", Genre." + parameters[1]) + " WHERE Genre." + parameters[0] + " = @" + parameters[0];
             SqlCommand      objCommand;
             SqlDataReader   genreReader;
 
