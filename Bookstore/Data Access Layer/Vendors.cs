@@ -24,9 +24,14 @@ namespace Bookstore
         public static List<Vendor> GetVendors()
         {
             List<Vendor>    vendors =       new List<Vendor>();
-            string          SQLStatement = SQLHelper.Select("Vendor", "Vendor", parameters[0], ", Vendor." + parameters[1]);//TODO should be loop
+            string          secondary =     string.Empty,
+                            SQLStatement;
             SqlCommand      objCommand;
             SqlDataReader   vendorReader;
+
+            for (int i = 1; i < parameters.Length; i++)
+                secondary +=                ", Vendor." + parameters[i];
+            SQLStatement =                  SQLHelper.Select("Vendor", " FROM " + "Vendor", parameters[0], secondary);
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -74,10 +79,15 @@ namespace Bookstore
         /// <param name="parameter">accepts a parameter to return a specific record</param>
         public static Vendor GetVendor(int parameter)//(string parameter)
         {
-            Vendor          objVendor =        null;
-            string          SQLStatement = SQLHelper.Select("Vendor", "Vendor", parameters[0], ", Vendor." + parameters[1]) + " WHERE Vendor." + parameters[0] + " = @" + parameters[0];//TODO should be loop
+            Vendor          objVendor =     null;
+            string          secondary =     string.Empty,
+                            SQLStatement;
             SqlCommand      objCommand;
             SqlDataReader   vendorReader;
+
+            for (int i = 1; i < parameters.Length; i++)
+                secondary +=                ", Vendor." + parameters[i];
+            SQLStatement =                  SQLHelper.Select("Vendor", " FROM " + "Vendor", parameters[0], secondary) + " WHERE Vendor." + parameters[0] + " = @" + parameters[0];
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -125,8 +135,9 @@ namespace Bookstore
         /// <param name="vendor">accepts a custom object of that type as a parameter</param>
         public static bool AddVendor(Vendor vendor)
         {
-            string          SQLStatement1 = "SELECT MAX(id) AS max_vendor FROM Vendor",//Helper.Select("Vendor", "MAX(" + parameters[0] + ") AS max_vendor", ""),//"SELECT MAX(id) FROM Vendor",
-                            SQLStatement2 = SQLHelper.Insert("Vendor", parameters[0], ", @" + parameters[1]);//TODO should be loop
+            string          secondary =     string.Empty,
+                            SQLStatement1 = "SELECT MAX(id) AS max_vendor FROM Vendor",//Helper.Select("Vendor", "MAX(" + parameters[0] + ") AS max_vendor", ""),//"SELECT MAX(id) FROM Vendor",
+                            SQLStatement2;
             //TODO what if MAX is nothing?
             int             rowsAffected,
                             max;
@@ -135,6 +146,10 @@ namespace Bookstore
                             objCommand2;
             SqlDataReader   vendorReader;
             bool            result =        false;
+
+            for (int i = 1; i < parameters.Length; i++)
+                secondary +=                ", @" + parameters[i];
+            SQLStatement2 =                 SQLHelper.Insert("Vendor", parameters[0], secondary);
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -191,11 +206,16 @@ namespace Bookstore
         /// <param name="vendor">accepts a custom object of that type as a parameter</param>
         public static bool UpdateVendor(Vendor vendor)
         {
-            string[]    first = { parameters[0] + " = @" + parameters[0] };
-            string      SQLStatement =  SQLHelper.Update("Vendor", first, ", " + parameters[1] + " = @" + parameters[1]);//TODO should be loop
+            string[]    primary =       { parameters[0] + " = @" + parameters[0] };
+            string      secondary =     string.Empty,
+                        SQLStatement;
             SqlCommand  objCommand;
             int         rowsAffected;
             bool        result =        false;
+
+            for (int i = 1; i < parameters.Length; i++)
+                secondary +=            ", " + parameters[i] + " = @" + parameters[i];
+            SQLStatement =              SQLHelper.Update("Vendor", primary, secondary);
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
