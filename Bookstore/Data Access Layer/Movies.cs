@@ -31,7 +31,21 @@ namespace Bookstore
 
             for (int i = 1; i < parameters.Length; i++)
                 secondary +=                ", Movie." + parameters[i];
-            SQLStatement =                  SQLHelper.Select("Movie", "Movie", parameters[0], secondary);
+            SQLStatement =                  SQLHelper.Select(
+                                                            "Movie",
+                                                            SQLHelper.Join(
+                                                                            "Movie",
+                                                                            " FROM " + "(" + "Movie",
+                                                                            "Genre",
+                                                                            ", Genre." + "name",//TODO extra2 needs to be special parameter [1]
+                                                                            parameters[4],//TODO joiner1 needs to be special parameter (foreign)
+                                                                            "id"//TODO joiner2 needs to be special parameter [0]
+                                                                          ),
+                                                            parameters[0],
+                                                            secondary
+                                                            );
+
+            /*SQLStatement =                  SQLHelper.Select("Movie", " FROM " + "Movie", parameters[0], secondary);*/
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -73,6 +87,7 @@ namespace Bookstore
                                 objMovie.copies_on_hand =                   copies_on_hand;
                                 objMovie.image =                            movieReader[parameters[ 9]].ToString();
                                 objMovie.trailer =                          movieReader[parameters[10]].ToString();
+                                objMovie.name =                             movieReader["name"].ToString();//TODO extra2 needs to be special parameter [1]
 
                                 movies.Add(objMovie);
                             }
@@ -106,7 +121,7 @@ namespace Bookstore
 
             for (int i = 1; i < parameters.Length; i++)
                 secondary +=                ", Movie." + parameters[i];
-            SQLStatement =                  SQLHelper.Select("Movie", "Movie", parameters[0], secondary) + " WHERE Movie." + parameters[0] + " = @" + parameters[0];
+            SQLStatement =                  SQLHelper.Select("Movie", " FROM " + "Movie", parameters[0], secondary) + " WHERE Movie." + parameters[0] + " = @" + parameters[0];
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -256,7 +271,7 @@ namespace Bookstore
                     //         Add Try..Catch appropriate block and throw exception back to calling program
                     using (objCommand = new SqlCommand(SQLStatement, objConn))
                     {
-                        objCommand.Parameters.AddWithValue('@' + parameters[ 0], movie.movie_number     );
+                        objCommand.Parameters.AddWithValue('@' + parameters[ 0], movie.movie_number     );//TODO Does primary need to be moved to the end?
                         objCommand.Parameters.AddWithValue('@' + parameters[ 1], movie.movie_title      );
                         objCommand.Parameters.AddWithValue('@' + parameters[ 2], movie.Description      );
                         objCommand.Parameters.AddWithValue('@' + parameters[ 3], movie.movie_year_made  );
