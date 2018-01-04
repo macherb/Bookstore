@@ -45,8 +45,6 @@ namespace Bookstore
                                                             secondary
                                                             );
 
-            /*SQLStatement =                  SQLHelper.Select("Movie", " FROM " + "Movie", parameters[0], secondary);*/
-
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
             try
@@ -119,9 +117,14 @@ namespace Bookstore
             SqlCommand      objCommand;
             SqlDataReader   movieReader;
 
-            for (int i = 1; i < parameters.Length; i++)
+            secondary =                     parameters[1];
+            for (int i = 2; i < parameters.Length; i++)
                 secondary +=                ", Movie." + parameters[i];
-            SQLStatement =                  SQLHelper.Select("Movie", " FROM " + "Movie", parameters[0], secondary) + " WHERE Movie." + parameters[0] + " = @" + parameters[0];
+            SQLStatement =                  SQLHelper.Select("Movie", 
+                                                            " FROM " + "Movie", 
+                                                            "", 
+                                                            secondary
+                                                            ) + " WHERE Movie." + parameters[0] + " = @" + parameters[0];
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -142,14 +145,14 @@ namespace Bookstore
                             while (movieReader.Read())
                             {
                                 objMovie =                      new Movie();
-                                int                             movie_number,
+                                int                             //movie_number,
                                                                 genre_id,
                                                                 movie_year_made,
                                                                 copies_on_hand;
                                 float                           movie_retail_cost;
 
-                                Int32.TryParse(                 movieReader[parameters[ 0]].ToString(), out movie_number        );
-                                objMovie.movie_number =         movie_number;
+                                //Int32.TryParse(                 movieReader[parameters[ 0]].ToString(), out movie_number        );
+                                objMovie.movie_number =         parameter;//movie_number;
                                 objMovie.movie_title =          movieReader[parameters[ 1]].ToString();
                                 objMovie.Description =          movieReader[parameters[ 2]].ToString();
                                 Int32.TryParse(                 movieReader[parameters[ 3]].ToString(), out movie_year_made     );
@@ -248,14 +251,15 @@ namespace Bookstore
         /// <param name="movie">accepts a custom object of that type as a parameter</param>
         public static bool UpdateMovie(Movie movie)
         {
-            string[]    primary =       { parameters[0] + " = @" + parameters[0] };
-            string      secondary =     string.Empty,
+            string      primary =       parameters[0] + " = @" + parameters[0],
+                        secondary,
                         SQLStatement;
             SqlCommand  objCommand;
             int         rowsAffected;
             bool        result =        false;
 
-            for (int i = 1; i < parameters.Length; i++)
+            secondary =                 parameters[1] + " = @" + parameters[1];
+            for (int i = 2; i < parameters.Length; i++)
                 secondary +=            ", " + parameters[i] + " = @" + parameters[i];
             SQLStatement =              SQLHelper.Update("Movie", primary, secondary);
 
