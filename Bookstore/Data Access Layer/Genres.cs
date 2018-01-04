@@ -75,7 +75,12 @@ namespace Bookstore
         public static Genre GetGenre(int parameter)//string parameter)
         {
             Genre           objGenre =      null;
-            string          SQLStatement = SQLHelper.Select("Genre", " FROM " + "Genre", parameters[0], ", Genre." + parameters[1]) + " WHERE Genre." + parameters[0] + " = @" + parameters[0];
+            string          SQLStatement =  SQLHelper.Select(
+                                                            "Genre", 
+                                                            " FROM " + "Genre", 
+                                                            "",
+                                                            parameters[1]
+                                                            ) + " WHERE Genre." + parameters[0] + " = @" + parameters[0];
             SqlCommand      objCommand;
             SqlDataReader   genreReader;
 
@@ -98,9 +103,9 @@ namespace Bookstore
                             while (genreReader.Read())
                             {
                                 objGenre =      new Genre();
-                                int             id;
-                                Int32.TryParse( genreReader[parameters[0]].ToString(), out id);
-                                objGenre.id =   id;
+                                //int             id;
+                                //Int32.TryParse( genreReader[parameters[0]].ToString(), out id);
+                                objGenre.id =   parameter;//id;
                                 objGenre.name = genreReader[parameters[1]].ToString();
                             }
                         }
@@ -191,12 +196,14 @@ namespace Bookstore
         /// <param name="genre">accepts a custom object of that type as a parameter</param>
         public static bool UpdateGenre(Genre genre)
         {
-            string[]    first = { parameters[0] + " = @" + parameters[0] };
-            string      SQLStatement = SQLHelper.Update("Genre", first, ", " + parameters[1] + " = @" + parameters[1]);
+            string      primary =       parameters[0] + " = @" + parameters[0],
+                        SQLStatement;
             SqlCommand  objCommand;
             int         rowsAffected;
             bool        result =        false;
 
+            SQLStatement =              SQLHelper.Update("Genre", primary, parameters[1] + " = @" + parameters[1]);
+            
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
             try
