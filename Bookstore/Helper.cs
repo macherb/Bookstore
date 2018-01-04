@@ -13,20 +13,12 @@ namespace Bookstore
 
     class SQLHelper
     {
-        /*/// <summary>
-        /// SQL statement that SELECT's primary and secondary fields from a table
-        /// </summary>
-        /// <param name="tableName1">The name of the table to SELECT from</param>
-        /// <param name="primary">The primary field to SELECT</param>
-        /// <param name="secondary">The secondary field(s) to SELECT</param>
-        /// <returns>An SQL SELECT statement</returns>*/
-
         /// <summary>
         /// SQL statement that SELECT's primary and secondary fields from a table
         /// </summary>
         /// <param name="tableName1a">The name of the table to SELECT from</param>
         /// <param name="tableName1b">The name of the table to SELECT from with any JOIN's</param>
-        /// <param name="primary">The primary field to SELECT</param>
+        /// <param name="primary">The primary field(s) to SELECT</param>
         /// <param name="secondary">The secondary field(s) to SELECT</param>
         /// <returns>An SQL SELECT statement</returns>
         public static string Select(string tableName1a, string tableName1b, 
@@ -48,37 +40,6 @@ namespace Bookstore
                     ;
             //TODO reset parenthesis counter
         }
-
-        /*/// <summary>
-        /// 
-        /// </summary>
-        /// <param name="tableName1a"></param>
-        /// <param name="tableName1b"></param>
-        /// <param name="tableName2"></param>
-        /// <param name="primary"></param>
-        /// <param name="secondary"></param>
-        /// <param name="extra2"></param>
-        /// <param name="joiner1"></param>
-        /// <param name="joiner2"></param>
-        /// <returns></returns>
-        public static string Select(string tableName1a, string tableName1b, 
-            string tableName2, 
-            string primary, //TODO can combine with "table1a."
-            string secondary, 
-            string extra2, 
-            string joiner1, string joiner2)
-        {
-            return  "SELECT " +
-                    tableName1a + "." + primary + secondary +
-                    extra2 + //, 3.extra3
-                    " FROM " + 
-                    "(" + 
-                    tableName1b + //(1 INNER JOIN 3 ON 1.joiner1_3 = 3.joiner1_3)
-                    " INNER JOIN " + tableName2 + " ON " + 
-                    tableName1a + "." + joiner1 + " = " + tableName2 + "." + joiner2
-                    + ")"
-                    ;
-        }*/
 
         /// <summary>
         /// Everything necessary to JOIN two tables, and get the field(s) you want
@@ -109,7 +70,7 @@ namespace Bookstore
         /// SQL statement that INSERT's primary and secondary fields into a table
         /// </summary>
         /// <param name="tableName">The name of the table to INSERT into</param>
-        /// <param name="primary">The primary field to INSERT</param>
+        /// <param name="primary">The primary field(s) to INSERT</param>
         /// <param name="secondary">The secondary field(s) to INSERT</param>
         /// <returns>An SQL INSERT statement</returns>
         public static string Insert(string tableName, string primary, string secondary)
@@ -121,20 +82,17 @@ namespace Bookstore
         /// SQL statement that UPDATE's primary and secondary fields in a table
         /// </summary>
         /// <param name="tableName">The name of the table to UPDATE in</param>
-        /// <param name="primary">The primary field to UPDATE, and identify the row to UPDATE</param>
+        /// <param name="primary">The primary field(s) to identify the row to UPDATE</param>
         /// <param name="secondary">The secondary field(s) to UPDATE</param>
         /// <returns>An SQL UPDATE statement</returns>
-        public static string Update(string tableName, string[] primary, string secondary)//TODO primary1 not necessary, get rid of ", " in secondary
+        public static string Update(string tableName, string primary, string secondary)
         {
-            string  primary1 =  primary[0],
-                    primary2 =  primary[0];
-
-            for (int i = 1; i < primary.Length; i++)
-            {
-                primary1 +=     ", " + primary[i];
-                primary2 +=     " AND " + primary[i];
-            }
-            return  "UPDATE " + tableName + " SET " + primary1 + secondary + " WHERE " + primary2;
+            return  "UPDATE " + 
+                    tableName + 
+                    " SET " + 
+                    secondary + 
+                    " WHERE " + 
+                    primary;
         }
 
         /// <summary>
