@@ -45,16 +45,6 @@ namespace Bookstore
                                                             secondary
                                                             );
 
-            /*SQLStatement =                  SQLHelper.Select(
-                                                            "Member",
-                                                            "Member",
-                                                            "Subscription",
-                                                            parameters[0],
-                                                            secondary,
-                                                            ", Subscription.name",//TODO needs to be special parameter
-                                                            parameters[14],//TODO needs to be special parameter
-                                                            "id"//TODO needs to be special parameter
-                                                            );*/
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
             try
@@ -128,9 +118,14 @@ namespace Bookstore
             SqlCommand      objCommand;
             SqlDataReader   memberReader;
 
-            for (int i = 1; i < parameters.Length; i++)
+            secondary =                     parameters[1];//TODO replace 1 with lowestSecondary
+            for (int i = 2; i < parameters.Length; i++)//TODO replace 2 with lowestSecondary + 1
                 secondary +=                ", Member." + parameters[i];
-            SQLStatement =                  SQLHelper.Select("Member", " FROM " + "Member", parameters[0], secondary) + " WHERE Member." + parameters[0] + " = @" + parameters[0];
+            SQLStatement =                  SQLHelper.Select("Member", 
+                                                            " FROM " + "Member", 
+                                                            "", 
+                                                            secondary
+                                                            ) + " WHERE Member." + parameters[0] + " = @" + parameters[0];
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -151,13 +146,13 @@ namespace Bookstore
                             while (memberReader.Read())
                             {
                                 objMember =                             new Member();
-                                int                     number,
+                                int                     //number,
                                                         contact_method,
                                                         subscription_id;
                                 DateTime                joindate =      new DateTime(1753, 1, 1, 0, 0, 0);
 
-                                Int32.TryParse(                         memberReader[parameters[ 0]].ToString(), out number         );
-                                objMember.number =                      number;
+                                //Int32.TryParse(                         memberReader[parameters[ 0]].ToString(), out number         );
+                                objMember.number =                      parameter;//number;
                                 DateTime.TryParse(                      memberReader[parameters[ 1]].ToString(), out joindate       );
                                 objMember.joindate =                    joindate;
                                 objMember.firstname =                   memberReader[parameters[ 2]].ToString();
@@ -266,14 +261,15 @@ namespace Bookstore
         /// <param name="member">accepts a custom object of that type as a parameter</param>
         public static bool UpdateMember(Member member)
         {
-            string[]    primary =       { parameters[0] + " = @" + parameters[0] };
-            string      secondary =     string.Empty,
+            string      primary =       parameters[0] + " = @" + parameters[0],
+                        secondary,
                         SQLStatement;
             SqlCommand  objCommand;
             int         rowsAffected;
             bool        result =        false;
 
-            for (int i = 1; i < parameters.Length; i++)
+            secondary =                 parameters[1] + " = @" + parameters[1];//TODO replace 1 with lowestSecondary
+            for (int i = 2; i < parameters.Length; i++)//TODO replace 2 with lowestSecondary + 1
                 secondary +=            ", " + parameters[i] + " = @" + parameters[i];
             SQLStatement =              SQLHelper.Update("Member", primary, secondary);
 
