@@ -24,12 +24,16 @@ namespace Bookstore
         public static List<Rental> GetRentals()
         {
             List<Rental>    rentals =       new List<Rental>();
-            string          secondary =     string.Empty,
+            string          primary,
+                            secondary =     string.Empty,
                             SQLStatement;
             SqlCommand      objCommand;
             SqlDataReader   rentalReader;
 
-            for (int i = 1; i < parameters.Length; i++)
+            primary =                       parameters[0];
+            for (int i = 1; i < 3; i++)
+                primary +=                  ", Rental." + parameters[i];
+            for (int i = 3; i < parameters.Length; i++)
                 secondary +=                ", Rental." + parameters[i];
             SQLStatement =                  SQLHelper.Select(
                                                             "Rental",
@@ -48,34 +52,10 @@ namespace Bookstore
                                                                             parameters[0],//TODO joiner1 needs to be special parameter (foreign)
                                                                             "movie_number"//TODO joiner2 needs to be special parameter [0]
                                                                           ),
-                                                            parameters[0],//TODO should be flipped?
+                                                            primary,
                                                             secondary
                                                             );
 
-            /*SQLStatement =                  SQLHelper.Select(
-                                                            "Rental",
-                                                            SQLHelper.Join(
-                                                                            "Rental",
-                                                                            " FROM " + "(" + "Rental",
-                                                                            "Movie",
-                                                                            ", Movie.movie_title",//TODO needs to be special parameter
-                                                                            parameters[0],//TODO needs to be special parameter
-                                                                            "movie_number"//TODO needs to be special parameter
-                                                                          ),
-                                                            parameters[0],
-                                                            secondary
-                                                            );
-
-            SQLStatement =                  SQLHelper.Select(
-                                                            "Rental",
-                                                            "Rental",
-                                                            "Movie",
-                                                            parameters[0],
-                                                            secondary,
-                                                            ", Movie.movie_title",//TODO needs to be special parameter
-                                                            parameters[0],//TODO needs to be special parameter
-                                                            "movie_number"//TODO needs to be special parameter
-                                                            );*/
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
             try
@@ -133,14 +113,22 @@ namespace Bookstore
         public static Rental GetRental(int parameter1, int parameter2, DateTime parameter3)//string parameter)
         {
             Rental          objRental =     null;
-            string          secondary =     string.Empty,//TODO should be flipped?
+            string          primary,
+                            secondary =     string.Empty,
                             SQLStatement;
             SqlCommand      objCommand;
             SqlDataReader   rentalReader;
 
-            for (int i = 1; i < parameters.Length; i++)
+            primary =                       parameters[0];
+            for (int i = 1; i < 3; i++)
+                primary +=                  ", Rental." + parameters[i];
+            for (int i = 3; i < parameters.Length; i++)
                 secondary +=                ", Rental." + parameters[i];
-            SQLStatement =                  SQLHelper.Select("Rental", " FROM " + "Rental", parameters[0], secondary) + " WHERE ";
+            SQLStatement =                  SQLHelper.Select("Rental", 
+                                                            " FROM " + "Rental", 
+                                                            primary, 
+                                                            secondary
+                                                            ) + " WHERE ";
             if (parameter1 > -1)
             {
                 SQLStatement +=             "Rental." + parameters[0] + " = @" + parameters[0];
@@ -224,15 +212,22 @@ namespace Bookstore
         /// <param name="rental">accepts a custom object of that type as a parameter</param>
         public static bool AddRental(Rental rental)
         {
-            string      secondary =     string.Empty,//TODO should be flipped?
+            string      primary,
+                        secondary =     string.Empty,
                         SQLStatement;
-            int         rowsAffected;
             SqlCommand  objCommand;
+            int         rowsAffected;
             bool        result =        false;
 
-            for (int i = 1; i < parameters.Length; i++)
+            primary =                   parameters[0];
+            for (int i = 1; i < 3; i++)
+                primary +=              ", @" + parameters[i];
+            for (int i = 3; i < parameters.Length; i++)
                 secondary +=            ", @" + parameters[i];
-            SQLStatement =              SQLHelper.Insert("Rental", parameters[0], secondary);
+            SQLStatement =              SQLHelper.Insert(   "Rental", 
+                                                            primary, 
+                                                            secondary
+                                                        );
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -278,19 +273,25 @@ namespace Bookstore
         /// <param name="rental">accepts a custom object of that type as a parameter</param>
         public static bool UpdateRental(Rental rental)
         {
-            string      secondary =     string.Empty,
+            string      primary,
+                        secondary =     string.Empty,
                         SQLStatement;
-            string[]    primary =       { parameters[0] + " = @" + parameters[0], parameters[1] + " = @" + parameters[1], parameters[2] + " = @" + parameters[2] };
             SqlCommand  objCommand;
             int         rowsAffected;
             bool        result =        false;
 
+            primary =                   parameters[0] + " = @" + parameters[0];
+            for (int i = 1; i < 3; i++)
+            {
+                primary +=              " AND " + parameters[i] + " = @" + parameters[i];
+            }
 //            for (int i = 1; i < parameters.Length; i++)
 //                secondary +=            ", " + parameters[i] + " = @" + parameters[i];
             SQLStatement =              SQLHelper.Update(  "Rental",
                                                             primary,
-                                                            ", " + parameters[3] + " = @" + parameters[3]//TODO only if not blank
-                                                        );//TODO
+                                                            //", " + 
+                                                            parameters[3] + " = @" + parameters[3]//TODO only if not blank
+                                                        );//TODO Make it like GetRental where not all three are required
             //TODO exclude one of the WHERE's
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
