@@ -12,8 +12,8 @@ namespace Bookstore
 {
     public partial class frmMember : Form, Iuser_interface
     {
-        //Members memberList;
-        string  imageLocation;
+        List<Member>    memberList;
+        string          imageLocation;
 
         public frmMember()
         {
@@ -27,7 +27,7 @@ namespace Bookstore
         {
 			try
 			{
-	            List<Member>                    memberList =    Members.GetMembers();
+	            /*List<Member>*/                    memberList =    Members.GetMembers();
 		        memberDataGridView.DataSource =                 memberList;
 
 			    List<Subscription>              subscriptionList =  Subscriptions.GetSubscriptions();
@@ -132,7 +132,8 @@ namespace Bookstore
                     if (status)
                     {
                         MessageBox.Show(MsgBoxHelper.Inserted("Member"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        frmMember_Load(sender, e);
+                        /*List<Member>*/                    memberList =    Members.GetMembers();
+		                memberDataGridView.DataSource =                 memberList;
                     }
                     else
                     {
@@ -246,7 +247,8 @@ namespace Bookstore
                     if (status)
                     {
                         MessageBox.Show(MsgBoxHelper.Updated("Member"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        frmMember_Load(sender, e);
+                        /*List<Member>*/                    memberList =    Members.GetMembers();
+		                memberDataGridView.DataSource =                 memberList;
                     }
                     else
                     {
@@ -278,7 +280,8 @@ namespace Bookstore
                     if (status)
                     {
                         MessageBox.Show(MsgBoxHelper.Deleted("Member"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        frmMember_Load(sender, e);
+                        /*List<Member>*/                    memberList =    Members.GetMembers();
+        		        memberDataGridView.DataSource =                 memberList;
                     }
                     else
                     {
