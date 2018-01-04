@@ -85,9 +85,14 @@ namespace Bookstore
             SqlCommand      objCommand;
             SqlDataReader   vendorReader;
 
-            for (int i = 1; i < parameters.Length; i++)
+            secondary =                     parameters[1];
+            for (int i = 2; i < parameters.Length; i++)
                 secondary +=                ", Vendor." + parameters[i];
-            SQLStatement =                  SQLHelper.Select("Vendor", " FROM " + "Vendor", parameters[0], secondary) + " WHERE Vendor." + parameters[0] + " = @" + parameters[0];
+            SQLStatement =                  SQLHelper.Select("Vendor", 
+                                                            " FROM " + "Vendor", 
+                                                            "", 
+                                                            secondary
+                                                            ) + " WHERE Vendor." + parameters[0] + " = @" + parameters[0];
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -108,9 +113,9 @@ namespace Bookstore
                             while (vendorReader.Read())
                             {
                                 objVendor =         new Vendor();
-                                int             id;
-                                Int32.TryParse(     vendorReader[parameters[0]].ToString(), out id);
-                                objVendor.id =      id;
+                                //int             id;
+                                //Int32.TryParse(     vendorReader[parameters[0]].ToString(), out id);
+                                objVendor.id =      parameter;//id;
                                 objVendor.name =    vendorReader[parameters[1]].ToString();
                             }
                         }
@@ -206,14 +211,15 @@ namespace Bookstore
         /// <param name="vendor">accepts a custom object of that type as a parameter</param>
         public static bool UpdateVendor(Vendor vendor)
         {
-            string[]    primary =       { parameters[0] + " = @" + parameters[0] };
-            string      secondary =     string.Empty,
+            string      primary =       parameters[0] + " = @" + parameters[0],
+                        secondary,
                         SQLStatement;
             SqlCommand  objCommand;
             int         rowsAffected;
             bool        result =        false;
 
-            for (int i = 1; i < parameters.Length; i++)
+            secondary =                 parameters[1] + " = @" + parameters[1];
+            for (int i = 2; i < parameters.Length; i++)
                 secondary +=            ", " + parameters[i] + " = @" + parameters[i];
             SQLStatement =              SQLHelper.Update("Vendor", primary, secondary);
 
@@ -279,10 +285,10 @@ namespace Bookstore
                         objCommand.Parameters.AddWithValue('@' + parameters[0], vendor.id);
                         //Step #3: return false if record was not added successfully
                         //         return true if record was added successfully
-                        rowsAffected = objCommand.ExecuteNonQuery();
+                        rowsAffected =  objCommand.ExecuteNonQuery();
                         if (rowsAffected > 0)
                         {
-                            result = true;   //Record was added successfully
+                            result =    true;   //Record was added successfully
                         }
                     }
                     objConn.Close();
