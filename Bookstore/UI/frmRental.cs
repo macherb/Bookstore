@@ -23,19 +23,19 @@ namespace Bookstore
         {
 			try
 			{
-	            /*List<Rental>*/                    rentalList =    Rentals.GetRentals();
+	            rentalList =                                    Rentals.GetRentals();
 		        rentalDataGridView.DataSource =                 rentalList;
 
 			    List<Movie>                     movieList =     Movies.GetMovies();
 				cmbMovieNumber.DataSource =                     movieList;
-				cmbMovieNumber.DisplayMember =                  "movie_title";
-				cmbMovieNumber.ValueMember =                    "movie_number";
+				cmbMovieNumber.DisplayMember =                  Movies.extra;
+				cmbMovieNumber.ValueMember =                    Movies.key;
 				cmbMovieNumber.SelectedIndex =                  -1;
 
 				List<Member>                    memberList =    Members.GetMembers();
 				cmbMemberNumber.DataSource =                    memberList;
-				cmbMemberNumber.DisplayMember =                 "login_name";
-				cmbMemberNumber.ValueMember =                   "number";
+				cmbMemberNumber.DisplayMember =                 Members.extra;
+				cmbMemberNumber.ValueMember =                   Members.key;
 				cmbMemberNumber.SelectedIndex =                 -1;
 			}
 			catch (Exception ex)
@@ -99,7 +99,7 @@ namespace Bookstore
                     if (status)
                     {
                         MessageBox.Show(MsgBoxHelper.Inserted("Rental"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        /*List<Rental>*/ rentalList =       Rentals.GetRentals();
+                        rentalList =                    Rentals.GetRentals();
                         rentalDataGridView.DataSource = rentalList;//TODO movie and member not -1?
                     }
                     else
@@ -183,7 +183,7 @@ namespace Bookstore
                     if (status)
                     {
                         MessageBox.Show(MsgBoxHelper.Updated("Rental"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        /*List<Rental>*/ rentalList =       Rentals.GetRentals();
+                        rentalList =                    Rentals.GetRentals();
                         rentalDataGridView.DataSource = rentalList;//TODO movie and member not -1?
                     }
                     else
@@ -223,7 +223,7 @@ namespace Bookstore
                     if (status)
                     {
                         MessageBox.Show(MsgBoxHelper.Deleted("Rental"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        /*List<Rental>*/ rentalList =       Rentals.GetRentals();
+                        rentalList =                    Rentals.GetRentals();
                         rentalDataGridView.DataSource = rentalList;//movie and member not -1?
                     }
                     else
