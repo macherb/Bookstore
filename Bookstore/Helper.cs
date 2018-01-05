@@ -22,22 +22,13 @@ namespace Bookstore
         /// <param name="secondary">The secondary field(s) to SELECT</param>
         /// <returns>An SQL SELECT statement</returns>
         public static string Select(string tableName1a, string tableName1b, 
-            
             string primary, 
             string secondary
             //TODO if adding for where, need first as second, don't select primary
             )
         {
-            return  "SELECT " +
-                    tableName1a + "." + primary + secondary + 
-                    "" +
-                    ///" FROM " + 
-                    //"(" + 
-                    tableName1b + 
-                    "" +
-                    ""
-                    //+ ")"
-                    ;
+            return  "SELECT " + tableName1a + "." + primary + secondary + 
+                    tableName1b;//extra2 + " FROM (tableName1b + " INNER JOIN 2 ON 1.joiner1_2 = 2.joiner1_2)
             //TODO reset parenthesis counter
         }
 
@@ -51,7 +42,7 @@ namespace Bookstore
         /// <param name="joiner1">The field from the first table to JOIN</param>
         /// <param name="joiner2">The field from the second table to JOIN</param>
         /// <returns>...and the extra field(s) from the second table FROM the first table JOIN the second table ON first table's joiner equals second table's joiner</returns>
-        public static string Join(string tableName1a, //can be combined with joiner1?
+        public static string Join(
             string tableName1b, 
             string tableName2, 
             string extra2, 
@@ -61,7 +52,7 @@ namespace Bookstore
                     extra2 + 
                     tableName1b + //extra3 + " FROM ((tableName1b + " INNER JOIN 3 ON 1.joiner1_3 = 3.joiner1_3)
                     " INNER JOIN " + tableName2 + " ON " + 
-                    tableName1a + "." + joiner1 + " = " + tableName2 + "." + joiner2
+                    joiner1 + " = " + tableName2 + "." + joiner2
                     + ")";
             //TODO increment parenthesis counter
         }
