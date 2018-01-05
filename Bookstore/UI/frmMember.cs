@@ -17,7 +17,6 @@ namespace Bookstore
 
         public frmMember()
         {
-            //memberList =    new Members();
             imageLocation = string.Empty;
 
             InitializeComponent();
@@ -27,13 +26,13 @@ namespace Bookstore
         {
 			try
 			{
-	            /*List<Member>*/                    memberList =    Members.GetMembers();
-		        memberDataGridView.DataSource =                 memberList;
+	            memberList =                                        Members.GetMembers();
+		        memberDataGridView.DataSource =                     memberList;
 
 			    List<Subscription>              subscriptionList =  Subscriptions.GetSubscriptions();
 				cmbSubscriptionID.DataSource =                      subscriptionList;
-				cmbSubscriptionID.DisplayMember =                   "name";
-			    cmbSubscriptionID.ValueMember =                     "id";
+				cmbSubscriptionID.DisplayMember =                   Subscriptions.extra;
+			    cmbSubscriptionID.ValueMember =                     Subscriptions.key;
 		        cmbSubscriptionID.SelectedIndex =                   -1;
 			}
 			catch (Exception ex)
@@ -132,8 +131,8 @@ namespace Bookstore
                     if (status)
                     {
                         MessageBox.Show(MsgBoxHelper.Inserted("Member"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        /*List<Member>*/                    memberList =    Members.GetMembers();
-		                memberDataGridView.DataSource =                 memberList;
+                        memberList =                    Members.GetMembers();
+		                memberDataGridView.DataSource = memberList;
                     }
                     else
                     {
@@ -247,8 +246,8 @@ namespace Bookstore
                     if (status)
                     {
                         MessageBox.Show(MsgBoxHelper.Updated("Member"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        /*List<Member>*/                    memberList =    Members.GetMembers();
-		                memberDataGridView.DataSource =                 memberList;
+                        memberList =                    Members.GetMembers();
+		                memberDataGridView.DataSource = memberList;
                     }
                     else
                     {
@@ -280,8 +279,8 @@ namespace Bookstore
                     if (status)
                     {
                         MessageBox.Show(MsgBoxHelper.Deleted("Member"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        /*List<Member>*/                    memberList =    Members.GetMembers();
-        		        memberDataGridView.DataSource =                 memberList;
+                        memberList =                    Members.GetMembers();
+        		        memberDataGridView.DataSource = memberList;
                     }
                     else
                     {
