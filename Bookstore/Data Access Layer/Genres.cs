@@ -16,6 +16,13 @@ namespace Bookstore
 
         #endregion
 
+        #region Public variables
+
+        public static string    key =   parameters[0];
+        public static string    extra = parameters[1];
+
+        #endregion
+
         #region Public functions
 
         /// <summary>
@@ -266,10 +273,10 @@ namespace Bookstore
                         objCommand.Parameters.AddWithValue('@' + parameters[0], genre.id);
                         //Step #3: return false if record was not added successfully
                         //         return true if record was added successfully
-                        rowsAffected = objCommand.ExecuteNonQuery();
+                        rowsAffected =  objCommand.ExecuteNonQuery();
                         if (rowsAffected > 0)
                         {
-                            result = true;   //Record was added successfully
+                            result =    true;   //Record was added successfully
                         }
                     }
                     objConn.Close();
