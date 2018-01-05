@@ -23,13 +23,13 @@ namespace Bookstore
         {
 			try
 			{
-	            /*List<Movie>*/                     movieList = Movies.GetMovies();
+	            movieList =                                 Movies.GetMovies();
 		        movieDataGridView.DataSource =              movieList;
 
 			    List<Genre>                     genreList = Genres.GetGenres();
 				cmbGenreID.DataSource =                     genreList;
-				cmbGenreID.DisplayMember =                  "name";
-			    cmbGenreID.ValueMember =                    "id";
+				cmbGenreID.DisplayMember =                  Genres.extra;
+			    cmbGenreID.ValueMember =                    Genres.key;
 		        cmbGenreID.SelectedIndex =                  -1;
 			}
 			catch (Exception ex)
@@ -118,7 +118,7 @@ namespace Bookstore
                     if (status)
                     {
                         MessageBox.Show(MsgBoxHelper.Inserted("Movie"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        /*List<Movie>*/ movieList =         Movies.GetMovies();
+                        movieList =                     Movies.GetMovies();
                         movieDataGridView.DataSource =  movieList;//TODO genre not -1?
                     }
                     else
@@ -206,7 +206,7 @@ namespace Bookstore
                     if (status)
                     {
                         MessageBox.Show(MsgBoxHelper.Updated("Movie"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        /*List<Movie>*/ movieList =         Movies.GetMovies();
+                        movieList =                     Movies.GetMovies();
                         movieDataGridView.DataSource =  movieList;//TODO genre not -1?
                     }
                     else
@@ -240,7 +240,7 @@ namespace Bookstore
                     if (status)
                     {
                         MessageBox.Show(MsgBoxHelper.Deleted("Movie"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        /*List<Movie>*/ movieList =         Movies.GetMovies();
+                        movieList =                     Movies.GetMovies();
                         movieDataGridView.DataSource =  movieList;//TODO genre not -1?
                     }
                     else
@@ -267,7 +267,7 @@ namespace Bookstore
             txtMovieRetailCost.Text =       string.Empty;
             txtCopiesOnHand.Text =          string.Empty;
             txtImage.Text =                 string.Empty;
-            picImage.ImageLocation = string.Empty;
+            picImage.ImageLocation =        string.Empty;
             txtTrailer.Text =               string.Empty;
         }
 
@@ -276,7 +276,7 @@ namespace Bookstore
             int movie_number;
             if (Int32.TryParse(txtMovieNumber.Text.Trim(), out movie_number))
             {
-                if (movie_number > short.MaxValue)//32767
+                if      (movie_number > short.MaxValue)//32767
                 {
                     MessageBox.Show(lblMovieNumber.Text + " must be less than or equal to " + short.MaxValue + ".", "Invalid " + lblMovieNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtMovieNumber.Focus();
@@ -331,7 +331,7 @@ namespace Bookstore
             int movie_year_made;
             if (Int32.TryParse(txtMovieYearMade.Text.Trim(), out movie_year_made))
             {
-                if (movie_year_made > short.MaxValue)//32767
+                if      (movie_year_made > short.MaxValue)//32767
                 {
                     MessageBox.Show(lblMovieYearMade.Text + " must be less than or equal to " + short.MaxValue + ".", "Invalid " + lblMovieYearMade.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtMovieYearMade.Focus();
@@ -375,13 +375,13 @@ namespace Bookstore
             float movie_retail_cost;
             if (float.TryParse(txtMovieRetailCost.Text.Trim(), out movie_retail_cost))
             {
-                if (movie_retail_cost > float.MaxValue)//3.40282347E+38
+                if      (movie_retail_cost > float.MaxValue)//3.40282347E+38
                 {
                     MessageBox.Show(lblMovieRetailCost.Text + " must be less than or equal to " + float.MaxValue + ".", "Invalid " + lblMovieRetailCost.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtMovieRetailCost.Focus();
                     return  false;
                 }
-                else if (movie_retail_cost < 0)//-32768
+                else if (movie_retail_cost < 0)
                 {
                     MessageBox.Show(lblMovieRetailCost.Text + " must be greater than or equal to 0.00.", "Invalid " + lblMovieRetailCost.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtMovieRetailCost.Focus();
@@ -398,7 +398,7 @@ namespace Bookstore
             int copies_on_hand;
             if (Int32.TryParse(txtCopiesOnHand.Text.Trim(), out copies_on_hand))
             {
-                if (copies_on_hand > short.MaxValue)//32767
+                if      (copies_on_hand > short.MaxValue)//32767
                 {
                     MessageBox.Show(lblCopiesOnHand.Text + " must be less than or equal to " + short.MaxValue + ".", "Invalid " + lblCopiesOnHand.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtCopiesOnHand.Focus();
