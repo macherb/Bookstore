@@ -12,7 +12,9 @@ namespace Bookstore
     {
         #region Private variables
 
-        private static string[] parameters = { "movie_number", "member_number", "media_checkout_date", "media_return_date" };
+        private static string[] parameters =    { "movie_number", "member_number", "media_checkout_date", "media_return_date" };
+        private static string   foreignMovie =  "Rental." + parameters[0];
+        private static string   foreignMember = "Rental." + parameters[1];
 
         #endregion
 
@@ -38,19 +40,17 @@ namespace Bookstore
             SQLStatement =                  SQLHelper.Select(
                                                             "Rental",
                                                             SQLHelper.Join(
-                                                                            "Rental",
                                                                             SQLHelper.Join(
-                                                                                            "Rental",
                                                                                             " FROM " + "((" + "Rental",//TODO call future function that uses parenthesis counter
                                                                                             "Member",
-                                                                                            ", Member." + "login_name",//TODO extra2 needs to be special parameter [10]
-                                                                                            parameters[1],//TODO joiner1 needs to be special parameter (foreign)
-                                                                                            "number"//TODO joiner2 needs to be special parameter [0]
+                                                                                            ", Member." + Members.extra,
+                                                                                            foreignMember,
+                                                                                            Members.key
                                                                                           ),
                                                                             "Movie",
-                                                                            ", Movie." + "movie_title",//extra2 TODO needs to be special parameter [1]
-                                                                            parameters[0],//TODO joiner1 needs to be special parameter (foreign)
-                                                                            "movie_number"//TODO joiner2 needs to be special parameter [0]
+                                                                            ", Movie." + Movies.extra,
+                                                                            foreignMovie,
+                                                                            Movies.key
                                                                           ),
                                                             primary,
                                                             secondary
@@ -86,8 +86,8 @@ namespace Bookstore
                                 objRental.media_checkout_date =                     media_checkout_date;
                                 DateTime.TryParse(                                  rentalReader[parameters[3]].ToString(), out media_return_date   );
                                 objRental.media_return_date =                       media_return_date;
-                                objRental.movie_title =                             rentalReader["movie_title"].ToString();//TODO needs to be special parameter [1]
-                                objRental.login_name =                              rentalReader["login_name"].ToString();//TODO needs to be special parameter [10]
+                                objRental.movie_title =                             rentalReader[Movies.extra ].ToString();
+                                objRental.login_name =                              rentalReader[Members.extra].ToString();
                                 rentals.Add(objRental);
                             }
                         }
@@ -227,7 +227,7 @@ namespace Bookstore
             SQLStatement =              SQLHelper.Insert(   "Rental", 
                                                             primary, 
                                                             secondary
-                                                        );
+                                                        );//TODO make sure not before joindate, and if not returned make sure number of copies not zero
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -244,7 +244,7 @@ namespace Bookstore
                         objCommand.Parameters.AddWithValue('@' + parameters[0], rental.movie_number         );
                         objCommand.Parameters.AddWithValue('@' + parameters[1], rental.member_number        );
                         objCommand.Parameters.AddWithValue('@' + parameters[2], rental.media_checkout_date  );
-                        objCommand.Parameters.AddWithValue('@' + parameters[3], rental.media_return_date    );
+                        objCommand.Parameters.AddWithValue('@' + parameters[3], rental.media_return_date    );//TODO if after checkout, add to number of copies
                         //Step #3: return false if record was not added successfully
                         //         return true if record was added successfully  
                         rowsAffected =  objCommand.ExecuteNonQuery();
@@ -282,15 +282,12 @@ namespace Bookstore
 
             primary =                   parameters[0] + " = @" + parameters[0];
             for (int i = 1; i < 3; i++)
-            {
                 primary +=              " AND " + parameters[i] + " = @" + parameters[i];
-            }
-//            for (int i = 1; i < parameters.Length; i++)
-//                secondary +=            ", " + parameters[i] + " = @" + parameters[i];
+            for (int i = 3; i < parameters.Length; i++)
+                secondary +=            ", " + parameters[i] + " = @" + parameters[i];
             SQLStatement =              SQLHelper.Update(  "Rental",
                                                             primary,
-                                                            //", " + 
-                                                            parameters[3] + " = @" + parameters[3]//TODO only if not blank
+                                                            secondary//TODO only if not blank
                                                         );//TODO Make it like GetRental where not all three are required
             //TODO exclude one of the WHERE's
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
