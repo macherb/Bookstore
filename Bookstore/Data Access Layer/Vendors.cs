@@ -80,7 +80,7 @@ namespace Bookstore
         public static Vendor GetVendor(int parameter)//(string parameter)
         {
             Vendor          objVendor =     null;
-            string          secondary =     string.Empty,
+            string          secondary,
                             SQLStatement;
             SqlCommand      objCommand;
             SqlDataReader   vendorReader;
@@ -185,10 +185,10 @@ namespace Bookstore
                         objCommand2.Parameters.AddWithValue('@' + parameters[1], vendor.name);
                         //Step #3: return false if record was not added successfully
                         //         return true if record was added successfully  
-                        rowsAffected = objCommand2.ExecuteNonQuery();
+                        rowsAffected =  objCommand2.ExecuteNonQuery();
                         if (rowsAffected > 0)
                         {
-                            result = true;   //Record was added successfully
+                            result =    true;   //Record was added successfully
                         }
                     }
                     objConn2.Close();
@@ -239,10 +239,10 @@ namespace Bookstore
                         objCommand.Parameters.AddWithValue('@' + parameters[1], vendor.name );
                         //Step #3: return false if record was not added successfully
                         //         return true if record was added successfully           
-                        rowsAffected = objCommand.ExecuteNonQuery();
+                        rowsAffected =  objCommand.ExecuteNonQuery();
                         if (rowsAffected > 0)
                         {
-                            result = true;   //Record was added successfully
+                            result =    true;   //Record was added successfully
                         }
                     }
                     objConn.Close();
