@@ -13,6 +13,14 @@ namespace Bookstore
         #region Private variables
 
         private static string[] parameters = { "number", "joindate", "firstname", "lastname", "address", "city", "state", "zipcode", "phone", "member_status", "login_name", "password", "email", "contact_method", "subscription_id", "photo" };
+        private static string   foreign =   "Member." + parameters[14];
+
+        #endregion
+
+        #region Public variables
+
+        public static string    key =   parameters[ 0];
+        public static string    extra = parameters[10];
 
         #endregion
 
@@ -34,12 +42,11 @@ namespace Bookstore
             SQLStatement =                  SQLHelper.Select(
                                                             "Member",
                                                             SQLHelper.Join(
-                                                                            "Member",
                                                                             " FROM " + "(" + "Member", 
                                                                             "Subscription",
-                                                                            ", Subscription." + "name",//TODO extra2 needs to be special parameter [1]
-                                                                            parameters[14],//TODO joiner1 needs to be special parameter (foreign)
-                                                                            "id"//TODO joiner2 needs to be special parameter [0]
+                                                                            ", Subscription." + Subscriptions.extra,
+                                                                            foreign,
+                                                                            Subscriptions.key
                                                                           ),
                                                             parameters[0],
                                                             secondary
@@ -67,27 +74,27 @@ namespace Bookstore
                                                         contact_method,
                                                         subscription_id;
                                 DateTime                joindate;
-                                Int32.TryParse(                         memberReader[parameters[ 0]].ToString(), out number         );
+                                Int32.TryParse(                         memberReader[parameters[ 0]     ].ToString(), out number         );
                                 objMember.number =                      number;
-                                DateTime.TryParse(                      memberReader[parameters[ 1]].ToString(), out joindate       );
+                                DateTime.TryParse(                      memberReader[parameters[ 1]     ].ToString(), out joindate       );
                                 objMember.joindate =                    joindate;
-                                objMember.firstname =                   memberReader[parameters[ 2]].ToString();
-                                objMember.lastname =                    memberReader[parameters[ 3]].ToString();
-                                objMember.address =                     memberReader[parameters[ 4]].ToString();
-                                objMember.city =                        memberReader[parameters[ 5]].ToString();
-                                objMember.state =                       memberReader[parameters[ 6]].ToString();
-                                objMember.zipcode =                     memberReader[parameters[ 7]].ToString();
-                                objMember.phone =                       memberReader[parameters[ 8]].ToString();
-                                objMember.member_status =               memberReader[parameters[ 9]].ToString();
-                                objMember.login_name =                  memberReader[parameters[10]].ToString();
-                                objMember.password =                    memberReader[parameters[11]].ToString();
-                                objMember.email =                       memberReader[parameters[12]].ToString();
-                                Int32.TryParse(                         memberReader[parameters[13]].ToString(), out contact_method );
+                                objMember.firstname =                   memberReader[parameters[ 2]     ].ToString();
+                                objMember.lastname =                    memberReader[parameters[ 3]     ].ToString();
+                                objMember.address =                     memberReader[parameters[ 4]     ].ToString();
+                                objMember.city =                        memberReader[parameters[ 5]     ].ToString();
+                                objMember.state =                       memberReader[parameters[ 6]     ].ToString();
+                                objMember.zipcode =                     memberReader[parameters[ 7]     ].ToString();
+                                objMember.phone =                       memberReader[parameters[ 8]     ].ToString();
+                                objMember.member_status =               memberReader[parameters[ 9]     ].ToString();
+                                objMember.login_name =                  memberReader[parameters[10]     ].ToString();
+                                objMember.password =                    memberReader[parameters[11]     ].ToString();
+                                objMember.email =                       memberReader[parameters[12]     ].ToString();
+                                Int32.TryParse(                         memberReader[parameters[13]     ].ToString(), out contact_method );
                                 objMember.contact_method =              contact_method;
-                                Int32.TryParse(                         memberReader[parameters[14]].ToString(), out subscription_id);
+                                Int32.TryParse(                         memberReader[parameters[14]     ].ToString(), out subscription_id);
                                 objMember.subscription_id =             subscription_id;
-                                objMember.photo =                       memberReader[parameters[15]].ToString();
-                                objMember.name =                        memberReader["name"].ToString();//TODO extra2 needs to be special parameter [1]
+                                objMember.photo =                       memberReader[parameters[15]     ].ToString();
+                                objMember.name =                        memberReader[Subscriptions.extra].ToString();
                                 members.Add(objMember);
                             }
                         }
@@ -113,7 +120,7 @@ namespace Bookstore
         public static Member GetMember(int parameter)//string parameter)
         {
             Member          objMember =     null;
-            string          secondary =     string.Empty,
+            string          secondary,
                             SQLStatement;
             SqlCommand      objCommand;
             SqlDataReader   memberReader;
