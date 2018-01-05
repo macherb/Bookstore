@@ -13,6 +13,14 @@ namespace Bookstore
         #region Private variables
 
         private static string[] parameters = { "movie_number", "movie_title", "Description", "movie_year_made", "genre_id", "movie_rating", "media_type", "movie_retail_cost", "copies_on_hand", "image", "trailer" };
+        private static string   foreign =   "Movie." + parameters[4];
+
+        #endregion
+
+        #region Public variables
+
+        public static string    key =       parameters[0];
+        public static string    extra =     parameters[1];
 
         #endregion
 
@@ -34,12 +42,11 @@ namespace Bookstore
             SQLStatement =                  SQLHelper.Select(
                                                             "Movie",
                                                             SQLHelper.Join(
-                                                                            "Movie",
                                                                             " FROM " + "(" + "Movie",
                                                                             "Genre",
-                                                                            ", Genre." + "name",//TODO extra2 needs to be special parameter [1]
-                                                                            parameters[4],//TODO joiner1 needs to be special parameter (foreign)
-                                                                            "id"//TODO joiner2 needs to be special parameter [0]
+                                                                            ", Genre." + Genres.extra,
+                                                                            foreign,
+                                                                            Genres.key
                                                                           ),
                                                             parameters[0],
                                                             secondary
@@ -85,7 +92,7 @@ namespace Bookstore
                                 objMovie.copies_on_hand =                   copies_on_hand;
                                 objMovie.image =                            movieReader[parameters[ 9]].ToString();
                                 objMovie.trailer =                          movieReader[parameters[10]].ToString();
-                                objMovie.name =                             movieReader["name"].ToString();//TODO extra2 needs to be special parameter [1]
+                                objMovie.name =                             movieReader[Genres.extra  ].ToString();
 
                                 movies.Add(objMovie);
                             }
@@ -112,7 +119,7 @@ namespace Bookstore
         public static Movie GetMovie(int parameter)//string parameter)
         {
             Movie           objMovie =      null;
-            string          secondary =     string.Empty,
+            string          secondary,
                             SQLStatement;
             SqlCommand      objCommand;
             SqlDataReader   movieReader;
