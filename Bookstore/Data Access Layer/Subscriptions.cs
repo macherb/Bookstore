@@ -16,6 +16,13 @@ namespace Bookstore
 
         #endregion
 
+        #region Public variables
+
+        public static string    key =   parameters[0];
+        public static string    extra = parameters[1];
+
+        #endregion
+
         #region Public functions
 
         /// <summary>
@@ -83,7 +90,7 @@ namespace Bookstore
         public static Subscription GetSubscription(int parameter)//(string parameter)
         {
             Subscription    objSubscription =   null;
-            string          secondary =         string.Empty,
+            string          secondary,
                             SQLStatement;
             SqlCommand      objCommand;
             SqlDataReader   subscriptionReader;
