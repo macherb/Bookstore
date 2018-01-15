@@ -156,107 +156,138 @@ namespace Bookstore
             }
             else
             {
-                Member                  objMember;
-
-                try
+                if      (number > short.MaxValue)// 32767
                 {
-                    objMember =                     Members.GetMember(number);
-                    if (objMember == null)
-                    {
-                        MessageBox.Show(MsgBoxHelper.Selected("Member " + lblNumber.Text + " " + number), "Failure", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-                    else
-                    {
-                        dtpJoinDate.Value =         objMember.joindate;
-                        txtFirstName.Text =         objMember.firstname.Trim();
-                        txtLastName.Text =          objMember.lastname.Trim();
-                        txtAddress.Text =           objMember.address.Trim();
-                        txtCity.Text =              objMember.city.Trim();
-                        txtState.Text =             objMember.state;
-                        txtZipCode.Text =           objMember.zipcode;
-                        txtPhone.Text =             objMember.phone;
-                        if (objMember.member_status == "A")
-                            rdoActive.Checked =     true;
-                        else
-                            rdoInactive.Checked =   true;
-                        txtLoginName.Text =         objMember.login_name;
-                        txtPassword.Text =          objMember.password;
-                        txtEmail.Text =             objMember.email;
-
-                        if      (objMember.contact_method == 1)
-                            rdoEmail.Checked =      true;
-                        else if (objMember.contact_method == 2)
-                            rdoFacebook.Checked =   true;
-                        else if (objMember.contact_method == 3)
-                            rdoPhoneText.Checked =  true;
-                        else if (objMember.contact_method == 4)
-                            rdoTwitter.Checked =    true;
-                        else
-                            objMember.contact_method =  0;
-
-                        cmbSubscriptionID.SelectedValue = objMember.subscription_id;
-                        imageLocation =             objMember.photo;
-                    }
+                    MessageBox.Show(lblNumber.Text + " must be less than or equal to " + short.MaxValue + ".", "Invalid " + lblNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    txtNumber.Focus();
                 }
-                catch (Exception ex)
+                else if (number < short.MinValue)//-32768
                 {
-                    MessageBox.Show(ex.Message, "Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(lblNumber.Text + " must be greater than or equal to " + short.MinValue + ".", "Invalid " + lblNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    txtNumber.Focus();
+                }
+                else
+                {
+                    Member          objMember;
+
+                    try
+                    {
+                        objMember =                             Members.GetMember(number);
+                        if (objMember == null)
+                        {
+                            MessageBox.Show(MsgBoxHelper.Selected("Member " + lblNumber.Text + " " + number), "Failure", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        else
+                        {
+                            dtpJoinDate.Value =                 objMember.joindate;
+                            txtFirstName.Text =                 objMember.firstname.Trim();
+                            txtLastName.Text =                  objMember.lastname.Trim();
+                            txtAddress.Text =                   objMember.address.Trim();
+                            txtCity.Text =                      objMember.city.Trim();
+                            txtState.Text =                     objMember.state;
+                            txtZipCode.Text =                   objMember.zipcode;
+                            txtPhone.Text =                     objMember.phone;
+                            if (objMember.member_status == "A")
+                                rdoActive.Checked =             true;
+                            else
+                                rdoInactive.Checked =           true;
+                            txtLoginName.Text =                 objMember.login_name;
+                            txtPassword.Text =                  objMember.password;
+                            txtEmail.Text =                     objMember.email;
+
+                            if      (objMember.contact_method == 1)
+                                rdoEmail.Checked =              true;
+                            else if (objMember.contact_method == 2)
+                                rdoFacebook.Checked =           true;
+                            else if (objMember.contact_method == 3)
+                                rdoPhoneText.Checked =          true;
+                            else if (objMember.contact_method == 4)
+                                rdoTwitter.Checked =            true;
+                            else
+                                objMember.contact_method =      0;
+
+                            cmbSubscriptionID.SelectedValue =   objMember.subscription_id;
+                            imageLocation =                     objMember.photo;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
         }
 
         private void btnUpdate_Click(object sender, EventArgs e)
         {
-            if (CheckAll())
+            int number;
+            if (!Int32.TryParse(txtNumber.Text.Trim(), out number))
             {
-                Member                  objMember = new Member();
-
-                int number;
-                Int32.TryParse(txtNumber.Text.Trim(), out number);
-                objMember.number =                  number;
-                objMember.joindate =                dtpJoinDate.Value;
-                objMember.firstname =               txtFirstName.Text.Trim();
-                objMember.lastname =                txtLastName.Text.Trim();
-                objMember.address =                 txtAddress.Text.Trim();
-                objMember.city =                    txtCity.Text.Trim();
-                objMember.state =                   txtState.Text.Trim();
-                objMember.zipcode =                 txtZipCode.Text.Trim();
-                objMember.phone =                   txtPhone.Text.Trim();
-                objMember.member_status =           rdoActive.Checked ? "A" : "I";
-                objMember.login_name =              txtLoginName.Text.Trim();
-                objMember.password =                txtPassword.Text.Trim();
-                objMember.email =                   txtEmail.Text.Trim();
-
-                if      (rdoEmail.Checked       )
-                    objMember.contact_method =      1;
-                else if (rdoFacebook.Checked    )
-                    objMember.contact_method =      2;
-                else if (rdoPhoneText.Checked   )
-                    objMember.contact_method =      3;
-                else if (rdoTwitter.Checked     )
-                    objMember.contact_method =      4;
-                else
-                    objMember.contact_method =      0;
-
-                objMember.subscription_id =         (int)cmbSubscriptionID.SelectedValue;
-                objMember.photo =                   imageLocation;
-                try
+                MessageBox.Show(lblNumber.Text + " must be an integer (" + short.MinValue + " - " + short.MaxValue + ").", "Invalid " + lblNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                txtNumber.Focus();
+            }
+            else
+            {
+                if (number > short.MaxValue)// 32767
                 {
-                    bool                status =    Members.UpdateMember(objMember);
-                    if (status)
-                    {
-                        MessageBox.Show(MsgBoxHelper.Updated("Member"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        memberList =                    Members.GetMembers();
-		                memberDataGridView.DataSource = memberList;
-                    }
-                    else
-                    {
-                        MessageBox.Show(MsgBoxHelper.Updated("Member not"), "Failure", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
+                    MessageBox.Show(lblNumber.Text + " must be less than or equal to " + short.MaxValue + ".", "Invalid " + lblNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    txtNumber.Focus();
                 }
-                catch (Exception ex)
+                else if (number < short.MinValue)//-32768
                 {
-                    MessageBox.Show(ex.Message, "Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(lblNumber.Text + " must be greater than or equal to " + short.MinValue + ".", "Invalid " + lblNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    txtNumber.Focus();
+                }
+                else if (CheckAll())
+                {
+                    Member                  objMember = new Member();
+
+                    Int32.TryParse(txtNumber.Text.Trim(), out number);
+                    objMember.number =                  number;
+                    objMember.joindate =                dtpJoinDate.Value;
+                    objMember.firstname =               txtFirstName.Text.Trim();
+                    objMember.lastname =                txtLastName.Text.Trim();
+                    objMember.address =                 txtAddress.Text.Trim();
+                    objMember.city =                    txtCity.Text.Trim();
+                    objMember.state =                   txtState.Text.Trim();
+                    objMember.zipcode =                 txtZipCode.Text.Trim();
+                    objMember.phone =                   txtPhone.Text.Trim();
+                    objMember.member_status =           rdoActive.Checked ? "A" : "I";
+                    objMember.login_name =              txtLoginName.Text.Trim();
+                    objMember.password =                txtPassword.Text.Trim();
+                    objMember.email =                   txtEmail.Text.Trim();
+
+                    if      (rdoEmail.Checked       )
+                        objMember.contact_method =      1;
+                    else if (rdoFacebook.Checked    )
+                        objMember.contact_method =      2;
+                    else if (rdoPhoneText.Checked   )
+                        objMember.contact_method =      3;
+                    else if (rdoTwitter.Checked     )
+                        objMember.contact_method =      4;
+                    else
+                        objMember.contact_method =      0;
+
+                    objMember.subscription_id =         (int)cmbSubscriptionID.SelectedValue;
+                    objMember.photo =                   imageLocation;
+                    try
+                    {
+                        bool                status =    Members.UpdateMember(objMember);
+                        if (status)
+                        {
+                            MessageBox.Show(MsgBoxHelper.Updated("Member"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            memberList = Members.GetMembers();
+                            memberDataGridView.DataSource = memberList;
+                        }
+                        else
+                        {
+                            MessageBox.Show(MsgBoxHelper.Updated("Member not"), "Failure", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
         }
@@ -271,25 +302,38 @@ namespace Bookstore
             }
             else
             {
-                Member                  objMember = new Member();
-                objMember.number =                  number;
-                try
+                if      (number > short.MaxValue)// 32767
                 {
-                    bool                status =    Members.DeleteMember(objMember);
-                    if (status)
-                    {
-                        MessageBox.Show(MsgBoxHelper.Deleted("Member"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        memberList =                    Members.GetMembers();
-        		        memberDataGridView.DataSource = memberList;
-                    }
-                    else
-                    {
-                        MessageBox.Show(MsgBoxHelper.Deleted("Member not"), "Failure", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
+                    MessageBox.Show(lblNumber.Text + " must be less than or equal to " + short.MaxValue + ".", "Invalid " + lblNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    txtNumber.Focus();
                 }
-                catch (Exception ex)
+                else if (number < short.MinValue)//-32768
                 {
-                    MessageBox.Show(ex.Message, "Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(lblNumber.Text + " must be greater than or equal to " + short.MinValue + ".", "Invalid " + lblNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    txtNumber.Focus();
+                }
+                else
+                {
+                    Member                                  objMember = new Member();
+                    objMember.number =                                  number;
+                    try
+                    {
+                        bool                                status =    Members.DeleteMember(objMember);
+                        if (status)
+                        {
+                            MessageBox.Show(MsgBoxHelper.Deleted("Member"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            memberList =                                Members.GetMembers();
+                            memberDataGridView.DataSource =             memberList;
+                        }
+                        else
+                        {
+                            MessageBox.Show(MsgBoxHelper.Deleted("Member not"), "Failure", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
         }
@@ -326,7 +370,7 @@ namespace Bookstore
 
         public bool CheckAll()
         {
-            int number;
+            /*int number;
             if (Int32.TryParse(txtNumber.Text.Trim(), out number))
             {
                 if      (number > short.MaxValue)// 32767
@@ -348,7 +392,7 @@ namespace Bookstore
                 txtNumber.Focus();
                 return  false;
             }
-
+            */
             if      (dtpJoinDate.Value >= DateTime.MaxValue)//
             {
                 MessageBox.Show(lblJoinDate.Text + " must be less than or equal to " + DateTime.MaxValue + ".", "Invalid " + lblJoinDate.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
