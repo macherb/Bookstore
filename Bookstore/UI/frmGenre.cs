@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -49,11 +48,11 @@ namespace Bookstore
         {
             if (CheckAll())
             {
-                Genre objGenre = new Genre();
-                objGenre.name = txtName.Text.Trim();
+                Genre           objGenre =  new Genre();
+                objGenre.name =             txtName.Text.Trim();
                 try
                 {
-                    bool status = Genres.AddGenre(objGenre);
+                    bool        status =    Genres.AddGenre(objGenre);
                     if (status)
                     {
                         MessageBox.Show(MsgBoxHelper.Inserted("Genre"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -79,29 +78,38 @@ namespace Bookstore
                 MessageBox.Show(lblID.Text + " must be an integer.", "Invalid " + lblID.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtID.Focus();
             }
-            /*else if (txtName.Text.Trim() == string.Empty)
-            {
-                MessageBox.Show(lblName.Text + " must not be blank.", "Invalid " + lblName.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }*/
             else
             {
-                Genre           objGenre;
-
-                try
+                if      (id > short.MaxValue)// 32767
                 {
-                    objGenre =  Genres.GetGenre(id);
-                    if (objGenre == null)
-                    {
-                        MessageBox.Show(MsgBoxHelper.Selected("Genre " + lblID.Text + " " + id), "Failure", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-                    else
-                    {
-                        txtName.Text = objGenre.name;
-                    }
+                    MessageBox.Show(lblID.Text + " must be less than or equal to " + short.MaxValue + ".", "Invalid " + lblID.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    txtID.Focus();
                 }
-                catch (Exception ex)
+                else if (id < short.MinValue)//-32768
                 {
-                    MessageBox.Show(ex.Message, "Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(lblID.Text + " must be greater than or equal to " + short.MinValue + ".", "Invalid " + lblID.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    txtID.Focus();
+                }
+                else
+                {
+                    Genre           objGenre;
+
+                    try
+                    {
+                        objGenre =              Genres.GetGenre(id);
+                        if (objGenre == null)
+                        {
+                            MessageBox.Show(MsgBoxHelper.Selected("Genre " + lblID.Text + " " + id), "Failure", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        else
+                        {
+                            txtName.Text =      objGenre.name;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
         }
@@ -114,27 +122,40 @@ namespace Bookstore
                 MessageBox.Show(lblID.Text + " must be an integer.", "Invalid " + lblID.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtID.Focus();
             }
-            else if (CheckAll())
+            else
             {
-                Genre           objGenre =  new Genre();
-                objGenre.id =               id;
-                objGenre.name =             txtName.Text.Trim();
-                try
+                if      (id > short.MaxValue)// 32767
                 {
-                    bool        status =    Genres.UpdateGenre(objGenre);
-                    if (status)
-                    {
-                        MessageBox.Show(MsgBoxHelper.Updated("Genre"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        frmGenre_Load(sender, e);
-                    }
-                    else
-                    {
-                        MessageBox.Show(MsgBoxHelper.Updated("Genre not"), "Failure", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
+                    MessageBox.Show(lblID.Text + " must be less than or equal to " + short.MaxValue + ".", "Invalid " + lblID.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    txtID.Focus();
                 }
-                catch (Exception ex)
+                else if (id < short.MinValue)//-32768
                 {
-                    MessageBox.Show(ex.Message, "Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(lblID.Text + " must be greater than or equal to " + short.MinValue + ".", "Invalid " + lblID.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    txtID.Focus();
+                }
+                else if (CheckAll())
+                {
+                    Genre           objGenre =  new Genre();
+                    objGenre.id =               id;
+                    objGenre.name =             txtName.Text.Trim();
+                    try
+                    {
+                        bool        status =    Genres.UpdateGenre(objGenre);
+                        if (status)
+                        {
+                            MessageBox.Show(MsgBoxHelper.Updated("Genre"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            frmGenre_Load(sender, e);
+                        }
+                        else
+                        {
+                            MessageBox.Show(MsgBoxHelper.Updated("Genre not"), "Failure", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
         }
@@ -147,31 +168,40 @@ namespace Bookstore
                 MessageBox.Show(lblID.Text + " must be an integer.", "Invalid " + lblID.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtID.Focus();
             }
-            /*else if (txtName.Text.Trim() == string.Empty)
-            {
-                MessageBox.Show(lblName.Text + " must not be blank.", "Invalid " + lblName.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }*/
             else
             {
-                Genre           objGenre =  new Genre();
-                objGenre.id =               id;
-                objGenre.name =             txtName.Text.Trim();
-                try
+                if      (id > short.MaxValue)// 32767
                 {
-                    bool        status =    Genres.DeleteGenre(objGenre);
-                    if (status)
-                    {
-                        MessageBox.Show(MsgBoxHelper.Deleted("Genre"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        frmGenre_Load(sender, e);
-                    }
-                    else
-                    {
-                        MessageBox.Show(MsgBoxHelper.Deleted("Genre not"), "Failure", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
+                    MessageBox.Show(lblID.Text + " must be less than or equal to " + short.MaxValue + ".", "Invalid " + lblID.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    txtID.Focus();
                 }
-                catch (Exception ex)
+                else if (id < short.MinValue)//-32768
                 {
-                    MessageBox.Show(ex.Message, "Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(lblID.Text + " must be greater than or equal to " + short.MinValue + ".", "Invalid " + lblID.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    txtID.Focus();
+                }
+                else
+                {
+                    Genre           objGenre =  new Genre();
+                    objGenre.id =               id;
+                    objGenre.name =             txtName.Text.Trim();
+                    try
+                    {
+                        bool        status =    Genres.DeleteGenre(objGenre);
+                        if (status)
+                        {
+                            MessageBox.Show(MsgBoxHelper.Deleted("Genre"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            frmGenre_Load(sender, e);
+                        }
+                        else
+                        {
+                            MessageBox.Show(MsgBoxHelper.Deleted("Genre not"), "Failure", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
         }
