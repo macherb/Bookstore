@@ -12,9 +12,10 @@ namespace Bookstore
     {
         #region Private variables
 
-        private static string[] parameters =    { "movie_number", "member_number", "media_checkout_date", "media_return_date" };
-        private static string   foreignMovie =  "Rental." + parameters[0];
-        private static string   foreignMember = "Rental." + parameters[1];
+        private static string[] parameters =        { "movie_number", "member_number", "media_checkout_date", "media_return_date" };
+        private static string   foreignMovie =      "Rental." + parameters[0];
+        private static string   foreignMember =     "Rental." + parameters[1];
+        private static int      lowestSecondary =   3;
 
         #endregion
 
@@ -33,9 +34,9 @@ namespace Bookstore
             SqlDataReader   rentalReader;
 
             primary =                       parameters[0];
-            for (int i = 1; i < 3; i++)
+            for (int i = 1; i < lowestSecondary; i++)
                 primary +=                  ", Rental." + parameters[i];
-            for (int i = 3; i < parameters.Length; i++)
+            for (int i = lowestSecondary; i < parameters.Length; i++)
                 secondary +=                ", Rental." + parameters[i];
             SQLStatement =                  SQLHelper.Select(
                                                             "Rental",
@@ -113,16 +114,16 @@ namespace Bookstore
         public static Rental GetRental(int parameter1, int parameter2, DateTime parameter3)//string parameter)
         {
             Rental          objRental =     null;
-            string          primary,
-                            secondary =     string.Empty,
+            string          primary =       parameters[0],
+                            secondary =     ", Rental.",
                             SQLStatement;
             SqlCommand      objCommand;
             SqlDataReader   rentalReader;
 
-            primary =                       parameters[0];
-            for (int i = 1; i < 3; i++)
+            for (int i = 1; i < lowestSecondary; i++)
                 primary +=                  ", Rental." + parameters[i];
-            for (int i = 3; i < parameters.Length; i++)
+            secondary +=                    parameters[lowestSecondary];
+            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
                 secondary +=                ", Rental." + parameters[i];
             SQLStatement =                  SQLHelper.Select("Rental", 
                                                             " FROM " + "Rental", 
@@ -212,48 +213,66 @@ namespace Bookstore
         /// <param name="rental">accepts a custom object of that type as a parameter</param>
         public static bool AddRental(Rental rental)
         {
-            string      primary,
-                        secondary =     string.Empty,
-                        SQLStatement;
-            SqlCommand  objCommand;
-            int         rowsAffected;
-            bool        result =        false;
+            string          primary,
+                            secondary =     string.Empty,
 
-            primary =                   parameters[0];
-            for (int i = 1; i < 3; i++)
-                primary +=              ", @" + parameters[i];
-            for (int i = 3; i < parameters.Length; i++)
-                secondary +=            ", @" + parameters[i];
-            SQLStatement =              SQLHelper.Insert(   "Rental", 
-                                                            primary, 
-                                                            secondary
-                                                        );//TODO make sure not before joindate, and if not returned make sure number of copies not zero
+                            SQLStatement2;
+
+            int             rowsAffected;
+
+            SqlCommand
+                            objCommand2;
+
+            bool            result =        false;
+
+            primary =                       parameters[0];
+            for (int i = 1; i < lowestSecondary; i++)
+                primary +=                  ", @" + parameters[i];
+            for (int i = lowestSecondary; i < parameters.Length; i++)
+                secondary +=                ", @" + parameters[i];
+            SQLStatement2 =                 SQLHelper.Insert(   "Rental", 
+                                                                primary, 
+                                                                secondary
+                                                            );//TODO make sure not before joindate, and if not returned make sure number of copies not zero
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
             try
             {
-                using (SqlConnection objConn = AccessDataSQLServer.GetConnection())
+
+
+
+
+
+
+
+
+
+
+
+
+
+                using (SqlConnection objConn2 = AccessDataSQLServer.GetConnection())
                 {
-                    objConn.Open();
+                    objConn2.Open();
                     //Step #2: Code logic to create appropriate SQL Server objects calls
                     //         Cod Logic to retrieve data from database
                     //         Add Try..Catch appropriate block and throw exception back to calling program
-                    using (objCommand = new SqlCommand(SQLStatement, objConn))
+                    using (objCommand2 = new SqlCommand(SQLStatement2, objConn2))
                     {
-                        objCommand.Parameters.AddWithValue('@' + parameters[0], rental.movie_number         );
-                        objCommand.Parameters.AddWithValue('@' + parameters[1], rental.member_number        );
-                        objCommand.Parameters.AddWithValue('@' + parameters[2], rental.media_checkout_date  );
-                        objCommand.Parameters.AddWithValue('@' + parameters[3], rental.media_return_date    );//TODO if after checkout, add to number of copies
+                        objCommand2.Parameters.AddWithValue('@' + parameters[0], rental.movie_number         );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[1], rental.member_number        );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[2], rental.media_checkout_date  );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[3], rental.media_return_date    );//TODO if after checkout, add to number of copies
                         //Step #3: return false if record was not added successfully
                         //         return true if record was added successfully  
-                        rowsAffected =  objCommand.ExecuteNonQuery();
+                        rowsAffected =  objCommand2.ExecuteNonQuery();
                         if (rowsAffected > 0)
                         {
                             result =    true;   //Record was added successfully
                         }
                     }
-                    objConn.Close();
+                    objConn2.Close();
                 }
             }
             catch (SqlException SQLex)
@@ -264,7 +283,7 @@ namespace Bookstore
             {
                 throw new Exception(IOex.Message);  //Record was not added successfully
             }
-            return result;
+            return  result;
         }
 
         /// <summary>
@@ -274,16 +293,17 @@ namespace Bookstore
         public static bool UpdateRental(Rental rental)
         {
             string      primary,
-                        secondary =     string.Empty,
+                        secondary =     ", ",
                         SQLStatement;
             SqlCommand  objCommand;
             int         rowsAffected;
             bool        result =        false;
 
             primary =                   parameters[0] + " = @" + parameters[0];
-            for (int i = 1; i < 3; i++)
+            for (int i = 1; i < lowestSecondary; i++)
                 primary +=              " AND " + parameters[i] + " = @" + parameters[i];
-            for (int i = 3; i < parameters.Length; i++)
+            secondary +=                parameters[lowestSecondary] + " = @" + parameters[lowestSecondary];
+            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
                 secondary +=            ", " + parameters[i] + " = @" + parameters[i];
             SQLStatement =              SQLHelper.Update(  "Rental",
                                                             primary,
@@ -334,13 +354,18 @@ namespace Bookstore
         /// <param name="rental">accepts a custom object of that type as a parameter</param>
         public static bool DeleteRental(Rental rental)
         {
-            string      SQLStatement = SQLHelper.Delete("Rental",
-                                                        parameters[0],
-                                                        " AND " + parameters[1] + " = @" + parameters[1] + " AND " + parameters[2] + " = @" + parameters[2]//TODO copy from update
-                                                       );
+            string      primary =       string.Empty,
+                        SQLStatement;
             SqlCommand  objCommand;
             int         rowsAffected;
             bool        result =        false;
+            
+            for (int i = 1; i < lowestSecondary; i++)
+                primary +=              " AND " + parameters[i] + " = @" + parameters[i];
+            SQLStatement =              SQLHelper.Delete("Rental",
+                                                        parameters[0],
+                                                        primary
+                                                        );
 
             //Step# 1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
