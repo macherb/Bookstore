@@ -12,14 +12,15 @@ namespace Bookstore
     {
         #region Private variables
 
-        private static string[] parameters = { "id", "name" };
+        private static string[] parameters =        { "id", "name" };
+        private static int      lowestSecondary =   1;
 
         #endregion
 
         #region Public variables
 
-        public static string    key =   parameters[0];
-        public static string    extra = parameters[1];
+        public static string    key =               parameters[0];
+        public static string    extra =             parameters[1];
 
         #endregion
 
@@ -31,9 +32,35 @@ namespace Bookstore
         public static List<Genre> GetGenres()
         {
             List<Genre>     genres =        new List<Genre>();
-            string          SQLStatement =  SQLHelper.Select("Genre", " FROM " + "Genre", parameters[0], ", Genre." + parameters[1]);
+            string          primary,
+                            secondary =     string.Empty,
+                            SQLStatement;
             SqlCommand      objCommand;
             SqlDataReader   genreReader;
+
+            primary =                       parameters[0];
+
+
+            for (int i = lowestSecondary; i < parameters.Length; i++)
+                secondary +=                ", Genre." + parameters[i];
+            SQLStatement =                  SQLHelper.Select(
+                                                            "Genre",
+
+
+                                                                                            " FROM " + "Genre"
+
+
+
+
+
+
+
+
+
+                                                                           ,
+                                                            primary,
+                                                            secondary
+                                                            );
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -82,14 +109,25 @@ namespace Bookstore
         public static Genre GetGenre(int parameter)//string parameter)
         {
             Genre           objGenre =      null;
-            string          SQLStatement =  SQLHelper.Select(
-                                                            "Genre", 
-                                                            " FROM " + "Genre", 
-                                                            "",
-                                                            parameters[1]
-                                                            ) + " WHERE Genre." + parameters[0] + " = @" + parameters[0];
+            string          primary =       string.Empty,
+                            secondary =     string.Empty,
+                            SQLStatement;
             SqlCommand      objCommand;
             SqlDataReader   genreReader;
+
+
+
+            secondary +=                    parameters[lowestSecondary];
+            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
+                secondary +=                ", Genre." + parameters[i];
+            SQLStatement =                  SQLHelper.Select("Genre",
+                                                            " FROM " + "Genre",
+                                                            primary,
+                                                            secondary
+                                                            ) + " WHERE ";
+
+
+            SQLStatement +=                 "Genre." + parameters[0] + " = @" + parameters[0];
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -137,17 +175,28 @@ namespace Bookstore
         /// <param name="genre">accepts a custom object of that type as a parameter</param>
         public static bool AddGenre(Genre genre)
         {
-            string          SQLStatement1 = "SELECT MAX(id) AS max_genre FROM Genre",//Helper.Select("Genre", "MAX(" + parameters[0] + ") AS max_genre", ""),//"SELECT MAX(id) FROM Genre",
+            string          primary,
+                            secondary =     string.Empty,
+                            SQLStatement1 = "SELECT MAX(id) AS max_genre FROM Genre",//Helper.Select("Genre", "MAX(" + parameters[0] + ") AS max_genre", ""),//"SELECT MAX(id) FROM Genre",
                             SQLStatement2 = "INSERT INTO Genre VALUES (max_genre, @name)";//Helper.Insert("Genre", parameters[0], ", @" + parameters[1]);
             //TODO what if MAX is nothing?
             int             rowsAffected,
                             max;
-
             SqlCommand      objCommand1,
                             objCommand2;
             SqlDataReader   genreReader;
             bool            result =        false;
-            
+
+            primary =                       parameters[0];
+
+
+            for (int i = lowestSecondary; i < parameters.Length; i++)
+                secondary +=                ", @" + parameters[i];
+            SQLStatement2 =                 SQLHelper.Insert(   "Genre",
+                                                                primary,
+                                                                secondary
+                                                            );
+
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
             try
@@ -155,9 +204,6 @@ namespace Bookstore
                 using (SqlConnection objConn1 = AccessDataSQLServer.GetConnection())
                 {
                     objConn1.Open();
-                    //Step #2: Code logic to create appropriate SQL Server objects calls
-                    //         Cod Logic to retrieve data from database
-                    //         Add Try..Catch appropriate block and throw exception back to calling program
                     using (objCommand1 = new SqlCommand(SQLStatement1, objConn1))
                     {
                         using ((genreReader = objCommand1.ExecuteReader(CommandBehavior.CloseConnection)))
@@ -171,16 +217,19 @@ namespace Bookstore
                 using (SqlConnection objConn2 = AccessDataSQLServer.GetConnection())
                 {
                     objConn2.Open();
+                    //Step #2: Code logic to create appropriate SQL Server objects calls
+                    //         Cod Logic to retrieve data from database
+                    //         Add Try..Catch appropriate block and throw exception back to calling program
                     using (objCommand2 = new SqlCommand(SQLStatement2, objConn2))
                     {
-                        //objCommand2.Parameters.AddWithValue('@' + parameters[0], max + 1);
-                        objCommand2.Parameters.AddWithValue('@' + parameters[1], genre.name);
+                        objCommand2.Parameters.AddWithValue('@' + parameters[0], max + 1    );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[1], genre.name );
                         //Step #3: return false if record was not added successfully
                         //         return true if record was added successfully  
                         rowsAffected =  objCommand2.ExecuteNonQuery();
                         if (rowsAffected > 0)
                         {
-                            result = true;   //Record was added successfully
+                            result =    true;   //Record was added successfully
                         }
                     }
                     objConn2.Close();
@@ -203,13 +252,23 @@ namespace Bookstore
         /// <param name="genre">accepts a custom object of that type as a parameter</param>
         public static bool UpdateGenre(Genre genre)
         {
-            string      primary =       parameters[0] + " = @" + parameters[0],
+            string      primary,
+                        secondary =     string.Empty,
                         SQLStatement;
             SqlCommand  objCommand;
             int         rowsAffected;
             bool        result =        false;
 
-            SQLStatement =              SQLHelper.Update("Genre", primary, parameters[1] + " = @" + parameters[1]);
+            primary =                   parameters[0] + " = @" + parameters[0];
+
+
+            secondary +=                parameters[lowestSecondary] + " = @" + parameters[lowestSecondary];
+            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
+                secondary +=            ", " + parameters[i] + " = @" + parameters[i];
+            SQLStatement =              SQLHelper.Update(   "Genre", 
+                                                            primary,
+                                                            secondary
+                                                        );
             
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -253,10 +312,18 @@ namespace Bookstore
         /// <param name="genre">accepts a custom object of that type as a parameter</param>
         public static bool DeleteGenre(Genre genre)
         {
-            string      SQLStatement = SQLHelper.Delete("Genre", parameters[0], string.Empty);
+            string      primary =       string.Empty,
+                        SQLStatement;
             SqlCommand  objCommand;
             int         rowsAffected;
             bool        result =        false;
+
+
+
+            SQLStatement =              SQLHelper.Delete("Genre",
+                                                        parameters[0],
+                                                        primary
+                                                        );
 
             //Step# 1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
