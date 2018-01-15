@@ -83,20 +83,13 @@ namespace Bookstore
         {
             if (CheckAll())
             {
-                int     movie_number;
-                Int32.TryParse(txtMovieNumber.Text.Trim(), out movie_number);
-                Movie   objMovie =  Movies.GetMovie(movie_number);//TODO need to add try
-                if (objMovie != null)
-                {
-                    MessageBox.Show("Movie " + lblMovieNumber.Text + " " + movie_number + " already exists.", "Invalid " + lblMovieNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    txtMovieNumber.Focus();
-                    return;
-                }
+                Movie   objMovie =              new Movie();
 
-                objMovie =                  new Movie();
-                int                         movie_year_made,
-                                            copies_on_hand;
-                float                       movie_retail_cost;
+                int                             movie_number,
+                                                movie_year_made,
+                                                copies_on_hand;
+                float                           movie_retail_cost;
+                Int32.TryParse(txtMovieNumber.Text.Trim(), out movie_number);
                 objMovie.movie_number =         movie_number;
                 objMovie.movie_title =          txtMovieTitle.Text.Trim();
                 objMovie.Description =          txtDescription.Text.Trim();
@@ -143,80 +136,110 @@ namespace Bookstore
             }
             else
             {
-                Movie           objMovie;
-
-                try
+                if      (movie_number > short.MaxValue)// 32767
                 {
-                    objMovie =  Movies.GetMovie(movie_number);
-                    if (objMovie == null)
-                    {
-                        MessageBox.Show(MsgBoxHelper.Selected("Movie " + lblMovieNumber.Text + " " + movie_number), "Failure", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-                    else
-                    {
-                        txtMovieTitle.Text =        objMovie.movie_title;
-                        txtDescription.Text =       objMovie.Description;
-                        txtMovieYearMade.Text =     objMovie.movie_year_made.ToString();
-                        cmbGenreID.SelectedValue =  objMovie.genre_id;
-                        cmbMovieRating.Text =       objMovie.movie_rating.Trim();
-                        cmbMediaType.Text =         objMovie.media_type;
-                        txtMovieRetailCost.Text =   objMovie.movie_retail_cost.ToString();
-                        txtCopiesOnHand.Text =      objMovie.copies_on_hand.ToString();
-                        txtImage.Text =             objMovie.image;
-                        picImage.ImageLocation = objMovie.image;
-                        txtTrailer.Text =           objMovie.trailer;
-                    }
+                    MessageBox.Show(lblMovieNumber.Text + " must be less than or equal to " + short.MaxValue + ".", "Invalid " + lblMovieNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    txtMovieNumber.Focus();
                 }
-                catch (Exception ex)
+                else if (movie_number < short.MinValue)//-32768
                 {
-                    MessageBox.Show(ex.Message, "Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(lblMovieNumber.Text + " must be greater than or equal to " + short.MinValue + ".", "Invalid " + lblMovieNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    txtMovieNumber.Focus();
+                }
+                else
+                {
+                    Movie objMovie;
+
+                    try
+                    {
+                        objMovie = Movies.GetMovie(movie_number);
+                        if (objMovie == null)
+                        {
+                            MessageBox.Show(MsgBoxHelper.Selected("Movie " + lblMovieNumber.Text + " " + movie_number), "Failure", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        else
+                        {
+                            txtMovieTitle.Text = objMovie.movie_title;
+                            txtDescription.Text = objMovie.Description;
+                            txtMovieYearMade.Text = objMovie.movie_year_made.ToString();
+                            cmbGenreID.SelectedValue = objMovie.genre_id;
+                            cmbMovieRating.Text = objMovie.movie_rating.Trim();
+                            cmbMediaType.Text = objMovie.media_type;
+                            txtMovieRetailCost.Text = objMovie.movie_retail_cost.ToString();
+                            txtCopiesOnHand.Text = objMovie.copies_on_hand.ToString();
+                            txtImage.Text = objMovie.image;
+                            picImage.ImageLocation = objMovie.image;
+                            txtTrailer.Text = objMovie.trailer;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
         }
 
         private void btnUpdate_Click(object sender, EventArgs e)
         {
-            if (CheckAll())
+            int movie_number;
+            if (!Int32.TryParse(txtMovieNumber.Text.Trim(), out movie_number))
             {
-                Movie                       objMovie =          new Movie();
-                int                         movie_number,
-                                            movie_year_made,
-                                            copies_on_hand;
-                float                       movie_retail_cost;
-                Int32.TryParse(txtMovieNumber.Text.Trim(), out movie_number);
-                objMovie.movie_number =                         movie_number;
-                objMovie.movie_title =                          txtMovieTitle.Text.Trim();
-                objMovie.Description =                          txtDescription.Text.Trim();
-                Int32.TryParse(txtMovieYearMade.Text.Trim(), out movie_year_made);
-                objMovie.movie_year_made =                      movie_year_made;
-                objMovie.genre_id =                             (int)cmbGenreID.SelectedValue;
-                objMovie.movie_rating =                         cmbMovieRating.Text;
-                objMovie.media_type =                           cmbMediaType.Text;
-                float.TryParse(txtMovieRetailCost.Text.Trim(), out movie_retail_cost);
-                objMovie.movie_retail_cost =                    movie_retail_cost;
-                Int32.TryParse(txtCopiesOnHand.Text.Trim(), out copies_on_hand);
-                objMovie.copies_on_hand =                       copies_on_hand;
-                objMovie.image =                                txtImage.Text.Trim();
-                picImage.ImageLocation = objMovie.image;
-                objMovie.trailer =                              txtTrailer.Text.Trim();
-
-                try
+                MessageBox.Show(lblMovieNumber.Text + " must be an integer (" + short.MinValue + " - " + short.MaxValue + ").", "Invalid " + lblMovieNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                txtMovieNumber.Focus();
+            }
+            else
+            {
+                if      (movie_number > short.MaxValue)// 32767
                 {
-                    bool                        status =    Movies.UpdateMovie(objMovie);
-                    if (status)
-                    {
-                        MessageBox.Show(MsgBoxHelper.Updated("Movie"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        movieList =                     Movies.GetMovies();
-                        movieDataGridView.DataSource =  movieList;//TODO genre not -1?
-                    }
-                    else
-                    {
-                        MessageBox.Show(MsgBoxHelper.Updated("Movie not"), "Failure", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
+                    MessageBox.Show(lblMovieNumber.Text + " must be less than or equal to " + short.MaxValue + ".", "Invalid " + lblMovieNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    txtMovieNumber.Focus();
                 }
-                catch (Exception ex)
+                else if (movie_number < short.MinValue)//-32768
                 {
-                    MessageBox.Show(ex.Message, "Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(lblMovieNumber.Text + " must be greater than or equal to " + short.MinValue + ".", "Invalid " + lblMovieNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    txtMovieNumber.Focus();
+                }
+                else if (CheckAll())
+                {
+                    Movie                       objMovie =          new Movie();
+                    int                         movie_year_made,
+                                                copies_on_hand;
+                    float                       movie_retail_cost;
+                    objMovie.movie_number =                         movie_number;
+                    objMovie.movie_title =                          txtMovieTitle.Text.Trim();
+                    objMovie.Description =                          txtDescription.Text.Trim();
+                    Int32.TryParse(txtMovieYearMade.Text.Trim(), out movie_year_made);
+                    objMovie.movie_year_made =                      movie_year_made;
+                    objMovie.genre_id =                             (int)cmbGenreID.SelectedValue;
+                    objMovie.movie_rating =                         cmbMovieRating.Text;
+                    objMovie.media_type =                           cmbMediaType.Text;
+                    float.TryParse(txtMovieRetailCost.Text.Trim(), out movie_retail_cost);
+                    objMovie.movie_retail_cost =                    movie_retail_cost;
+                    Int32.TryParse(txtCopiesOnHand.Text.Trim(), out copies_on_hand);
+                    objMovie.copies_on_hand =                       copies_on_hand;
+                    objMovie.image =                                txtImage.Text.Trim();
+                    picImage.ImageLocation = objMovie.image;
+                    objMovie.trailer =                              txtTrailer.Text.Trim();
+
+                    try
+                    {
+                        bool                    status =            Movies.UpdateMovie(objMovie);
+                        if (status)
+                        {
+                            MessageBox.Show(MsgBoxHelper.Updated("Movie"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            movieList =                     Movies.GetMovies();
+                            movieDataGridView.DataSource =  movieList;//TODO genre not -1?
+                        }
+                        else
+                        {
+                            MessageBox.Show(MsgBoxHelper.Updated("Movie not"), "Failure", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
         }
@@ -231,26 +254,39 @@ namespace Bookstore
             }
             else
             {
-                Movie                   objMovie =  new Movie();
-                objMovie.movie_number =             movie_number;
-
-                try
+                if      (movie_number > short.MaxValue)// 32767
                 {
-                    bool status = Movies.DeleteMovie(objMovie);
-                    if (status)
-                    {
-                        MessageBox.Show(MsgBoxHelper.Deleted("Movie"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        movieList =                     Movies.GetMovies();
-                        movieDataGridView.DataSource =  movieList;//TODO genre not -1?
-                    }
-                    else
-                    {
-                        MessageBox.Show(MsgBoxHelper.Deleted("Movie not"), "Failure", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
+                    MessageBox.Show(lblMovieNumber.Text + " must be less than or equal to " + short.MaxValue + ".", "Invalid " + lblMovieNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    txtMovieNumber.Focus();
                 }
-                catch (Exception ex)
+                else if (movie_number < short.MinValue)//-32768
                 {
-                    MessageBox.Show(ex.Message, "Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(lblMovieNumber.Text + " must be greater than or equal to " + short.MinValue + ".", "Invalid " + lblMovieNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    txtMovieNumber.Focus();
+                }
+                else
+                {
+                    Movie objMovie = new Movie();
+                    objMovie.movie_number = movie_number;
+
+                    try
+                    {
+                        bool status = Movies.DeleteMovie(objMovie);
+                        if (status)
+                        {
+                            MessageBox.Show(MsgBoxHelper.Deleted("Movie"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            movieList = Movies.GetMovies();
+                            movieDataGridView.DataSource = movieList;//TODO genre not -1?
+                        }
+                        else
+                        {
+                            MessageBox.Show(MsgBoxHelper.Deleted("Movie not"), "Failure", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
         }
@@ -273,7 +309,7 @@ namespace Bookstore
 
         public bool CheckAll()
         {
-            int movie_number;
+            /*int movie_number;
             if (Int32.TryParse(txtMovieNumber.Text.Trim(), out movie_number))
             {
                 if      (movie_number > short.MaxValue)//32767
@@ -295,7 +331,7 @@ namespace Bookstore
                 txtMovieNumber.Focus();
                 return false;
             }
-
+            */
             if (txtMovieTitle.Text.Trim() != string.Empty)
             {
                 if (txtMovieTitle.Text.Trim().Length > 100)
