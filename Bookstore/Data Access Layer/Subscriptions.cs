@@ -12,14 +12,15 @@ namespace Bookstore
     {
         #region Private variables
 
-        private static string[] parameters = { "id", "name", "cost" };
+        private static string[] parameters =        { "id", "name", "cost" };
+        private static int      lowestSecondary =   1;
 
         #endregion
 
         #region Public variables
 
-        public static string    key =   parameters[0];
-        public static string    extra = parameters[1];
+        public static string    key =               parameters[0];
+        public static string    extra =             parameters[1];
 
         #endregion
 
@@ -31,14 +32,35 @@ namespace Bookstore
         public static List<Subscription> GetSubscriptions()
         {
             List<Subscription>  subscriptions =     new List<Subscription>();
-            string              secondary =         string.Empty,
+            string              primary,
+                                secondary =         string.Empty,
                                 SQLStatement;
             SqlCommand          objCommand;
             SqlDataReader       subscriptionReader;
+            
+            primary =                               parameters[0];
 
-            for (int i = 1; i < parameters.Length; i++)
+
+            for (int i = lowestSecondary; i < parameters.Length; i++)
                 secondary +=                        ", Subscription." + parameters[i];
-            SQLStatement =                          SQLHelper.Select("Subscription", " FROM " + "Subscription", parameters[0], secondary);
+            SQLStatement =                          SQLHelper.Select(
+                                                                    "Subscription",
+
+
+                                                                                                    " FROM " + "Subscription"
+
+
+
+
+
+
+
+
+
+                                                                                   ,
+                                                                    primary,
+                                                                    secondary
+                                                                    );
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -90,19 +112,25 @@ namespace Bookstore
         public static Subscription GetSubscription(int parameter)//(string parameter)
         {
             Subscription    objSubscription =   null;
-            string          secondary,
+            string          primary =           string.Empty,
+                            secondary =         string.Empty,
                             SQLStatement;
             SqlCommand      objCommand;
             SqlDataReader   subscriptionReader;
 
-            secondary =                         parameters[1];
-            for (int i = 2; i < parameters.Length; i++)
+
+
+            secondary +=                        parameters[lowestSecondary];
+            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
                 secondary +=                    ", Subscription." + parameters[i];
             SQLStatement =                      SQLHelper.Select("Subscription", 
-                                                                " FROM " + "Subscription", 
-                                                                "", 
+                                                                " FROM " + "Subscription",
+                                                                primary, 
                                                                 secondary
-                                                                ) + " WHERE Subscription." + parameters[0] + " = @" + parameters[0];
+                                                                ) + " WHERE ";
+
+
+            SQLStatement +=                     "Subscription." + parameters[0] + " = @" + parameters[0];
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -153,21 +181,27 @@ namespace Bookstore
         /// <param name="subscription">accepts a custom object of that type as a parameter</param>
         public static bool AddSubscription(Subscription subscription)
         {
-            string          secondary =     string.Empty,
+            string          primary,
+                            secondary =     string.Empty,
                             SQLStatement1 = "SELECT MAX(id) AS max_subscription FROM Subscription",//Helper.Select("Subscription", "MAX(" + parameters[0] + ") AS max_subscription", ""),//"SELECT MAX(id) FROM Subscription",
                             SQLStatement2;
             //TODO what if MAX is nothing?
             int             rowsAffected,
                             max;
-
             SqlCommand      objCommand1,
                             objCommand2;
             SqlDataReader   subscriptionReader;
             bool            result =        false;
 
-            for (int i = 1; i < parameters.Length; i++)
+            primary =                       parameters[0];
+
+
+            for (int i = lowestSecondary; i < parameters.Length; i++)
                 secondary +=                ", @" + parameters[i];
-            SQLStatement2 =                 SQLHelper.Insert("Subscription", parameters[0], secondary);
+            SQLStatement2 =                 SQLHelper.Insert(   "Subscription",
+                                                                primary,
+                                                                secondary
+                                                            );
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -176,9 +210,6 @@ namespace Bookstore
                 using (SqlConnection objConn1 = AccessDataSQLServer.GetConnection())
                 {
                     objConn1.Open();
-                    //Step #2: Code logic to create appropriate SQL Server objects calls
-                    //         Cod Logic to retrieve data from database
-                    //         Add Try..Catch appropriate block and throw exception back to calling program
                     using (objCommand1 = new SqlCommand(SQLStatement1, objConn1))
                     {
                         using ((subscriptionReader = objCommand1.ExecuteReader(CommandBehavior.CloseConnection)))
@@ -192,6 +223,9 @@ namespace Bookstore
                 using (SqlConnection objConn2 = AccessDataSQLServer.GetConnection())
                 {
                     objConn2.Open();
+                    //Step #2: Code logic to create appropriate SQL Server objects calls
+                    //         Cod Logic to retrieve data from database
+                    //         Add Try..Catch appropriate block and throw exception back to calling program
                     using (objCommand2 = new SqlCommand(SQLStatement2, objConn2))
                     {
                         objCommand2.Parameters.AddWithValue('@' + parameters[0], max + 1);
@@ -216,7 +250,7 @@ namespace Bookstore
             {
                 throw new Exception(IOex.Message);  //Record was not added successfully
             }
-            return result;
+            return  result;
         }
 
         /// <summary>
@@ -225,17 +259,23 @@ namespace Bookstore
         /// <param name="subscription">accepts a custom object of that type as a parameter</param>
         public static bool UpdateSubscription(Subscription subscription)
         {
-            string      primary =       parameters[0] + " = @" + parameters[0],
-                        secondary,
+            string      primary,
+                        secondary =     string.Empty,
                         SQLStatement;
             SqlCommand  objCommand;
             int         rowsAffected;
             bool        result =        false;
 
-            secondary =                 parameters[1] + " = @" + parameters[1];
-            for (int i = 1; i < parameters.Length; i++)
+            primary =                   parameters[0] + " = @" + parameters[0];
+
+
+            secondary +=                parameters[lowestSecondary] + " = @" + parameters[lowestSecondary];
+            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
                 secondary +=            ", " + parameters[i] + " = @" + parameters[i];
-            SQLStatement =              SQLHelper.Update("Subscription", primary, secondary);
+            SQLStatement =              SQLHelper.Update(   "Subscription",
+                                                            primary,
+                                                            secondary
+                                                        );
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -280,10 +320,18 @@ namespace Bookstore
         /// <param name="subscription">accepts a custom object of that type as a parameter</param>
         public static bool DeleteSubscription(Subscription subscription)
         {
-            string      SQLStatement =  SQLHelper.Delete("Subscription", parameters[0], string.Empty);
+            string      primary =       string.Empty,
+                        SQLStatement;
             SqlCommand  objCommand;
             int         rowsAffected;
             bool        result =        false;
+
+
+
+            SQLStatement =              SQLHelper.Delete("Subscription",
+                                                        parameters[0],
+                                                        primary
+                                                        );
 
             //Step# 1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
