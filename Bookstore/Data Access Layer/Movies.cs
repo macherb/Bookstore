@@ -12,15 +12,16 @@ namespace Bookstore
     {
         #region Private variables
 
-        private static string[] parameters = { "movie_number", "movie_title", "Description", "movie_year_made", "genre_id", "movie_rating", "media_type", "movie_retail_cost", "copies_on_hand", "image", "trailer" };
-        private static string   foreign =   "Movie." + parameters[4];
+        private static string[] parameters =        { "movie_number", "movie_title", "Description", "movie_year_made", "genre_id", "movie_rating", "media_type", "movie_retail_cost", "copies_on_hand", "image", "trailer" };
+        private static string   foreign =           "Movie." + parameters[4];
+        private static int      lowestSecondary =   1;
 
         #endregion
 
         #region Public variables
 
-        public static string    key =       parameters[0];
-        public static string    extra =     parameters[1];
+        public static string    key =               parameters[0];
+        public static string    extra =             parameters[1];
 
         #endregion
 
@@ -32,23 +33,33 @@ namespace Bookstore
         public static List<Movie> GetMovies()
         {
             List<Movie>     movies =        new List<Movie>();
-            string          secondary =     string.Empty,
+            string          primary,
+                            secondary =     string.Empty,
                             SQLStatement;
             SqlCommand      objCommand;
             SqlDataReader   movieReader;
+            
+            primary =                       parameters[0];
 
-            for (int i = 1; i < parameters.Length; i++)
+
+            for (int i = lowestSecondary; i < parameters.Length; i++)
                 secondary +=                ", Movie." + parameters[i];
             SQLStatement =                  SQLHelper.Select(
                                                             "Movie",
                                                             SQLHelper.Join(
-                                                                            " FROM " + "(" + "Movie",
+
+                                                                                            " FROM " + "(" + "Movie"
+
+
+
+
+                                                                                           ,
                                                                             "Genre",
                                                                             ", Genre." + Genres.extra,
                                                                             foreign,
                                                                             Genres.key
                                                                           ),
-                                                            parameters[0],
+                                                            primary,
                                                             secondary
                                                             );
 
@@ -119,19 +130,25 @@ namespace Bookstore
         public static Movie GetMovie(int parameter)//string parameter)
         {
             Movie           objMovie =      null;
-            string          secondary,
+            string          primary =       string.Empty,
+                            secondary =     string.Empty,
                             SQLStatement;
             SqlCommand      objCommand;
             SqlDataReader   movieReader;
 
-            secondary =                     parameters[1];
-            for (int i = 2; i < parameters.Length; i++)
+
+
+            secondary +=                    parameters[lowestSecondary];
+            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
                 secondary +=                ", Movie." + parameters[i];
             SQLStatement =                  SQLHelper.Select("Movie", 
-                                                            " FROM " + "Movie", 
-                                                            "", 
+                                                            " FROM " + "Movie",
+                                                            primary, 
                                                             secondary
-                                                            ) + " WHERE Movie." + parameters[0] + " = @" + parameters[0];
+                                                            ) + " WHERE ";
+
+
+            SQLStatement +=                 "Movie." + parameters[0] + " = @" + parameters[0];
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -197,48 +214,73 @@ namespace Bookstore
         /// <param name="movie">accepts a custom object of that type as a parameter</param>
         public static bool AddMovie(Movie movie)
         {
-            string      secondary =     string.Empty,
-                        SQLStatement;
-            int         rowsAffected;
-            SqlCommand  objCommand;
-            bool        result =        false;
+            string          primary,
+                            secondary =     string.Empty,
+                            SQLStatement1 = "SELECT MAX(movie_number) AS max_movie FROM Movie",
+                            SQLStatement2;
 
-            for (int i = 1; i < parameters.Length; i++)
-                secondary +=            ", @" + parameters[i];
-            SQLStatement =              SQLHelper.Insert("Movie", parameters[0], secondary);
+            int             rowsAffected,
+                            max;
+            SqlCommand      objCommand1,
+                            objCommand2;
+            SqlDataReader   movieReader;
+            bool            result =        false;
+
+            primary =                       parameters[0];
+
+
+            for (int i = lowestSecondary; i < parameters.Length; i++)
+                secondary +=                ", @" + parameters[i];
+            SQLStatement2 =                 SQLHelper.Insert(   "Movie",
+                                                                primary,
+                                                                secondary
+                                                            );
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
             try
             {
-                using (SqlConnection objConn = AccessDataSQLServer.GetConnection())
+                using (SqlConnection objConn1 = AccessDataSQLServer.GetConnection())
                 {
-                    objConn.Open();
+                    objConn1.Open();
+                    using (objCommand1 = new SqlCommand(SQLStatement1, objConn1))
+                    {
+                        using ((movieReader = objCommand1.ExecuteReader(CommandBehavior.CloseConnection)))
+                        {
+                            movieReader.Read();
+                            Int32.TryParse(movieReader[0].ToString(), out max);
+                        }
+                    }
+                    objConn1.Close();
+                }
+                using (SqlConnection objConn2 = AccessDataSQLServer.GetConnection())
+                {
+                    objConn2.Open();
                     //Step #2: Code logic to create appropriate SQL Server objects calls
                     //         Cod Logic to retrieve data from database
                     //         Add Try..Catch appropriate block and throw exception back to calling program
-                    using (objCommand = new SqlCommand(SQLStatement, objConn))
+                    using (objCommand2 = new SqlCommand(SQLStatement2, objConn2))
                     {
-                        objCommand.Parameters.AddWithValue('@' + parameters[ 0], movie.movie_number     );
-                        objCommand.Parameters.AddWithValue('@' + parameters[ 1], movie.movie_title      );
-                        objCommand.Parameters.AddWithValue('@' + parameters[ 2], movie.Description      );
-                        objCommand.Parameters.AddWithValue('@' + parameters[ 3], movie.movie_year_made  );
-                        objCommand.Parameters.AddWithValue('@' + parameters[ 4], movie.genre_id         );
-                        objCommand.Parameters.AddWithValue('@' + parameters[ 5], movie.movie_rating     );
-                        objCommand.Parameters.AddWithValue('@' + parameters[ 6], movie.media_type       );
-                        objCommand.Parameters.AddWithValue('@' + parameters[ 7], movie.movie_retail_cost);
-                        objCommand.Parameters.AddWithValue('@' + parameters[ 8], movie.copies_on_hand   );
-                        objCommand.Parameters.AddWithValue('@' + parameters[ 9], movie.image            );
-                        objCommand.Parameters.AddWithValue('@' + parameters[10], movie.trailer          );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[ 0], max + 1                   );//movie.movie_number     );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[ 1], movie.movie_title         );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[ 2], movie.Description         );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[ 3], movie.movie_year_made     );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[ 4], movie.genre_id            );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[ 5], movie.movie_rating        );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[ 6], movie.media_type          );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[ 7], movie.movie_retail_cost   );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[ 8], movie.copies_on_hand      );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[ 9], movie.image               );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[10], movie.trailer             );
                         //Step #3: return false if record was not added successfully
                         //         return true if record was added successfully
-                        rowsAffected =  objCommand.ExecuteNonQuery();
+                        rowsAffected =  objCommand2.ExecuteNonQuery();
                         if (rowsAffected > 0)
                         {
                             result =    true;   //Record was added successfully
                         }
                     }
-                    objConn.Close();
+                    objConn2.Close();
                 }
             }
             catch (SqlException SQLex)
@@ -258,17 +300,23 @@ namespace Bookstore
         /// <param name="movie">accepts a custom object of that type as a parameter</param>
         public static bool UpdateMovie(Movie movie)
         {
-            string      primary =       parameters[0] + " = @" + parameters[0],
-                        secondary,
+            string      primary,
+                        secondary =     string.Empty,
                         SQLStatement;
             SqlCommand  objCommand;
             int         rowsAffected;
             bool        result =        false;
 
-            secondary =                 parameters[1] + " = @" + parameters[1];
-            for (int i = 2; i < parameters.Length; i++)
+            primary =                   parameters[0] + " = @" + parameters[0];
+
+
+            secondary +=                parameters[lowestSecondary] + " = @" + parameters[lowestSecondary];
+            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
                 secondary +=            ", " + parameters[i] + " = @" + parameters[i];
-            SQLStatement =              SQLHelper.Update("Movie", primary, secondary);
+            SQLStatement =              SQLHelper.Update(   "Movie",
+                                                            primary,
+                                                            secondary
+                                                        );
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -321,10 +369,18 @@ namespace Bookstore
         /// <param name="movie">accepts a custom object of that type as a parameter</param>
         public static bool DeleteMovie(Movie movie)
         {
-            string      SQLStatement =  SQLHelper.Delete("Movie", parameters[0], string.Empty);
+            string      primary =       string.Empty,
+                        SQLStatement;
             SqlCommand  objCommand;
             int         rowsAffected;
             bool        result =        false;
+
+
+
+            SQLStatement =              SQLHelper.Delete("Movie",
+                                                        parameters[0],
+                                                        primary
+                                                        );
 
             //Step# 1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
