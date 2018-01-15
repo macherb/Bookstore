@@ -78,29 +78,38 @@ namespace Bookstore
                 MessageBox.Show(lblID.Text + " must be an integer (" + short.MinValue + " - " + short.MaxValue + ").", "Invalid " + lblID.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtID.Focus();
             }
-            /*else if (txtName.Text.Trim() == string.Empty)
-            {
-                MessageBox.Show(lblName.Text + " must not be blank.", "Invalid " + lblName.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }*/
             else
             {
-                Vendor objVendor;
-
-                try
+                if      (id > short.MaxValue)// 32767
                 {
-                    objVendor = Vendors.GetVendor(id);
-                    if (objVendor == null)
-                    {
-                        MessageBox.Show(MsgBoxHelper.Selected("Vendor " + lblID.Text + " " + id), "Failure", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-                    else
-                    {
-                        txtName.Text = objVendor.name;
-                    }
+                    MessageBox.Show(lblID.Text + " must be less than or equal to " + short.MaxValue + ".", "Invalid " + lblID.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    txtID.Focus();
                 }
-                catch (Exception ex)
+                else if (id < short.MinValue)//-32768
                 {
-                    MessageBox.Show(ex.Message, "Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(lblID.Text + " must be greater than or equal to " + short.MinValue + ".", "Invalid " + lblID.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    txtID.Focus();
+                }
+                else
+                {
+                    Vendor                  objVendor;
+
+                    try
+                    {
+                        objVendor =                     Vendors.GetVendor(id);
+                        if (objVendor == null)
+                        {
+                            MessageBox.Show(MsgBoxHelper.Selected("Vendor " + lblID.Text + " " + id), "Failure", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        else
+                        {
+                            txtName.Text =              objVendor.name;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
         }
@@ -113,27 +122,40 @@ namespace Bookstore
                 MessageBox.Show(lblID.Text + " must be an integer (" + short.MinValue + " - " + short.MaxValue + ").", "Invalid " + lblID.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtID.Focus();
             }
-            else if (CheckAll())
+            else
             {
-                Vendor           objVendor =  new Vendor();
-                objVendor.id =               id;
-                objVendor.name =             txtName.Text.Trim();
-                try
+                if      (id > short.MaxValue)// 32767
                 {
-                    bool        status =    Vendors.UpdateVendor(objVendor);
-                    if (status)
-                    {
-                        MessageBox.Show(MsgBoxHelper.Updated("Vendor"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        frmVendor_Load(sender, e);
-                    }
-                    else
-                    {
-                        MessageBox.Show(MsgBoxHelper.Updated("Vendor not"), "Failure", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
+                    MessageBox.Show(lblID.Text + " must be less than or equal to " + short.MaxValue + ".", "Invalid " + lblID.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    txtID.Focus();
                 }
-                catch (Exception ex)
+                else if (id < short.MinValue)//-32768
                 {
-                    MessageBox.Show(ex.Message, "Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(lblID.Text + " must be greater than or equal to " + short.MinValue + ".", "Invalid " + lblID.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    txtID.Focus();
+                }
+                else if (CheckAll())
+                {
+                    Vendor          objVendor = new Vendor();
+                    objVendor.id =              id;
+                    objVendor.name =            txtName.Text.Trim();
+                    try
+                    {
+                        bool        status =    Vendors.UpdateVendor(objVendor);
+                        if (status)
+                        {
+                            MessageBox.Show(MsgBoxHelper.Updated("Vendor"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            frmVendor_Load(sender, e);
+                        }
+                        else
+                        {
+                            MessageBox.Show(MsgBoxHelper.Updated("Vendor not"), "Failure", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
         }
@@ -146,31 +168,40 @@ namespace Bookstore
                 MessageBox.Show(lblID.Text + " must be an integer (" + short.MinValue + " - " + short.MaxValue + ").", "Invalid " + lblID.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtID.Focus();
             }
-            /*else if (txtName.Text.Trim() == string.Empty)
-            {
-                MessageBox.Show(lblName.Text + " must not be blank.", "Invalid " + lblName.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }*/
             else
             {
-                Vendor           objVendor =  new Vendor();
-                objVendor.id =               id;
-                objVendor.name =             txtName.Text.Trim();
-                try
+                if      (id > short.MaxValue)// 32767
                 {
-                    bool        status =    Vendors.DeleteVendor(objVendor);
-                    if (status)
-                    {
-                        MessageBox.Show(MsgBoxHelper.Deleted("Vendor"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        frmVendor_Load(sender, e);
-                    }
-                    else
-                    {
-                        MessageBox.Show(MsgBoxHelper.Deleted("Vendor not"), "Failure", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
+                    MessageBox.Show(lblID.Text + " must be less than or equal to " + short.MaxValue + ".", "Invalid " + lblID.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    txtID.Focus();
                 }
-                catch (Exception ex)
+                else if (id < short.MinValue)//-32768
                 {
-                    MessageBox.Show(ex.Message, "Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(lblID.Text + " must be greater than or equal to " + short.MinValue + ".", "Invalid " + lblID.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    txtID.Focus();
+                }
+                else
+                {
+                    Vendor          objVendor = new Vendor();
+                    objVendor.id =              id;
+                    objVendor.name =            txtName.Text.Trim();
+                    try
+                    {
+                        bool        status =    Vendors.DeleteVendor(objVendor);
+                        if (status)
+                        {
+                            MessageBox.Show(MsgBoxHelper.Deleted("Vendor"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            frmVendor_Load(sender, e);
+                        }
+                        else
+                        {
+                            MessageBox.Show(MsgBoxHelper.Deleted("Vendor not"), "Failure", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
         }
