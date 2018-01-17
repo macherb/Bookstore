@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -17,10 +17,11 @@ namespace Bookstore
             InitializeComponent();
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void frmKiosk_Load(object sender, EventArgs e)
         {
             frmLogin    myLogin =   new frmLogin();
-            myLogin.Show();
+            if (myLogin.ShowDialog() > DialogResult.None)
+                this.WindowState =  System.Windows.Forms.FormWindowState.Normal;
         }
 
         private void movieToolStripMenuItem_Click(object sender, EventArgs e)
@@ -53,13 +54,13 @@ namespace Bookstore
             myVendor.Show();
         }
 
-        private void membershipToolStripMenuItem_Click(object sender, EventArgs e)
+        private void reportMembershipToolStripMenuItem_Click(object sender, EventArgs e)
         {
             frmMembershipReport myReport =  new frmMembershipReport();
             myReport.Show();
         }
 
-        private void rentalToolStripMenuItem1_Click(object sender, EventArgs e)
+        private void reportRentalToolStripMenuItem_Click(object sender, EventArgs e)
         {
             frmRentalReport     myReport =  new frmRentalReport();
             myReport.Show();
