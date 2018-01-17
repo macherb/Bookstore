@@ -23,9 +23,15 @@ namespace Bookstore
         public static string    extra =             parameters[1];
 
         #endregion
-
+        private static void PrimarySecondary(ref string primary, string preprimary, ref string secondary, string presecondary)
+        {
+            for (int i = 1; i < lowestSecondary; i++)
+                primary +=                  preprimary + parameters[i];
+            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
+                secondary +=                presecondary + parameters[i];
+        }
         #region Public functions
-
+//TODO get max should be its own function
         /// <summary>
         /// Returns a list of generic  type objects from the table
         /// </summary>
@@ -39,10 +45,12 @@ namespace Bookstore
             SqlDataReader   genreReader;
 
             primary =                       parameters[0];
+            secondary +=                    ", Genre." + parameters[lowestSecondary];
+            PrimarySecondary(ref primary, ", Genre.", ref secondary, ", Genre.");
+            /*
 
-
-            for (int i = lowestSecondary; i < parameters.Length; i++)
-                secondary +=                ", Genre." + parameters[i];
+            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
+                secondary +=                ", Genre." + parameters[i];*/
             SQLStatement =                  SQLHelper.Select(
                                                             "Genre",
 
@@ -115,11 +123,12 @@ namespace Bookstore
             SqlCommand      objCommand;
             SqlDataReader   genreReader;
 
-
-
             secondary +=                    parameters[lowestSecondary];
+            PrimarySecondary(ref primary, ", Genre.", ref secondary, ", Genre.");
+            /*
+            
             for (int i = lowestSecondary + 1; i < parameters.Length; i++)
-                secondary +=                ", Genre." + parameters[i];
+                secondary +=                ", Genre." + parameters[i];*/
             SQLStatement =                  SQLHelper.Select("Genre",
                                                             " FROM " + "Genre",
                                                             primary,
@@ -188,10 +197,12 @@ namespace Bookstore
             bool            result =        false;
 
             primary =                       parameters[0];
+            secondary +=                    ", @" + parameters[lowestSecondary];
+            PrimarySecondary(ref primary, ", @", ref secondary, ", @");
+            /*
 
-
-            for (int i = lowestSecondary; i < parameters.Length; i++)
-                secondary +=                ", @" + parameters[i];
+            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
+                secondary +=                ", @" + parameters[i];*/
             SQLStatement2 =                 SQLHelper.Insert(   "Genre",
                                                                 primary,
                                                                 secondary
@@ -259,10 +270,10 @@ namespace Bookstore
             int         rowsAffected;
             bool        result =        false;
 
-            primary =                   parameters[0] + " = @" + parameters[0];
-
-
+            primary =                   parameters[0              ] + " = @" + parameters[0              ];
             secondary +=                parameters[lowestSecondary] + " = @" + parameters[lowestSecondary];
+            
+
             for (int i = lowestSecondary + 1; i < parameters.Length; i++)
                 secondary +=            ", " + parameters[i] + " = @" + parameters[i];
             SQLStatement =              SQLHelper.Update(   "Genre", 
