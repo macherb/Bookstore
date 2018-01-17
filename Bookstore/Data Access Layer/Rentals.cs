@@ -18,7 +18,13 @@ namespace Bookstore
         private static int      lowestSecondary =   3;
 
         #endregion
-
+        private static void PrimarySecondary(ref string primary, string preprimary, ref string secondary, string presecondary)
+        {
+            for (int i = 1                  ; i < lowestSecondary  ; i++)
+                primary +=      preprimary + parameters[i];
+            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
+                secondary +=    presecondary + parameters[i];
+        }
         #region Public functions
 
         /// <summary>
@@ -34,10 +40,12 @@ namespace Bookstore
             SqlDataReader   rentalReader;
 
             primary =                       parameters[0];
-            for (int i = 1; i < lowestSecondary; i++)
+            secondary +=                    ", Rental." + parameters[lowestSecondary];
+            PrimarySecondary(ref primary, ", Rental.", ref secondary, ", Rental.");
+            /*for (int i = 1; i < lowestSecondary; i++)
                 primary +=                  ", Rental." + parameters[i];
-            for (int i = lowestSecondary; i < parameters.Length; i++)
-                secondary +=                ", Rental." + parameters[i];
+            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
+                secondary +=                ", Rental." + parameters[i];*/
             SQLStatement =                  SQLHelper.Select(
                                                             "Rental",
                                                             SQLHelper.Join(
@@ -120,11 +128,12 @@ namespace Bookstore
             SqlCommand      objCommand;
             SqlDataReader   rentalReader;
 
-            for (int i = 1; i < lowestSecondary; i++)
-                primary +=                  ", Rental." + parameters[i];
             secondary +=                    parameters[lowestSecondary];
+            PrimarySecondary(ref primary, ", Rental.", ref secondary, ", Rental.");
+            /*for (int i = 1; i < lowestSecondary; i++)
+                primary +=                  ", Rental." + parameters[i];
             for (int i = lowestSecondary + 1; i < parameters.Length; i++)
-                secondary +=                ", Rental." + parameters[i];
+                secondary +=                ", Rental." + parameters[i];*/
             SQLStatement =                  SQLHelper.Select("Rental", 
                                                             " FROM " + "Rental", 
                                                             primary, 
@@ -226,10 +235,12 @@ namespace Bookstore
             bool            result =        false;
 
             primary =                       parameters[0];
-            for (int i = 1; i < lowestSecondary; i++)
+            secondary +=                    ", @" + parameters[lowestSecondary];
+            PrimarySecondary(ref primary, ", @", ref secondary, ", @");
+            /*for (int i = 1; i < lowestSecondary; i++)
                 primary +=                  ", @" + parameters[i];
-            for (int i = lowestSecondary; i < parameters.Length; i++)
-                secondary +=                ", @" + parameters[i];
+            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
+                secondary +=                ", @" + parameters[i];*/
             SQLStatement2 =                 SQLHelper.Insert(   "Rental", 
                                                                 primary, 
                                                                 secondary
@@ -299,10 +310,11 @@ namespace Bookstore
             int         rowsAffected;
             bool        result =        false;
 
-            primary =                   parameters[0] + " = @" + parameters[0];
+            primary =                   parameters[0              ] + " = @" + parameters[0              ];
+            secondary +=                parameters[lowestSecondary] + " = @" + parameters[lowestSecondary];
+
             for (int i = 1; i < lowestSecondary; i++)
                 primary +=              " AND " + parameters[i] + " = @" + parameters[i];
-            secondary +=                parameters[lowestSecondary] + " = @" + parameters[lowestSecondary];
             for (int i = lowestSecondary + 1; i < parameters.Length; i++)
                 secondary +=            ", " + parameters[i] + " = @" + parameters[i];
             SQLStatement =              SQLHelper.Update(  "Rental",
