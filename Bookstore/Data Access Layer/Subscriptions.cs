@@ -23,7 +23,13 @@ namespace Bookstore
         public static string    extra =             parameters[1];
 
         #endregion
-
+        private static void PrimarySecondary(ref string primary, string preprimary, ref string secondary, string presecondary)
+        {
+            for (int i = 1                  ; i < lowestSecondary  ; i++)
+                primary +=      preprimary + parameters[i];
+            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
+                secondary +=    presecondary + parameters[i];
+        }
         #region Public functions
 
         /// <summary>
@@ -39,10 +45,12 @@ namespace Bookstore
             SqlDataReader       subscriptionReader;
             
             primary =                               parameters[0];
+            secondary +=                            ", Subscription." + parameters[lowestSecondary];
+            PrimarySecondary(ref primary, ", Subscription.", ref secondary, ", Subscription.");
+            /*
 
-
-            for (int i = lowestSecondary; i < parameters.Length; i++)
-                secondary +=                        ", Subscription." + parameters[i];
+            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
+                secondary +=                        ", Subscription." + parameters[i];*/
             SQLStatement =                          SQLHelper.Select(
                                                                     "Subscription",
 
@@ -118,11 +126,12 @@ namespace Bookstore
             SqlCommand      objCommand;
             SqlDataReader   subscriptionReader;
 
-
-
             secondary +=                        parameters[lowestSecondary];
+            PrimarySecondary(ref primary, ", Subscription.", ref secondary, ", Subscription.");
+            /*
+
             for (int i = lowestSecondary + 1; i < parameters.Length; i++)
-                secondary +=                    ", Subscription." + parameters[i];
+                secondary +=                    ", Subscription." + parameters[i];*/
             SQLStatement =                      SQLHelper.Select("Subscription", 
                                                                 " FROM " + "Subscription",
                                                                 primary, 
@@ -194,10 +203,12 @@ namespace Bookstore
             bool            result =        false;
 
             primary =                       parameters[0];
+            secondary +=                    ", @" + parameters[lowestSecondary];
+            PrimarySecondary(ref primary, ", @", ref secondary, ", @");
+            /*
 
-
-            for (int i = lowestSecondary; i < parameters.Length; i++)
-                secondary +=                ", @" + parameters[i];
+            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
+                secondary +=                ", @" + parameters[i];*/
             SQLStatement2 =                 SQLHelper.Insert(   "Subscription",
                                                                 primary,
                                                                 secondary
@@ -228,9 +239,9 @@ namespace Bookstore
                     //         Add Try..Catch appropriate block and throw exception back to calling program
                     using (objCommand2 = new SqlCommand(SQLStatement2, objConn2))
                     {
-                        objCommand2.Parameters.AddWithValue('@' + parameters[0], max + 1);
-                        objCommand2.Parameters.AddWithValue('@' + parameters[1], subscription.name);
-                        objCommand2.Parameters.AddWithValue('@' + parameters[2], subscription.cost);
+                        objCommand2.Parameters.AddWithValue('@' + parameters[0], max + 1            );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[1], subscription.name  );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[2], subscription.cost  );
                         //Step #3: return false if record was not added successfully
                         //         return true if record was added successfully  
                         rowsAffected =  objCommand2.ExecuteNonQuery();
@@ -266,10 +277,10 @@ namespace Bookstore
             int         rowsAffected;
             bool        result =        false;
 
-            primary =                   parameters[0] + " = @" + parameters[0];
-
-
+            primary =                   parameters[0              ] + " = @" + parameters[0              ];
             secondary +=                parameters[lowestSecondary] + " = @" + parameters[lowestSecondary];
+
+            
             for (int i = lowestSecondary + 1; i < parameters.Length; i++)
                 secondary +=            ", " + parameters[i] + " = @" + parameters[i];
             SQLStatement =              SQLHelper.Update(   "Subscription",
