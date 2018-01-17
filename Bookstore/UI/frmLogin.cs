@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -37,14 +37,14 @@ namespace Bookstore
             {
                 if (txtLoginName.Text.Trim().Length > 20)
                 {
-                    MessageBox.Show(lblLoginName.Text + " must be less than 20 characters.", "Invalid " + lblLoginName.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblLoginName.Text, 20), "Invalid " + lblLoginName.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtLoginName.Focus();
                     return;
                 }
             }
             else
             {
-                MessageBox.Show(lblLoginName.Text + " must not be blank.", "Invalid " + lblLoginName.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(MsgBoxHelper.NotBlank(lblLoginName.Text), "Invalid " + lblLoginName.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtLoginName.Focus();
                 return;
             }
@@ -53,14 +53,14 @@ namespace Bookstore
             {
                 if (txtPassword.Text.Trim().Length > 20)
                 {
-                    MessageBox.Show(lblPassword.Text + " must be less than 20 characters.", "Invalid " + lblPassword.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblPassword.Text, 20), "Invalid " + lblPassword.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtPassword.Focus();
                     return;
                 }
             }
             else
             {
-                MessageBox.Show(lblPassword.Text + " must not be blank.", "Invalid " + lblPassword.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(MsgBoxHelper.NotBlank(lblPassword.Text), "Invalid " + lblPassword.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtPassword.Focus();
                 return;
             }
@@ -91,7 +91,10 @@ namespace Bookstore
         private void btnSignUp_Click(object sender, EventArgs e)
         {
             frmMember   myMember =  new frmMember();
-            myMember.Show();
+            myMember.SetLoginName(txtLoginName.Text);
+            myMember.SetPassword(txtPassword.Text);
+            if (myMember.ShowDialog() > DialogResult.None)
+                this.Close();
         }
     }
 }
