@@ -43,7 +43,7 @@ namespace Bookstore
 				MessageBox.Show(ex.Message, "Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 
-			ToolTip toolTip = new ToolTip();
+			ToolTip                             toolTip =       new ToolTip();
 
             toolTip.SetToolTip(btnAdd, "Add Movie, Member, Checkout and Return");
             toolTip.SetToolTip(btnBrowse, "Browse by Movie, Member and Checkout");
@@ -68,7 +68,7 @@ namespace Bookstore
         {
             if (CheckAll())
             {
-				Rental objRental;
+				Rental                          objRental;
 
 				try
 				{
@@ -95,12 +95,12 @@ namespace Bookstore
                 objRental.media_return_date =               dtpMediaReturnDate.Value;//TODO only add if not blank
                 try
                 {
-                    bool status = Rentals.AddRental(objRental);
+                    bool                        status =    Rentals.AddRental(objRental);
                     if (status)
                     {
                         MessageBox.Show(MsgBoxHelper.Inserted("Rental"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        rentalList =                    Rentals.GetRentals();
-                        rentalDataGridView.DataSource = rentalList;//TODO movie and member not -1?
+                        rentalList =                        Rentals.GetRentals();
+                        rentalDataGridView.DataSource =     rentalList;//TODO movie and member not -1?
                     }
                     else
                     {
@@ -125,17 +125,17 @@ namespace Bookstore
             }
             else
             {
-                int first,
-                    second;
+                int                                     first,
+                                                        second;
 
                 if (cmbMovieNumber.SelectedIndex == -1)
-                    first =     -1;
+                    first =                             -1;
                 else
-                    first =     (int)cmbMovieNumber.SelectedValue;
+                    first =                             (int)cmbMovieNumber.SelectedValue;
                 if (cmbMemberNumber.SelectedIndex == -1)
-                    second =    -1;
+                    second =                            -1;
                 else
-                    second =    (int)cmbMemberNumber.SelectedValue;
+                    second =                            (int)cmbMemberNumber.SelectedValue;
 
                 Rental                                  objRental;
 
@@ -183,8 +183,8 @@ namespace Bookstore
                     if (status)
                     {
                         MessageBox.Show(MsgBoxHelper.Updated("Rental"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        rentalList =                    Rentals.GetRentals();
-                        rentalDataGridView.DataSource = rentalList;//TODO movie and member not -1?
+                        rentalList =                        Rentals.GetRentals();
+                        rentalDataGridView.DataSource =     rentalList;//TODO movie and member not -1?
                     }
                     else
                     {
@@ -202,29 +202,29 @@ namespace Bookstore
         {
             if      (cmbMovieNumber.SelectedIndex == -1)
             {
-                MessageBox.Show(lblMovieNumber.Text + " must not be blank.", "Invalid " + lblMovieNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(MsgBoxHelper.NotBlank(lblMovieNumber.Text), "Invalid " + lblMovieNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 cmbMovieNumber.Focus();
             }
             else if (cmbMemberNumber.SelectedIndex == -1)
             {
-                MessageBox.Show(lblMemberNumber.Text + " must not be blank.", "Invalid " + lblMemberNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(MsgBoxHelper.NotBlank(lblMemberNumber.Text), "Invalid " + lblMemberNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 cmbMemberNumber.Focus();
             }
-
+            //TODO add m c d
             else
             {
-                Rental                      objRental = new Rental();
-                objRental.movie_number =                (int)cmbMovieNumber.SelectedValue;//TODO
-                objRental.member_number =               (int)cmbMemberNumber.SelectedValue;
-                objRental.media_checkout_date =         dtpMediaCheckoutDate.Value;
+                Rental                          objRental = new Rental();
+                objRental.movie_number =                    (int)cmbMovieNumber.SelectedValue;//TODO
+                objRental.member_number =                   (int)cmbMemberNumber.SelectedValue;
+                objRental.media_checkout_date =             dtpMediaCheckoutDate.Value;
                 try
                 {
-                    bool                    status =    Rentals.DeleteRental(objRental);
+                    bool                        status =    Rentals.DeleteRental(objRental);
                     if (status)
                     {
                         MessageBox.Show(MsgBoxHelper.Deleted("Rental"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        rentalList =                    Rentals.GetRentals();
-                        rentalDataGridView.DataSource = rentalList;//movie and member not -1?
+                        rentalList =                        Rentals.GetRentals();
+                        rentalDataGridView.DataSource =     rentalList;//movie and member not -1?
                     }
                     else
                     {
@@ -250,14 +250,14 @@ namespace Bookstore
         {
             if (cmbMovieNumber.SelectedIndex == -1)
             {
-                MessageBox.Show(lblMovieNumber.Text + " must not be blank.", "Invalid " + lblMovieNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(MsgBoxHelper.NotBlank(lblMovieNumber.Text), "Invalid " + lblMovieNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 cmbMovieNumber.Focus();
                 return  false;
             }
 
             if (cmbMemberNumber.SelectedIndex == -1)
             {
-                MessageBox.Show(lblMemberNumber.Text + " must not be blank.", "Invalid " + lblMemberNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(MsgBoxHelper.NotBlank(lblMemberNumber.Text), "Invalid " + lblMemberNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 cmbMemberNumber.Focus();
                 return  false;
             }
