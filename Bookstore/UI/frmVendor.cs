@@ -29,7 +29,7 @@ namespace Bookstore
 				MessageBox.Show(ex.Message, "Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 
-			ToolTip toolTip = new ToolTip();
+			ToolTip                             toolTip =   new ToolTip();
 
             toolTip.SetToolTip(btnAdd, "Add Vendor Name");
             toolTip.SetToolTip(btnBrowse, "Browse by Vendor Number");
@@ -75,19 +75,19 @@ namespace Bookstore
             int id;
             if (!Int32.TryParse(txtID.Text.Trim(), out id))
             {
-                MessageBox.Show(lblID.Text + " must be an integer (" + short.MinValue + " - " + short.MaxValue + ").", "Invalid " + lblID.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(MsgBoxHelper.MustBe(lblID.Text), "Invalid " + lblID.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtID.Focus();
             }
             else
             {
                 if      (id > short.MaxValue)// 32767
                 {
-                    MessageBox.Show(lblID.Text + " must be less than or equal to " + short.MaxValue + ".", "Invalid " + lblID.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblID.Text), "Invalid " + lblID.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtID.Focus();
                 }
                 else if (id < short.MinValue)//-32768
                 {
-                    MessageBox.Show(lblID.Text + " must be greater than or equal to " + short.MinValue + ".", "Invalid " + lblID.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.GTETmin(lblID.Text), "Invalid " + lblID.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtID.Focus();
                 }
                 else
@@ -119,19 +119,19 @@ namespace Bookstore
             int id;
             if (!Int32.TryParse(txtID.Text.Trim(), out id))
             {
-                MessageBox.Show(lblID.Text + " must be an integer (" + short.MinValue + " - " + short.MaxValue + ").", "Invalid " + lblID.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(MsgBoxHelper.MustBe(lblID.Text), "Invalid " + lblID.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtID.Focus();
             }
             else
             {
                 if      (id > short.MaxValue)// 32767
                 {
-                    MessageBox.Show(lblID.Text + " must be less than or equal to " + short.MaxValue + ".", "Invalid " + lblID.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblID.Text), "Invalid " + lblID.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtID.Focus();
                 }
                 else if (id < short.MinValue)//-32768
                 {
-                    MessageBox.Show(lblID.Text + " must be greater than or equal to " + short.MinValue + ".", "Invalid " + lblID.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.GTETmin(lblID.Text), "Invalid " + lblID.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtID.Focus();
                 }
                 else if (CheckAll())
@@ -165,19 +165,19 @@ namespace Bookstore
             int id;
             if (!Int32.TryParse(txtID.Text.Trim(), out id))
             {
-                MessageBox.Show(lblID.Text + " must be an integer (" + short.MinValue + " - " + short.MaxValue + ").", "Invalid " + lblID.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(MsgBoxHelper.MustBe(lblID.Text), "Invalid " + lblID.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtID.Focus();
             }
             else
             {
                 if      (id > short.MaxValue)// 32767
                 {
-                    MessageBox.Show(lblID.Text + " must be less than or equal to " + short.MaxValue + ".", "Invalid " + lblID.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblID.Text), "Invalid " + lblID.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtID.Focus();
                 }
                 else if (id < short.MinValue)//-32768
                 {
-                    MessageBox.Show(lblID.Text + " must be greater than or equal to " + short.MinValue + ".", "Invalid " + lblID.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.GTETmin(lblID.Text), "Invalid " + lblID.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtID.Focus();
                 }
                 else
@@ -218,16 +218,16 @@ namespace Bookstore
             {
                 if (txtName.Text.Trim().Length > 30)
                 {
-                    MessageBox.Show(lblName.Text + " must be less than 30 characters.", "Invalid " + lblName.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblName.Text, 30), "Invalid " + lblName.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtName.Focus();
-                    return false;
+                    return  false;
                 }
             }
             else
             {
-                MessageBox.Show(lblName.Text + " must not be blank.", "Invalid " + lblName.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(MsgBoxHelper.NotBlank(lblName.Text), "Invalid " + lblName.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtName.Focus();
-                return false;
+                return  false;
             }
             return  true;
         }
