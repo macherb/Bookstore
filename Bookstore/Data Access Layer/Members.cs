@@ -24,7 +24,13 @@ namespace Bookstore
         public static string    extra =             parameters[10];
 
         #endregion
-
+        private static void PrimarySecondary(ref string primary, string preprimary, ref string secondary, string presecondary)
+        {
+            for (int i = 1                  ; i < lowestSecondary  ; i++)
+                primary +=      preprimary + parameters[i];
+            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
+                secondary +=    presecondary + parameters[i];
+        }
         #region Public functions
 
         /// <summary>
@@ -40,10 +46,12 @@ namespace Bookstore
             SqlDataReader   memberReader;
             
             primary =                       parameters[0];
+            secondary +=                    ", Member." + parameters[lowestSecondary];
+            PrimarySecondary(ref primary, ", Member.", ref secondary, ", Member.");
+            /*
 
-
-            for (int i = lowestSecondary; i < parameters.Length; i++)
-                secondary +=                ", Member." + parameters[i];
+            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
+                secondary +=                ", Member." + parameters[i];*/
             SQLStatement =                  SQLHelper.Select(
                                                             "Member",
                                                             SQLHelper.Join(
@@ -137,11 +145,12 @@ namespace Bookstore
             SqlCommand      objCommand;
             SqlDataReader   memberReader;
 
-
-
             secondary +=                     parameters[lowestSecondary];
+            PrimarySecondary(ref primary, ", Member.", ref secondary, ", Member.");
+            /*
+
             for (int i = lowestSecondary + 1; i < parameters.Length; i++)
-                secondary +=                ", Member." + parameters[i];
+                secondary +=                ", Member." + parameters[i];*/
             SQLStatement =                  SQLHelper.Select("Member", 
                                                             " FROM " + "Member",
                                                             primary, 
@@ -231,10 +240,12 @@ namespace Bookstore
             bool            result =        false;
 
             primary =                       parameters[0];
+            secondary +=                    ", @" + parameters[lowestSecondary];
+            PrimarySecondary(ref primary, ", @", ref secondary, ", @");
+            /*
 
-
-            for (int i = lowestSecondary; i < parameters.Length; i++)
-                secondary +=                ", @" + parameters[i];
+            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
+                secondary +=                ", @" + parameters[i];*/
             SQLStatement2 =                 SQLHelper.Insert(   "Member",
                                                                 primary,
                                                                 secondary
@@ -317,9 +328,9 @@ namespace Bookstore
             bool        result =        false;
 
             primary =                   parameters[0] + " = @" + parameters[0];
-
-
             secondary +=                parameters[lowestSecondary] + " = @" + parameters[lowestSecondary];
+
+            
             for (int i = lowestSecondary + 1; i < parameters.Length; i++)
                 secondary +=            ", " + parameters[i] + " = @" + parameters[i];
             SQLStatement =              SQLHelper.Update(   "Member",
