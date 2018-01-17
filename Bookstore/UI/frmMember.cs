@@ -40,7 +40,7 @@ namespace Bookstore
 				MessageBox.Show(ex.Message, "Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 
-			ToolTip toolTip = new ToolTip();
+			ToolTip                             toolTip =           new ToolTip();
 
             toolTip.SetToolTip(btnAdd, "Add all Member fields");
             toolTip.SetToolTip(btnBrowse, "Browse by Member Number");
@@ -95,39 +95,39 @@ namespace Bookstore
         {
             if (CheckAll())
             {
-                Member              objMember = new Member();
+                Member                      objMember = new Member();
 
-                int                 number;
+                int                         number;
                 Int32.TryParse(txtNumber.Text.Trim(), out number);
-                objMember.number =              number;
-                objMember.joindate =            dtpJoinDate.Value;
-                objMember.firstname =           txtFirstName.Text.Trim();
-                objMember.lastname =            txtLastName.Text.Trim();
-                objMember.address =             txtAddress.Text.Trim();
-                objMember.city =                txtCity.Text.Trim();
-                objMember.state =               txtState.Text.Trim();
-                objMember.zipcode =             txtZipCode.Text.Trim();
-                objMember.phone =               txtPhone.Text.Trim();
-                objMember.member_status =       rdoActive.Checked ? "A" : "I";
-                objMember.login_name =          txtLoginName.Text.Trim();
-                objMember.password =            txtPassword.Text.Trim();
-                objMember.email =               txtEmail.Text.Trim();
+                objMember.number =                      number;
+                objMember.joindate =                    dtpJoinDate.Value;
+                objMember.firstname =                   txtFirstName.Text.Trim();
+                objMember.lastname =                    txtLastName.Text.Trim();
+                objMember.address =                     txtAddress.Text.Trim();
+                objMember.city =                        txtCity.Text.Trim();
+                objMember.state =                       txtState.Text.Trim();
+                objMember.zipcode =                     txtZipCode.Text.Trim();
+                objMember.phone =                       txtPhone.Text.Trim();
+                objMember.member_status =               rdoActive.Checked ? "A" : "I";
+                objMember.login_name =                  txtLoginName.Text.Trim();
+                objMember.password =                    txtPassword.Text.Trim();
+                objMember.email =                       txtEmail.Text.Trim();
                 if      (rdoEmail.Checked       )
-                    objMember.contact_method =  1;
+                    objMember.contact_method =          1;
                 else if (rdoFacebook.Checked    )
-                    objMember.contact_method =  2;
+                    objMember.contact_method =          2;
                 else if (rdoPhoneText.Checked   )
-                    objMember.contact_method =  3;
+                    objMember.contact_method =          3;
                 else if (rdoTwitter.Checked     )
-                    objMember.contact_method =  4;
+                    objMember.contact_method =          4;
                 else
-                    objMember.contact_method =  0;
+                    objMember.contact_method =          0;
 
-                objMember.subscription_id =     (int)cmbSubscriptionID.SelectedValue;
-                objMember.photo =               imageLocation;
+                objMember.subscription_id =             (int)cmbSubscriptionID.SelectedValue;
+                objMember.photo =                       imageLocation;
                 try
                 {
-                    bool            status =    Members.AddMember(objMember);
+                    bool                    status =    Members.AddMember(objMember);
                     if (status)
                     {
                         MessageBox.Show(MsgBoxHelper.Inserted("Member"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -151,24 +151,24 @@ namespace Bookstore
             int number;
             if (!Int32.TryParse(txtNumber.Text.Trim(), out number))
             {
-                MessageBox.Show(lblNumber.Text + " must be an integer (" + short.MinValue + " - " + short.MaxValue + ").", "Invalid " + lblNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(MsgBoxHelper.MustBe(lblNumber.Text), "Invalid " + lblNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtNumber.Focus();
             }
             else
             {
                 if      (number > short.MaxValue)// 32767
                 {
-                    MessageBox.Show(lblNumber.Text + " must be less than or equal to " + short.MaxValue + ".", "Invalid " + lblNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblNumber.Text), "Invalid " + lblNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtNumber.Focus();
                 }
                 else if (number < short.MinValue)//-32768
                 {
-                    MessageBox.Show(lblNumber.Text + " must be greater than or equal to " + short.MinValue + ".", "Invalid " + lblNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.GTETmin(lblNumber.Text), "Invalid " + lblNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtNumber.Focus();
                 }
                 else
                 {
-                    Member          objMember;
+                    Member                          objMember;
 
                     try
                     {
@@ -223,60 +223,60 @@ namespace Bookstore
             int number;
             if (!Int32.TryParse(txtNumber.Text.Trim(), out number))
             {
-                MessageBox.Show(lblNumber.Text + " must be an integer (" + short.MinValue + " - " + short.MaxValue + ").", "Invalid " + lblNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(MsgBoxHelper.MustBe(lblNumber.Text), "Invalid " + lblNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtNumber.Focus();
             }
             else
             {
-                if (number > short.MaxValue)// 32767
+                if      (number > short.MaxValue)// 32767
                 {
-                    MessageBox.Show(lblNumber.Text + " must be less than or equal to " + short.MaxValue + ".", "Invalid " + lblNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblNumber.Text), "Invalid " + lblNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtNumber.Focus();
                 }
                 else if (number < short.MinValue)//-32768
                 {
-                    MessageBox.Show(lblNumber.Text + " must be greater than or equal to " + short.MinValue + ".", "Invalid " + lblNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.GTETmin(lblNumber.Text), "Invalid " + lblNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtNumber.Focus();
                 }
                 else if (CheckAll())
                 {
-                    Member                  objMember = new Member();
+                    Member                      objMember = new Member();
 
                     Int32.TryParse(txtNumber.Text.Trim(), out number);
-                    objMember.number =                  number;
-                    objMember.joindate =                dtpJoinDate.Value;
-                    objMember.firstname =               txtFirstName.Text.Trim();
-                    objMember.lastname =                txtLastName.Text.Trim();
-                    objMember.address =                 txtAddress.Text.Trim();
-                    objMember.city =                    txtCity.Text.Trim();
-                    objMember.state =                   txtState.Text.Trim();
-                    objMember.zipcode =                 txtZipCode.Text.Trim();
-                    objMember.phone =                   txtPhone.Text.Trim();
-                    objMember.member_status =           rdoActive.Checked ? "A" : "I";
-                    objMember.login_name =              txtLoginName.Text.Trim();
-                    objMember.password =                txtPassword.Text.Trim();
-                    objMember.email =                   txtEmail.Text.Trim();
+                    objMember.number =                      number;
+                    objMember.joindate =                    dtpJoinDate.Value;
+                    objMember.firstname =                   txtFirstName.Text.Trim();
+                    objMember.lastname =                    txtLastName.Text.Trim();
+                    objMember.address =                     txtAddress.Text.Trim();
+                    objMember.city =                        txtCity.Text.Trim();
+                    objMember.state =                       txtState.Text.Trim();
+                    objMember.zipcode =                     txtZipCode.Text.Trim();
+                    objMember.phone =                       txtPhone.Text.Trim();
+                    objMember.member_status =               rdoActive.Checked ? "A" : "I";
+                    objMember.login_name =                  txtLoginName.Text.Trim();
+                    objMember.password =                    txtPassword.Text.Trim();
+                    objMember.email =                       txtEmail.Text.Trim();
 
                     if      (rdoEmail.Checked       )
-                        objMember.contact_method =      1;
+                        objMember.contact_method =          1;
                     else if (rdoFacebook.Checked    )
-                        objMember.contact_method =      2;
+                        objMember.contact_method =          2;
                     else if (rdoPhoneText.Checked   )
-                        objMember.contact_method =      3;
+                        objMember.contact_method =          3;
                     else if (rdoTwitter.Checked     )
-                        objMember.contact_method =      4;
+                        objMember.contact_method =          4;
                     else
-                        objMember.contact_method =      0;
+                        objMember.contact_method =          0;
 
-                    objMember.subscription_id =         (int)cmbSubscriptionID.SelectedValue;
-                    objMember.photo =                   imageLocation;
+                    objMember.subscription_id =             (int)cmbSubscriptionID.SelectedValue;
+                    objMember.photo =                       imageLocation;
                     try
                     {
-                        bool                status =    Members.UpdateMember(objMember);
+                        bool                    status =    Members.UpdateMember(objMember);
                         if (status)
                         {
                             MessageBox.Show(MsgBoxHelper.Updated("Member"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            memberList = Members.GetMembers();
+                            memberList =                    Members.GetMembers();
                             memberDataGridView.DataSource = memberList;
                         }
                         else
@@ -297,19 +297,19 @@ namespace Bookstore
             int number;
             if (!Int32.TryParse(txtNumber.Text.Trim(), out number))
             {
-                MessageBox.Show(lblNumber.Text + " must be an integer (" + short.MinValue + " - " + short.MaxValue + ").", "Invalid " + lblNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(MsgBoxHelper.MustBe(lblNumber.Text), "Invalid " + lblNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtNumber.Focus();
             }
             else
             {
                 if      (number > short.MaxValue)// 32767
                 {
-                    MessageBox.Show(lblNumber.Text + " must be less than or equal to " + short.MaxValue + ".", "Invalid " + lblNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblNumber.Text), "Invalid " + lblNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtNumber.Focus();
                 }
                 else if (number < short.MinValue)//-32768
                 {
-                    MessageBox.Show(lblNumber.Text + " must be greater than or equal to " + short.MinValue + ".", "Invalid " + lblNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.GTETmin(lblNumber.Text), "Invalid " + lblNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtNumber.Focus();
                 }
                 else
@@ -370,29 +370,6 @@ namespace Bookstore
 
         public bool CheckAll()
         {
-            /*int number;
-            if (Int32.TryParse(txtNumber.Text.Trim(), out number))
-            {
-                if      (number > short.MaxValue)// 32767
-                {
-                    MessageBox.Show(lblNumber.Text + " must be less than or equal to " + short.MaxValue + ".", "Invalid " + lblNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    txtNumber.Focus();
-                    return  false;
-                }
-                else if (number < short.MinValue)//-32768
-                {
-                    MessageBox.Show(lblNumber.Text + " must be greater than or equal to " + short.MinValue + ".", "Invalid " + lblNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    txtNumber.Focus();
-                    return  false;
-                }
-            }
-            else
-            {
-                MessageBox.Show(lblNumber.Text + " must be an integer (" + short.MinValue + " - " + short.MaxValue + ").", "Invalid " + lblNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                txtNumber.Focus();
-                return  false;
-            }
-            */
             if      (dtpJoinDate.Value >= DateTime.MaxValue)//
             {
                 MessageBox.Show(lblJoinDate.Text + " must be less than or equal to " + DateTime.MaxValue + ".", "Invalid " + lblJoinDate.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -410,14 +387,14 @@ namespace Bookstore
             {
                 if (txtFirstName.Text.Trim().Length > 15)
                 {
-                    MessageBox.Show(lblFirstName.Text + " must be less than 15 characters.", "Invalid " + lblFirstName.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblFirstName.Text, 15), "Invalid " + lblFirstName.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtFirstName.Focus();
                     return  false;
                 }
             }
             else
             {
-                MessageBox.Show(lblFirstName.Text + " must not be blank.", "Invalid " + lblFirstName.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(MsgBoxHelper.NotBlank(lblFirstName.Text), "Invalid " + lblFirstName.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtFirstName.Focus();
                 return  false;
             }
@@ -426,14 +403,14 @@ namespace Bookstore
             {
                 if (txtLastName.Text.Trim().Length > 25)
                 {
-                    MessageBox.Show(lblLastName.Text + " must be less than 25 characters.", "Invalid " + lblLastName.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblLastName.Text, 25), "Invalid " + lblLastName.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtLastName.Focus();
                     return  false;
                 }
             }
             else
             {
-                MessageBox.Show(lblLastName.Text + " must not be blank.", "Invalid " + lblLastName.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(MsgBoxHelper.NotBlank(lblLastName.Text), "Invalid " + lblLastName.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtLastName.Focus();
                 return  false;
             }
@@ -442,14 +419,14 @@ namespace Bookstore
             {
                 if (txtAddress.Text.Trim().Length > 30)
                 {
-                    MessageBox.Show(lblAddress.Text + " must be less than 30 characters.", "Invalid " + lblAddress.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblAddress.Text, 30), "Invalid " + lblAddress.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtAddress.Focus();
                     return  false;
                 }
             }
             else
             {
-                MessageBox.Show(lblAddress.Text + " must not be blank.", "Invalid " + lblAddress.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(MsgBoxHelper.NotBlank(lblAddress.Text), "Invalid " + lblAddress.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtAddress.Focus();
                 return  false;
             }
@@ -458,14 +435,14 @@ namespace Bookstore
             {
                 if (txtCity.Text.Trim().Length > 20)
                 {
-                    MessageBox.Show(lblCity.Text + " must be less than 20 characters.", "Invalid " + lblCity.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblCity.Text, 20), "Invalid " + lblCity.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtCity.Focus();
                     return  false;
                 }
             }
             else
             {
-                MessageBox.Show(lblCity.Text + " must not be blank.", "Invalid " + lblCity.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(MsgBoxHelper.NotBlank(lblCity.Text), "Invalid " + lblCity.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtCity.Focus();
                 return  false;
             }
@@ -474,14 +451,14 @@ namespace Bookstore
             {
                 if (txtState.Text.Trim().Length > 2)
                 {
-                    MessageBox.Show(lblState.Text + " must be less than 2 characters.", "Invalid " + lblState.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblState.Text, 2), "Invalid " + lblState.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtState.Focus();
                     return  false;
                 }
             }
             else
             {
-                MessageBox.Show(lblState.Text + " must not be blank.", "Invalid " + lblState.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(MsgBoxHelper.NotBlank(lblState.Text), "Invalid " + lblState.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtState.Focus();
                 return  false;
             }
@@ -490,14 +467,14 @@ namespace Bookstore
             {
                 if (txtZipCode.Text.Trim().Length > 5)
                 {
-                    MessageBox.Show(lblZipCode.Text + " must be less than 5 characters.", "Invalid " + lblZipCode.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblZipCode.Text, 5), "Invalid " + lblZipCode.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtZipCode.Focus();
                     return  false;
                 }
             }
             else
             {
-                MessageBox.Show(lblZipCode.Text + " must not be blank.", "Invalid " + lblZipCode.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(MsgBoxHelper.NotBlank(lblZipCode.Text), "Invalid " + lblZipCode.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtZipCode.Focus();
                 return  false;
             }
@@ -506,14 +483,14 @@ namespace Bookstore
             {
                 if (txtPhone.Text.Trim().Length > 10)
                 {
-                    MessageBox.Show(lblPhone.Text + " must be less than 10 characters.", "Invalid " + lblPhone.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblPhone.Text, 10), "Invalid " + lblPhone.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtPhone.Focus();
                     return  false;
                 }
             }
             else
             {
-                MessageBox.Show(lblPhone.Text + " must not be blank.", "Invalid " + lblPhone.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(MsgBoxHelper.NotBlank(lblPhone.Text), "Invalid " + lblPhone.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtPhone.Focus();
                 return  false;
             }
@@ -532,14 +509,14 @@ namespace Bookstore
             {
                 if (txtLoginName.Text.Trim().Length > 20)
                 {
-                    MessageBox.Show(lblLoginName.Text + " must be less than 20 characters.", "Invalid " + lblLoginName.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblLoginName.Text, 20), "Invalid " + lblLoginName.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtLoginName.Focus();
                     return  false;
                 }
             }
             else
             {
-                MessageBox.Show(lblLoginName.Text + " must not be blank.", "Invalid " + lblLoginName.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(MsgBoxHelper.NotBlank(lblLoginName.Text), "Invalid " + lblLoginName.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtLoginName.Focus();
                 return  false;
             }
@@ -548,14 +525,14 @@ namespace Bookstore
             {
                 if (txtPassword.Text.Trim().Length > 20)
                 {
-                    MessageBox.Show(lblPassword.Text + " must be less than 20 characters.", "Invalid " + lblPassword.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblPassword.Text, 20), "Invalid " + lblPassword.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtPassword.Focus();
                     return  false;
                 }
             }
             else
             {
-                MessageBox.Show(lblPassword.Text + " must not be blank.", "Invalid " + lblPassword.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(MsgBoxHelper.NotBlank(lblPassword.Text), "Invalid " + lblPassword.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtPassword.Focus();
                 return  false;
             }
@@ -564,23 +541,23 @@ namespace Bookstore
             {
                 if (txtEmail.Text.Trim().Length > 20)
                 {
-                    MessageBox.Show(lblEmail.Text + " must be less than 20 characters.", "Invalid " + lblEmail.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblEmail.Text, 20), "Invalid " + lblEmail.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtEmail.Focus();
                     return  false;
                 }
             }
             else
             {
-                MessageBox.Show(lblEmail.Text + " must not be blank.", "Invalid " + lblEmail.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(MsgBoxHelper.NotBlank(lblEmail.Text), "Invalid " + lblEmail.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtEmail.Focus();
                 return  false;
             }
 
             if (cmbSubscriptionID.SelectedIndex == -1)
             {
-                MessageBox.Show(lblSubscriptionID.Text + " must not be blank.", "Invalid " + lblSubscriptionID.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(MsgBoxHelper.NotBlank(lblSubscriptionID.Text), "Invalid " + lblSubscriptionID.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 cmbSubscriptionID.Focus();
-                return false;
+                return  false;
             }
 
             if (!rdoEmail.Checked && !rdoFacebook.Checked && !rdoPhoneText.Checked && !rdoTwitter.Checked)
@@ -590,7 +567,7 @@ namespace Bookstore
                                 MessageBoxButtons.OK,
                                 MessageBoxIcon.Error
                                );
-                return false;
+                return  false;
             }
 
             return  true;
