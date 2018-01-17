@@ -37,7 +37,7 @@ namespace Bookstore
 				MessageBox.Show(ex.Message, "Failure", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 
-			ToolTip toolTip = new ToolTip();
+			ToolTip                             toolTip =   new ToolTip();
 
             toolTip.SetToolTip(btnAdd, "Add all Movie fields");
             toolTip.SetToolTip(btnFind, "Browse by Movie Number");
@@ -107,7 +107,7 @@ namespace Bookstore
                 objMovie.trailer =              txtTrailer.Text.Trim();
                 try
                 {
-                    bool status = Movies.AddMovie(objMovie);
+                    bool                    status =    Movies.AddMovie(objMovie);
                     if (status)
                     {
                         MessageBox.Show(MsgBoxHelper.Inserted("Movie"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -126,50 +126,50 @@ namespace Bookstore
             }
         }
 
-        private void btnFind_Click(object sender, EventArgs e)
+        private void btnBrowse_Click(object sender, EventArgs e)
         {
             int movie_number;
             if (!Int32.TryParse(txtMovieNumber.Text.Trim(), out movie_number))
             {
-                MessageBox.Show(lblMovieNumber.Text + " must be an integer (" + short.MinValue + " - " + short.MaxValue + ").", "Invalid " + lblMovieNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(MsgBoxHelper.MustBe(lblMovieNumber.Text), "Invalid " + lblMovieNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtMovieNumber.Focus();
             }
             else
             {
                 if      (movie_number > short.MaxValue)// 32767
                 {
-                    MessageBox.Show(lblMovieNumber.Text + " must be less than or equal to " + short.MaxValue + ".", "Invalid " + lblMovieNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblMovieNumber.Text), "Invalid " + lblMovieNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtMovieNumber.Focus();
                 }
                 else if (movie_number < short.MinValue)//-32768
                 {
-                    MessageBox.Show(lblMovieNumber.Text + " must be greater than or equal to " + short.MinValue + ".", "Invalid " + lblMovieNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.GTETmin(lblMovieNumber.Text), "Invalid " + lblMovieNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtMovieNumber.Focus();
                 }
                 else
                 {
-                    Movie objMovie;
+                    Movie                               objMovie;
 
                     try
                     {
-                        objMovie = Movies.GetMovie(movie_number);
+                        objMovie =                                  Movies.GetMovie(movie_number);
                         if (objMovie == null)
                         {
                             MessageBox.Show(MsgBoxHelper.Selected("Movie " + lblMovieNumber.Text + " " + movie_number), "Failure", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         }
                         else
                         {
-                            txtMovieTitle.Text = objMovie.movie_title;
-                            txtDescription.Text = objMovie.Description;
-                            txtMovieYearMade.Text = objMovie.movie_year_made.ToString();
-                            cmbGenreID.SelectedValue = objMovie.genre_id;
-                            cmbMovieRating.Text = objMovie.movie_rating.Trim();
-                            cmbMediaType.Text = objMovie.media_type;
-                            txtMovieRetailCost.Text = objMovie.movie_retail_cost.ToString();
-                            txtCopiesOnHand.Text = objMovie.copies_on_hand.ToString();
-                            txtImage.Text = objMovie.image;
-                            picImage.ImageLocation = objMovie.image;
-                            txtTrailer.Text = objMovie.trailer;
+                            txtMovieTitle.Text =                    objMovie.movie_title;
+                            txtDescription.Text =                   objMovie.Description;
+                            txtMovieYearMade.Text =                 objMovie.movie_year_made.ToString();
+                            cmbGenreID.SelectedValue =              objMovie.genre_id;
+                            cmbMovieRating.Text =                   objMovie.movie_rating.Trim();
+                            cmbMediaType.Text =                     objMovie.media_type;
+                            txtMovieRetailCost.Text =               objMovie.movie_retail_cost.ToString();
+                            txtCopiesOnHand.Text =                  objMovie.copies_on_hand.ToString();
+                            txtImage.Text =                         objMovie.image;
+                            picImage.ImageLocation =                objMovie.image;
+                            txtTrailer.Text =                       objMovie.trailer;
                         }
                     }
                     catch (Exception ex)
@@ -185,19 +185,19 @@ namespace Bookstore
             int movie_number;
             if (!Int32.TryParse(txtMovieNumber.Text.Trim(), out movie_number))
             {
-                MessageBox.Show(lblMovieNumber.Text + " must be an integer (" + short.MinValue + " - " + short.MaxValue + ").", "Invalid " + lblMovieNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(MsgBoxHelper.MustBe(lblMovieNumber.Text), "Invalid " + lblMovieNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtMovieNumber.Focus();
             }
             else
             {
                 if      (movie_number > short.MaxValue)// 32767
                 {
-                    MessageBox.Show(lblMovieNumber.Text + " must be less than or equal to " + short.MaxValue + ".", "Invalid " + lblMovieNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblMovieNumber.Text), "Invalid " + lblMovieNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtMovieNumber.Focus();
                 }
                 else if (movie_number < short.MinValue)//-32768
                 {
-                    MessageBox.Show(lblMovieNumber.Text + " must be greater than or equal to " + short.MinValue + ".", "Invalid " + lblMovieNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.GTETmin(lblMovieNumber.Text), "Invalid " + lblMovieNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtMovieNumber.Focus();
                 }
                 else if (CheckAll())
@@ -219,7 +219,7 @@ namespace Bookstore
                     Int32.TryParse(txtCopiesOnHand.Text.Trim(), out copies_on_hand);
                     objMovie.copies_on_hand =                       copies_on_hand;
                     objMovie.image =                                txtImage.Text.Trim();
-                    picImage.ImageLocation = objMovie.image;
+                    picImage.ImageLocation =                        objMovie.image;
                     objMovie.trailer =                              txtTrailer.Text.Trim();
 
                     try
@@ -228,8 +228,8 @@ namespace Bookstore
                         if (status)
                         {
                             MessageBox.Show(MsgBoxHelper.Updated("Movie"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            movieList =                     Movies.GetMovies();
-                            movieDataGridView.DataSource =  movieList;//TODO genre not -1?
+                            movieList =                             Movies.GetMovies();
+                            movieDataGridView.DataSource =          movieList;//TODO genre not -1?
                         }
                         else
                         {
@@ -249,34 +249,34 @@ namespace Bookstore
             int     movie_number;
             if (!Int32.TryParse(txtMovieNumber.Text.Trim(), out movie_number))
             {
-                MessageBox.Show(lblMovieNumber.Text + " must be an integer (" + short.MinValue + " - " + short.MaxValue + ").", "Invalid " + lblMovieNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(MsgBoxHelper.MustBe(lblMovieNumber.Text), "Invalid " + lblMovieNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtMovieNumber.Focus();
             }
             else
             {
                 if      (movie_number > short.MaxValue)// 32767
                 {
-                    MessageBox.Show(lblMovieNumber.Text + " must be less than or equal to " + short.MaxValue + ".", "Invalid " + lblMovieNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblMovieNumber.Text), "Invalid " + lblMovieNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtMovieNumber.Focus();
                 }
                 else if (movie_number < short.MinValue)//-32768
                 {
-                    MessageBox.Show(lblMovieNumber.Text + " must be greater than or equal to " + short.MinValue + ".", "Invalid " + lblMovieNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.GTETmin(lblMovieNumber.Text), "Invalid " + lblMovieNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtMovieNumber.Focus();
                 }
                 else
                 {
-                    Movie objMovie = new Movie();
-                    objMovie.movie_number = movie_number;
+                    Movie                                   objMovie =  new Movie();
+                    objMovie.movie_number =                             movie_number;
 
                     try
                     {
-                        bool status = Movies.DeleteMovie(objMovie);
+                        bool                                status =    Movies.DeleteMovie(objMovie);
                         if (status)
                         {
                             MessageBox.Show(MsgBoxHelper.Deleted("Movie"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            movieList = Movies.GetMovies();
-                            movieDataGridView.DataSource = movieList;//TODO genre not -1?
+                            movieList =                                 Movies.GetMovies();
+                            movieDataGridView.DataSource =              movieList;//TODO genre not -1?
                         }
                         else
                         {
@@ -309,103 +309,80 @@ namespace Bookstore
 
         public bool CheckAll()
         {
-            /*int movie_number;
-            if (Int32.TryParse(txtMovieNumber.Text.Trim(), out movie_number))
-            {
-                if      (movie_number > short.MaxValue)//32767
-                {
-                    MessageBox.Show(lblMovieNumber.Text + " must be less than or equal to " + short.MaxValue + ".", "Invalid " + lblMovieNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    txtMovieNumber.Focus();
-                    return  false;
-                }
-                else if (movie_number < short.MinValue)//-32768
-                {
-                    MessageBox.Show(lblMovieNumber.Text + " must be greater than or equal to " + short.MinValue + ".", "Invalid " + lblMovieNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    txtMovieNumber.Focus();
-                    return false;
-                }
-            }
-            else
-            {
-                MessageBox.Show(lblMovieNumber.Text + " must be an integer (" + short.MinValue + " - " + short.MaxValue + ").", "Invalid " + lblMovieNumber.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                txtMovieNumber.Focus();
-                return false;
-            }
-            */
             if (txtMovieTitle.Text.Trim() != string.Empty)
             {
                 if (txtMovieTitle.Text.Trim().Length > 100)
                 {
-                    MessageBox.Show(lblMovieTitle.Text + " must be less than 100 characters.", "Invalid " + lblMovieTitle.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblMovieTitle.Text, 100), "Invalid " + lblMovieTitle.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtMovieTitle.Focus();
-                    return false;
+                    return  false;
                 }
             }
             else
             {
-                MessageBox.Show(lblMovieTitle.Text + " must not be blank.", "Invalid " + lblMovieTitle.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(MsgBoxHelper.NotBlank(lblMovieTitle.Text), "Invalid " + lblMovieTitle.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtMovieTitle.Focus();
-                return false;
+                return  false;
             }
 
             if (txtDescription.Text.Trim() != string.Empty)
             {
                 if (txtDescription.Text.Trim().Length > 255)
                 {
-                    MessageBox.Show(lblDescription.Text + " must be less than 255 characters.", "Invalid " + lblDescription.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblDescription.Text, 255), "Invalid " + lblDescription.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtDescription.Focus();
-                    return false;
+                    return  false;
                 }
             }
             else
             {
-                MessageBox.Show(lblDescription.Text + " must not be blank.", "Invalid " + lblDescription.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(MsgBoxHelper.NotBlank(lblDescription.Text), "Invalid " + lblDescription.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtDescription.Focus();
-                return false;
+                return  false;
             }
 
             int movie_year_made;
             if (Int32.TryParse(txtMovieYearMade.Text.Trim(), out movie_year_made))
             {
-                if      (movie_year_made > short.MaxValue)//32767
+                if      (movie_year_made > short.MaxValue)// 32767
                 {
-                    MessageBox.Show(lblMovieYearMade.Text + " must be less than or equal to " + short.MaxValue + ".", "Invalid " + lblMovieYearMade.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblMovieYearMade.Text), "Invalid " + lblMovieYearMade.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtMovieYearMade.Focus();
                     return  false;
                 }
                 else if (movie_year_made < short.MinValue)//-32768
                 {
-                    MessageBox.Show(lblMovieYearMade.Text + " must be greater than or equal to " + short.MinValue + ".", "Invalid " + lblMovieYearMade.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.GTETmin(lblMovieYearMade.Text), "Invalid " + lblMovieYearMade.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtMovieYearMade.Focus();
                     return  false;
                 }
             }
             else
             {
-                MessageBox.Show(lblMovieYearMade.Text + " must be an integer (" + short.MinValue + " - " + short.MaxValue + ").", "Invalid " + lblMovieYearMade.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(MsgBoxHelper.MustBe(lblMovieYearMade.Text), "Invalid " + lblMovieYearMade.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtMovieYearMade.Focus();
                 return  false;
             }
 
             if (cmbGenreID.SelectedIndex == -1)
             {
-                MessageBox.Show(lblGenreID.Text + " must not be blank.", "Invalid " + lblGenreID.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(MsgBoxHelper.NotBlank(lblGenreID.Text), "Invalid " + lblGenreID.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 cmbGenreID.Focus();
                 return  false;
             }
 
             if (cmbMovieRating.SelectedIndex == -1)
             {
-                MessageBox.Show(lblMovieRating.Text + " must not be blank.", "Invalid " + lblMovieRating.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(MsgBoxHelper.NotBlank(lblMovieRating.Text), "Invalid " + lblMovieRating.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 cmbMovieRating.Focus();
                 return  false;
             }
             
             if (cmbMediaType.SelectedIndex == -1)
             {
-                MessageBox.Show(lblMediaType.Text + " must not be blank.", "Invalid " + lblMediaType.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(MsgBoxHelper.NotBlank(lblMediaType.Text), "Invalid " + lblMediaType.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 cmbMediaType.Focus();
-                return false;
+                return  false;
             }
 
             float movie_retail_cost;
@@ -426,7 +403,7 @@ namespace Bookstore
             }
             else
             {
-                MessageBox.Show(lblMovieRetailCost.Text + " must be an integer (" + short.MinValue + " - " + short.MaxValue + ").", "Invalid " + lblMovieRetailCost.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(lblMovieRetailCost.Text + " must be a monetary value (0.00 - " + float.MaxValue + ").", "Invalid " + lblMovieRetailCost.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtMovieRetailCost.Focus();
                 return  false;
             }
@@ -434,41 +411,41 @@ namespace Bookstore
             int copies_on_hand;
             if (Int32.TryParse(txtCopiesOnHand.Text.Trim(), out copies_on_hand))
             {
-                if      (copies_on_hand > short.MaxValue)//32767
+                if      (copies_on_hand > short.MaxValue)// 32767
                 {
-                    MessageBox.Show(lblCopiesOnHand.Text + " must be less than or equal to " + short.MaxValue + ".", "Invalid " + lblCopiesOnHand.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblCopiesOnHand.Text), "Invalid " + lblCopiesOnHand.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtCopiesOnHand.Focus();
                     return  false;
                 }
                 else if (copies_on_hand < short.MinValue)//-32768
                 {
-                    MessageBox.Show(lblCopiesOnHand.Text + " must be greater than or equal to " + short.MinValue + ".", "Invalid " + lblCopiesOnHand.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.GTETmin(lblCopiesOnHand.Text), "Invalid " + lblCopiesOnHand.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtCopiesOnHand.Focus();
                     return  false;
                 }
             }
             else
             {
-                MessageBox.Show(lblCopiesOnHand.Text + " must be an integer (" + short.MinValue + " - " + short.MaxValue + ").", "Invalid " + lblCopiesOnHand.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(lblCopiesOnHand.Text + " must be an integer (0 - " + short.MaxValue + ").", "Invalid " + lblCopiesOnHand.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtCopiesOnHand.Focus();
                 return  false;
             }
 
             if (txtImage.Text.Trim().Length > 255)
             {
-                MessageBox.Show(lblImage.Text + " must be less than 255 characters.", "Invalid " + lblImage.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(MsgBoxHelper.LTETmax(lblImage.Text, 255), "Invalid " + lblImage.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtImage.Focus();
                 return  false;
             }
 
             if (txtTrailer.Text.Trim().Length > 255)
             {
-                MessageBox.Show(lblTrailer.Text + " must be less than 255 characters.", "Invalid " + lblTrailer.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(MsgBoxHelper.LTETmax(lblTrailer.Text, 255), "Invalid " + lblTrailer.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtTrailer.Focus();
-                return false;
+                return  false;
             }
 
-            return true;
+            return  true;
         }
     }
 }
