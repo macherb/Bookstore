@@ -35,7 +35,6 @@ namespace Bookstore
         /// <summary>
         /// Everything necessary to JOIN two tables, and get the field(s) you want
         /// </summary>
-        /// <param name="tableName1a">The name of the table to JOIN</param>
         /// <param name="tableName1b">The extra(s) from other JOIN's with the name of the table to JOIN and any additional JOIN's</param>
         /// <param name="tableName2">The name of the table to be JOIN'ed</param>
         /// <param name="extra2">Extra field(s) to SELECT from the second table</param>
@@ -90,7 +89,7 @@ namespace Bookstore
         /// SQL statement that DELETE's a row from a table
         /// </summary>
         /// <param name="tableName">The name of the table to DELETE from</param>
-        /// <param name="first">The primary field to identify the row to DELETE</param>
+        /// <param name="primary">The primary field to identify the row to DELETE</param>
         /// <param name="secondary">The secondary field(s) to identify the row to DELETE</param>
         /// <returns>An SQL DELETE statement</returns>
         public static string Delete(string tableName, string primary, string secondary)
@@ -139,6 +138,57 @@ namespace Bookstore
         public static string Deleted(string tableName)
         {
             return tableName + " deleted in the database.";
+        }
+
+        /// <summary>
+        /// A message for not a short (-32768 - 32767)
+        /// </summary>
+        /// <param name="number">The number that is out of range</param>
+        /// <returns>A message to display in the MessageBox</returns>
+        public static string MustBe(string number)
+        {
+            return  number + " must be an integer (" + short.MinValue + " - " + short.MaxValue + ").";
+        }
+
+        /// <summary>
+        /// A message for <= maximum value for short (32767)
+        /// </summary>
+        /// <param name="number">The number that is out of range</param>
+        /// <returns>A message to display in the MessageBox</returns>
+        public static string LTETmax(string number)
+        {
+            return  number + " must be less than or equal to " + short.MaxValue + ".";
+        }
+
+        /// <summary>
+        /// A message for >= minimum value for short (-32768)
+        /// </summary>
+        /// <param name="number">The number that is out of range</param>
+        /// <returns>A message to display in the MessageBox</returns>
+        public static string GTETmin(string number)
+        {
+            return  number + " must be greater than or equal to " + short.MinValue + ".";
+        }
+
+        /// <summary>
+        /// A message for <= maximum characters
+        /// </summary>
+        /// <param name="text">The text whose length is out of range</param>
+        /// <param name="max">The maximum number of characters</param>
+        /// <returns>A message to display in the MessageBox</returns>
+        public static string LTETmax(string text, int max)
+        {
+            return  text + " must be less than or equal to " + max + " characters.";
+        }
+
+        /// <summary>
+        /// A message for > zero characters
+        /// </summary>
+        /// <param name="text">The text whose length is out of range</param>
+        /// <returns>A message to display in the MessageBox</returns>
+        public static string NotBlank(string text)
+        {
+            return  text + " must not be blank.";
         }
     }
 }
