@@ -24,7 +24,13 @@ namespace Bookstore
         public static string    extra =             parameters[1];
 
         #endregion
-
+        private static void PrimarySecondary(ref string primary, string preprimary, ref string secondary, string presecondary)
+        {
+            for (int i = 1                  ; i < lowestSecondary   ; i++)
+                primary +=      preprimary + parameters[i];
+            for (int i = lowestSecondary + 1; i < parameters.Length ; i++)
+                secondary +=    presecondary + parameters[i];
+        }
         #region Public functions
 
         /// <summary>
@@ -40,10 +46,12 @@ namespace Bookstore
             SqlDataReader   movieReader;
             
             primary =                       parameters[0];
+            secondary +=                    ", Movie." + parameters[lowestSecondary];
+            PrimarySecondary(ref primary, ", Movie.", ref secondary, ", Movie.");
+            /*
 
-
-            for (int i = lowestSecondary; i < parameters.Length; i++)
-                secondary +=                ", Movie." + parameters[i];
+            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
+                secondary +=                ", Movie." + parameters[i];*/
             SQLStatement =                  SQLHelper.Select(
                                                             "Movie",
                                                             SQLHelper.Join(
@@ -136,11 +144,12 @@ namespace Bookstore
             SqlCommand      objCommand;
             SqlDataReader   movieReader;
 
-
-
             secondary +=                    parameters[lowestSecondary];
+            PrimarySecondary(ref primary, ", Movie.", ref secondary, ", Movie.");
+            /*
+
             for (int i = lowestSecondary + 1; i < parameters.Length; i++)
-                secondary +=                ", Movie." + parameters[i];
+                secondary +=                ", Movie." + parameters[i];*/
             SQLStatement =                  SQLHelper.Select("Movie", 
                                                             " FROM " + "Movie",
                                                             primary, 
@@ -216,7 +225,7 @@ namespace Bookstore
         {
             string          primary,
                             secondary =     string.Empty,
-                            SQLStatement1 = "SELECT MAX(movie_number) AS max_movie FROM Movie",
+                            SQLStatement1 = "SELECT MAX(movie_number) AS max_movie FROM Movie",//TODO call SQLHelper.Select
                             SQLStatement2;
 
             int             rowsAffected,
@@ -227,10 +236,12 @@ namespace Bookstore
             bool            result =        false;
 
             primary =                       parameters[0];
+            secondary +=                    ", @" + parameters[lowestSecondary];
+            PrimarySecondary(ref primary, ", @", ref secondary, ", @");
+            /*
 
-
-            for (int i = lowestSecondary; i < parameters.Length; i++)
-                secondary +=                ", @" + parameters[i];
+            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
+                secondary +=                ", @" + parameters[i];*/
             SQLStatement2 =                 SQLHelper.Insert(   "Movie",
                                                                 primary,
                                                                 secondary
@@ -307,10 +318,10 @@ namespace Bookstore
             int         rowsAffected;
             bool        result =        false;
 
-            primary =                   parameters[0] + " = @" + parameters[0];
-
-
+            primary =                   parameters[0              ] + " = @" + parameters[0              ];
             secondary +=                parameters[lowestSecondary] + " = @" + parameters[lowestSecondary];
+
+            
             for (int i = lowestSecondary + 1; i < parameters.Length; i++)
                 secondary +=            ", " + parameters[i] + " = @" + parameters[i];
             SQLStatement =              SQLHelper.Update(   "Movie",
