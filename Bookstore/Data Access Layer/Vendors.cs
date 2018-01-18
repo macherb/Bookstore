@@ -16,6 +16,15 @@ namespace Bookstore
         private static int      lowestSecondary =   1;
 
         #endregion
+
+        #region Public variables
+
+        public static string    key =               parameters[0];
+
+        #endregion
+
+        #region Private functions
+
         private static void PrimarySecondary(ref string primary, string preprimary, ref string secondary, string presecondary)
         {
             for (int i = 1                  ; i < lowestSecondary  ; i++)
@@ -23,6 +32,9 @@ namespace Bookstore
             for (int i = lowestSecondary + 1; i < parameters.Length; i++)
                 secondary +=    presecondary + parameters[i];
         }
+
+        #endregion
+
         #region Public functions
 
         /// <summary>
@@ -32,18 +44,14 @@ namespace Bookstore
         {
             List<Vendor>    vendors =       new List<Vendor>();
             string          primary,
-                            secondary =     string.Empty,
+                            secondary,
                             SQLStatement;
             SqlCommand      objCommand;
             SqlDataReader   vendorReader;
 
             primary =                       parameters[0];
-            secondary +=                    ", Vendor." + parameters[lowestSecondary];
+            secondary =                     ", Vendor." + parameters[lowestSecondary];
             PrimarySecondary(ref primary, ", Vendor.", ref secondary, ", Vendor.");
-            /*
-
-            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
-                secondary +=                ", Vendor." + parameters[i];*/
             SQLStatement =                  SQLHelper.Select(
                                                             "Vendor",
 
@@ -118,10 +126,6 @@ namespace Bookstore
 
             secondary +=                    parameters[lowestSecondary];
             PrimarySecondary(ref primary, ", Vendor.", ref secondary, ", Vendor.");
-            /*
-
-            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
-                secondary +=                ", Vendor." + parameters[i];*/
             SQLStatement =                  SQLHelper.Select("Vendor", 
                                                             " FROM " + "Vendor",
                                                             primary, 
@@ -150,9 +154,7 @@ namespace Bookstore
                             while (vendorReader.Read())
                             {
                                 objVendor =         new Vendor();
-                                //int             id;
-                                //Int32.TryParse(     vendorReader[parameters[0]].ToString(), out id);
-                                objVendor.id =      parameter;//id;
+                                objVendor.id =      parameter;
                                 objVendor.name =    vendorReader[parameters[1]].ToString();
                             }
                         }
@@ -178,10 +180,10 @@ namespace Bookstore
         public static bool AddVendor(Vendor vendor)
         {
             string          primary,
-                            secondary =     string.Empty,
-                            SQLStatement1 = "SELECT MAX(id) AS max_vendor FROM Vendor",//Helper.Select("Vendor", "MAX(" + parameters[0] + ") AS max_vendor", ""),//"SELECT MAX(id) FROM Vendor",
+                            secondary,
+                            SQLStatement1,
                             SQLStatement2;
-            //TODO what if MAX is nothing?
+            //TODO what if MAX is 32767
             int             rowsAffected,
                             max;
             SqlCommand      objCommand1,
@@ -189,13 +191,10 @@ namespace Bookstore
             SqlDataReader   vendorReader;
             bool            result =        false;
 
+            SQLStatement1 =                 SQLHelper.Select("MAX(Vendor", " FROM " + "Vendor", key, ")");
             primary =                       parameters[0];
-            secondary +=                    ", @" + parameters[lowestSecondary];
+            secondary =                     ", @" + parameters[lowestSecondary];
             PrimarySecondary(ref primary, ", @", ref secondary, ", @");
-            /*
-
-            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
-                secondary +=                ", @" + parameters[i];*/
             SQLStatement2 =                 SQLHelper.Insert(   "Vendor",
                                                                 primary,
                                                                 secondary
@@ -218,6 +217,7 @@ namespace Bookstore
                     }
                     objConn1.Close();
                 }
+                vendor.id =                 max + 1;
                 using (SqlConnection objConn2 = AccessDataSQLServer.GetConnection())
                 {
                     objConn2.Open();
@@ -226,7 +226,7 @@ namespace Bookstore
                     //         Add Try..Catch appropriate block and throw exception back to calling program
                     using (objCommand2 = new SqlCommand(SQLStatement2, objConn2))
                     {
-                        objCommand2.Parameters.AddWithValue('@' + parameters[0], max + 1    );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[0], vendor.id  );
                         objCommand2.Parameters.AddWithValue('@' + parameters[1], vendor.name);
                         //Step #3: return false if record was not added successfully
                         //         return true if record was added successfully  
@@ -257,16 +257,17 @@ namespace Bookstore
         public static bool UpdateVendor(Vendor vendor)
         {
             string      primary,
-                        secondary =     string.Empty,
+                        secondary,
                         SQLStatement;
             SqlCommand  objCommand;
             int         rowsAffected;
             bool        result =        false;
 
             primary =                   parameters[0              ] + " = @" + parameters[0              ];
-            secondary +=                parameters[lowestSecondary] + " = @" + parameters[lowestSecondary];
+            secondary =                 parameters[lowestSecondary] + " = @" + parameters[lowestSecondary];
 
-            
+
+
             for (int i = lowestSecondary + 1; i < parameters.Length; i++)
                 secondary +=            ", " + parameters[i] + " = @" + parameters[i];
             SQLStatement =              SQLHelper.Update(   "Vendor",
