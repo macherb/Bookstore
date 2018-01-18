@@ -23,6 +23,9 @@ namespace Bookstore
         public static string    extra =             parameters[1];
 
         #endregion
+
+        #region Private functions
+
         private static void PrimarySecondary(ref string primary, string preprimary, ref string secondary, string presecondary)
         {
             for (int i = 1                  ; i < lowestSecondary  ; i++)
@@ -30,6 +33,9 @@ namespace Bookstore
             for (int i = lowestSecondary + 1; i < parameters.Length; i++)
                 secondary +=    presecondary + parameters[i];
         }
+
+        #endregion
+
         #region Public functions
 
         /// <summary>
@@ -39,18 +45,14 @@ namespace Bookstore
         {
             List<Subscription>  subscriptions =     new List<Subscription>();
             string              primary,
-                                secondary =         string.Empty,
+                                secondary,
                                 SQLStatement;
             SqlCommand          objCommand;
             SqlDataReader       subscriptionReader;
             
             primary =                               parameters[0];
-            secondary +=                            ", Subscription." + parameters[lowestSecondary];
+            secondary =                             ", Subscription." + parameters[lowestSecondary];
             PrimarySecondary(ref primary, ", Subscription.", ref secondary, ", Subscription.");
-            /*
-
-            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
-                secondary +=                        ", Subscription." + parameters[i];*/
             SQLStatement =                          SQLHelper.Select(
                                                                     "Subscription",
 
@@ -128,10 +130,6 @@ namespace Bookstore
 
             secondary +=                        parameters[lowestSecondary];
             PrimarySecondary(ref primary, ", Subscription.", ref secondary, ", Subscription.");
-            /*
-
-            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
-                secondary +=                    ", Subscription." + parameters[i];*/
             SQLStatement =                      SQLHelper.Select("Subscription", 
                                                                 " FROM " + "Subscription",
                                                                 primary, 
@@ -160,10 +158,8 @@ namespace Bookstore
                             while (subscriptionReader.Read())
                             {
                                 objSubscription =       new Subscription();
-                                //int                     id;
                                 float                   cost;
-                                //Int32.TryParse(         subscriptionReader[parameters[0]].ToString(), out id    );
-                                objSubscription.id =    parameter;//id;
+                                objSubscription.id =    parameter;
                                 objSubscription.name =  subscriptionReader[parameters[1]].ToString();
                                 float.TryParse(         subscriptionReader[parameters[2]].ToString(), out cost  );
                                 objSubscription.cost =  cost;
@@ -191,10 +187,10 @@ namespace Bookstore
         public static bool AddSubscription(Subscription subscription)
         {
             string          primary,
-                            secondary =     string.Empty,
-                            SQLStatement1 = "SELECT MAX(id) AS max_subscription FROM Subscription",//Helper.Select("Subscription", "MAX(" + parameters[0] + ") AS max_subscription", ""),//"SELECT MAX(id) FROM Subscription",
+                            secondary,
+                            SQLStatement1,
                             SQLStatement2;
-            //TODO what if MAX is nothing?
+            //TODO what if MAX is 32767
             int             rowsAffected,
                             max;
             SqlCommand      objCommand1,
@@ -202,13 +198,10 @@ namespace Bookstore
             SqlDataReader   subscriptionReader;
             bool            result =        false;
 
+            SQLStatement1 =                 SQLHelper.Select("MAX(Subscription", " FROM " + "Subscription", key, ")");
             primary =                       parameters[0];
-            secondary +=                    ", @" + parameters[lowestSecondary];
+            secondary =                     ", @" + parameters[lowestSecondary];
             PrimarySecondary(ref primary, ", @", ref secondary, ", @");
-            /*
-
-            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
-                secondary +=                ", @" + parameters[i];*/
             SQLStatement2 =                 SQLHelper.Insert(   "Subscription",
                                                                 primary,
                                                                 secondary
@@ -231,6 +224,7 @@ namespace Bookstore
                     }
                     objConn1.Close();
                 }
+                subscription.id =           max + 1;
                 using (SqlConnection objConn2 = AccessDataSQLServer.GetConnection())
                 {
                     objConn2.Open();
@@ -239,7 +233,7 @@ namespace Bookstore
                     //         Add Try..Catch appropriate block and throw exception back to calling program
                     using (objCommand2 = new SqlCommand(SQLStatement2, objConn2))
                     {
-                        objCommand2.Parameters.AddWithValue('@' + parameters[0], max + 1            );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[0], subscription.id    );
                         objCommand2.Parameters.AddWithValue('@' + parameters[1], subscription.name  );
                         objCommand2.Parameters.AddWithValue('@' + parameters[2], subscription.cost  );
                         //Step #3: return false if record was not added successfully
@@ -271,14 +265,15 @@ namespace Bookstore
         public static bool UpdateSubscription(Subscription subscription)
         {
             string      primary,
-                        secondary =     string.Empty,
+                        secondary,
                         SQLStatement;
             SqlCommand  objCommand;
             int         rowsAffected;
             bool        result =        false;
 
             primary =                   parameters[0              ] + " = @" + parameters[0              ];
-            secondary +=                parameters[lowestSecondary] + " = @" + parameters[lowestSecondary];
+            secondary =                 parameters[lowestSecondary] + " = @" + parameters[lowestSecondary];
+
 
             
             for (int i = lowestSecondary + 1; i < parameters.Length; i++)
