@@ -49,6 +49,7 @@ namespace Bookstore
             if (CheckAll())
             {
                 Genre           objGenre =  new Genre();
+
                 objGenre.name =             txtName.Text.Trim();
                 try
                 {
@@ -57,6 +58,7 @@ namespace Bookstore
                     {
                         MessageBox.Show(MsgBoxHelper.Inserted("Genre"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         frmGenre_Load(sender, e);
+                        txtID.Text =        objGenre.id.ToString();
                     }
                     else
                     {
