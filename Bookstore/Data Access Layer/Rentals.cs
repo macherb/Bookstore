@@ -18,6 +18,9 @@ namespace Bookstore
         private static int      lowestSecondary =   3;
 
         #endregion
+
+        #region Private functions
+
         private static void PrimarySecondary(ref string primary, string preprimary, ref string secondary, string presecondary)
         {
             for (int i = 1                  ; i < lowestSecondary  ; i++)
@@ -25,6 +28,9 @@ namespace Bookstore
             for (int i = lowestSecondary + 1; i < parameters.Length; i++)
                 secondary +=    presecondary + parameters[i];
         }
+
+        #endregion
+
         #region Public functions
 
         /// <summary>
@@ -34,18 +40,14 @@ namespace Bookstore
         {
             List<Rental>    rentals =       new List<Rental>();
             string          primary,
-                            secondary =     string.Empty,
+                            secondary,
                             SQLStatement;
             SqlCommand      objCommand;
             SqlDataReader   rentalReader;
 
             primary =                       parameters[0];
-            secondary +=                    ", Rental." + parameters[lowestSecondary];
+            secondary =                     ", Rental." + parameters[lowestSecondary];
             PrimarySecondary(ref primary, ", Rental.", ref secondary, ", Rental.");
-            /*for (int i = 1; i < lowestSecondary; i++)
-                primary +=                  ", Rental." + parameters[i];
-            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
-                secondary +=                ", Rental." + parameters[i];*/
             SQLStatement =                  SQLHelper.Select(
                                                             "Rental",
                                                             SQLHelper.Join(
@@ -130,10 +132,6 @@ namespace Bookstore
 
             secondary +=                    parameters[lowestSecondary];
             PrimarySecondary(ref primary, ", Rental.", ref secondary, ", Rental.");
-            /*for (int i = 1; i < lowestSecondary; i++)
-                primary +=                  ", Rental." + parameters[i];
-            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
-                secondary +=                ", Rental." + parameters[i];*/
             SQLStatement =                  SQLHelper.Select("Rental", 
                                                             " FROM " + "Rental", 
                                                             primary, 
@@ -155,7 +153,7 @@ namespace Bookstore
 
             if (parameter3 > new DateTime(1753, 1, 1, 0, 0, 0))
             {
-                SQLStatement +=             "Rental." + parameters[2] + " = @" + parameters[2];
+                SQLStatement +=             "Rental." + parameters[2] + " = @" + parameters[2];//TODO make four parameters
             }
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
@@ -171,11 +169,8 @@ namespace Bookstore
                     using (objCommand = new SqlCommand(SQLStatement, objConn))
                     {
                         objCommand.Parameters.AddWithValue('@' + parameters[0], parameter1);
-
                         objCommand.Parameters.AddWithValue('@' + parameters[1], parameter2);
-
                         objCommand.Parameters.AddWithValue('@' + parameters[2], parameter3);
-
                         //Step #3: Return the objtemp variable back to the calling UI 
                         using ((rentalReader = objCommand.ExecuteReader(CommandBehavior.CloseConnection)))
                         {
@@ -223,7 +218,7 @@ namespace Bookstore
         public static bool AddRental(Rental rental)
         {
             string          primary,
-                            secondary =     string.Empty,
+                            secondary,
 
                             SQLStatement2;
 
@@ -234,13 +229,10 @@ namespace Bookstore
 
             bool            result =        false;
 
+
             primary =                       parameters[0];
-            secondary +=                    ", @" + parameters[lowestSecondary];
+            secondary =                     ", @" + parameters[lowestSecondary];
             PrimarySecondary(ref primary, ", @", ref secondary, ", @");
-            /*for (int i = 1; i < lowestSecondary; i++)
-                primary +=                  ", @" + parameters[i];
-            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
-                secondary +=                ", @" + parameters[i];*/
             SQLStatement2 =                 SQLHelper.Insert(   "Rental", 
                                                                 primary, 
                                                                 secondary
@@ -250,6 +242,7 @@ namespace Bookstore
             //To return a database connection object
             try
             {
+
 
 
 
@@ -304,14 +297,14 @@ namespace Bookstore
         public static bool UpdateRental(Rental rental)
         {
             string      primary,
-                        secondary =     ", ",
+                        secondary,
                         SQLStatement;
             SqlCommand  objCommand;
             int         rowsAffected;
             bool        result =        false;
 
             primary =                   parameters[0              ] + " = @" + parameters[0              ];
-            secondary +=                parameters[lowestSecondary] + " = @" + parameters[lowestSecondary];
+            secondary =                 parameters[lowestSecondary] + " = @" + parameters[lowestSecondary];
 
             for (int i = 1; i < lowestSecondary; i++)
                 primary +=              " AND " + parameters[i] + " = @" + parameters[i];
