@@ -24,6 +24,9 @@ namespace Bookstore
         public static string    extra =             parameters[10];
 
         #endregion
+
+        #region Private functions
+
         private static void PrimarySecondary(ref string primary, string preprimary, ref string secondary, string presecondary)
         {
             for (int i = 1                  ; i < lowestSecondary  ; i++)
@@ -31,6 +34,9 @@ namespace Bookstore
             for (int i = lowestSecondary + 1; i < parameters.Length; i++)
                 secondary +=    presecondary + parameters[i];
         }
+
+        #endregion
+
         #region Public functions
 
         /// <summary>
@@ -40,18 +46,14 @@ namespace Bookstore
         {
             List<Member>    members =       new List<Member>();
             string          primary,
-                            secondary =     string.Empty,
+                            secondary,
                             SQLStatement;
             SqlCommand      objCommand;
             SqlDataReader   memberReader;
             
             primary =                       parameters[0];
-            secondary +=                    ", Member." + parameters[lowestSecondary];
+            secondary =                     ", Member." + parameters[lowestSecondary];
             PrimarySecondary(ref primary, ", Member.", ref secondary, ", Member.");
-            /*
-
-            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
-                secondary +=                ", Member." + parameters[i];*/
             SQLStatement =                  SQLHelper.Select(
                                                             "Member",
                                                             SQLHelper.Join(
@@ -147,10 +149,6 @@ namespace Bookstore
 
             secondary +=                     parameters[lowestSecondary];
             PrimarySecondary(ref primary, ", Member.", ref secondary, ", Member.");
-            /*
-
-            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
-                secondary +=                ", Member." + parameters[i];*/
             SQLStatement =                  SQLHelper.Select("Member", 
                                                             " FROM " + "Member",
                                                             primary, 
@@ -179,13 +177,11 @@ namespace Bookstore
                             while (memberReader.Read())
                             {
                                 objMember =                             new Member();
-                                int                     //number,
-                                                        contact_method,
+                                int                     contact_method,
                                                         subscription_id;
                                 DateTime                joindate =      new DateTime(1753, 1, 1, 0, 0, 0);
 
-                                //Int32.TryParse(                         memberReader[parameters[ 0]].ToString(), out number         );
-                                objMember.number =                      parameter;//number;
+                                objMember.number =                      parameter;
                                 DateTime.TryParse(                      memberReader[parameters[ 1]].ToString(), out joindate       );
                                 objMember.joindate =                    joindate;
                                 objMember.firstname =                   memberReader[parameters[ 2]].ToString();
@@ -228,8 +224,8 @@ namespace Bookstore
         public static bool AddMember(Member member)
         {
             string          primary,
-                            secondary =     string.Empty,
-                            SQLStatement1 = "SELECT MAX(number) AS max_member FROM Member",
+                            secondary,
+                            SQLStatement1,
                             SQLStatement2;
 
             int             rowsAffected,
@@ -239,13 +235,10 @@ namespace Bookstore
             SqlDataReader   memberReader;
             bool            result =        false;
 
+            SQLStatement1 =                 SQLHelper.Select("MAX(Member", " FROM " + "Member", key, ")");
             primary =                       parameters[0];
-            secondary +=                    ", @" + parameters[lowestSecondary];
+            secondary =                     ", @" + parameters[lowestSecondary];
             PrimarySecondary(ref primary, ", @", ref secondary, ", @");
-            /*
-
-            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
-                secondary +=                ", @" + parameters[i];*/
             SQLStatement2 =                 SQLHelper.Insert(   "Member",
                                                                 primary,
                                                                 secondary
@@ -268,6 +261,7 @@ namespace Bookstore
                     }
                     objConn1.Close();
                 }
+                member.number =             max + 1;
                 using (SqlConnection objConn2 = AccessDataSQLServer.GetConnection())
                 {
                     objConn2.Open();
@@ -276,7 +270,7 @@ namespace Bookstore
                     //         Add Try..Catch appropriate block and throw exception back to calling program
                     using (objCommand2 = new SqlCommand(SQLStatement2, objConn2))
                     {
-                        objCommand2.Parameters.AddWithValue('@' + parameters[ 0],    max + 1                );//member.number           );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[ 0],    member.number          );
                         objCommand2.Parameters.AddWithValue('@' + parameters[ 1],    member.joindate        );
                         objCommand2.Parameters.AddWithValue('@' + parameters[ 2],    member.firstname       );
                         objCommand2.Parameters.AddWithValue('@' + parameters[ 3],    member.lastname        );
@@ -321,14 +315,15 @@ namespace Bookstore
         public static bool UpdateMember(Member member)
         {
             string      primary,
-                        secondary =     string.Empty,
+                        secondary,
                         SQLStatement;
             SqlCommand  objCommand;
             int         rowsAffected;
             bool        result =        false;
 
-            primary =                   parameters[0] + " = @" + parameters[0];
-            secondary +=                parameters[lowestSecondary] + " = @" + parameters[lowestSecondary];
+            primary =                   parameters[0              ] + " = @" + parameters[0              ];
+            secondary =                 parameters[lowestSecondary] + " = @" + parameters[lowestSecondary];
+
 
             
             for (int i = lowestSecondary + 1; i < parameters.Length; i++)
