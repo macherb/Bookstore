@@ -48,15 +48,17 @@ namespace Bookstore
         {
             if (CheckAll())
             {
-                Vendor objVendor = new Vendor();
-                objVendor.name = txtName.Text.Trim();
+                Vendor              objVendor = new Vendor();
+
+                objVendor.name =                txtName.Text.Trim();
                 try
                 {
-                    bool status = Vendors.AddVendor(objVendor);
+                    bool            status =    Vendors.AddVendor(objVendor);
                     if (status)
                     {
                         MessageBox.Show(MsgBoxHelper.Inserted("Vendor"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         frmVendor_Load(sender, e);
+                        txtID.Text =            objVendor.id.ToString();
                     }
                     else
                     {
