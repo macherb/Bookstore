@@ -85,12 +85,9 @@ namespace Bookstore
             {
                 Movie   objMovie =              new Movie();
 
-                int                             movie_number,
-                                                movie_year_made,
+                int                             movie_year_made,
                                                 copies_on_hand;
                 float                           movie_retail_cost;
-                Int32.TryParse(txtMovieNumber.Text.Trim(), out movie_number);
-                objMovie.movie_number =         movie_number;
                 objMovie.movie_title =          txtMovieTitle.Text.Trim();
                 objMovie.Description =          txtDescription.Text.Trim();
                 Int32.TryParse(txtMovieYearMade.Text.Trim(), out movie_year_made);
@@ -113,6 +110,7 @@ namespace Bookstore
                         MessageBox.Show(MsgBoxHelper.Inserted("Movie"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         movieList =                     Movies.GetMovies();
                         movieDataGridView.DataSource =  movieList;//TODO genre not -1?
+                        txtMovieNumber.Text =           objMovie.movie_number.ToString();
                     }
                     else
                     {
