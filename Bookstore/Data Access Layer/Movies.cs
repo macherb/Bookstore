@@ -24,13 +24,19 @@ namespace Bookstore
         public static string    extra =             parameters[1];
 
         #endregion
+
+        #region Private functions
+
         private static void PrimarySecondary(ref string primary, string preprimary, ref string secondary, string presecondary)
         {
-            for (int i = 1                  ; i < lowestSecondary   ; i++)
+            for (int i = 1                  ; i < lowestSecondary  ; i++)
                 primary +=      preprimary + parameters[i];
-            for (int i = lowestSecondary + 1; i < parameters.Length ; i++)
+            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
                 secondary +=    presecondary + parameters[i];
         }
+
+        #endregion
+
         #region Public functions
 
         /// <summary>
@@ -40,18 +46,14 @@ namespace Bookstore
         {
             List<Movie>     movies =        new List<Movie>();
             string          primary,
-                            secondary =     string.Empty,
+                            secondary,
                             SQLStatement;
             SqlCommand      objCommand;
             SqlDataReader   movieReader;
             
             primary =                       parameters[0];
-            secondary +=                    ", Movie." + parameters[lowestSecondary];
+            secondary =                     ", Movie." + parameters[lowestSecondary];
             PrimarySecondary(ref primary, ", Movie.", ref secondary, ", Movie.");
-            /*
-
-            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
-                secondary +=                ", Movie." + parameters[i];*/
             SQLStatement =                  SQLHelper.Select(
                                                             "Movie",
                                                             SQLHelper.Join(
@@ -146,10 +148,6 @@ namespace Bookstore
 
             secondary +=                    parameters[lowestSecondary];
             PrimarySecondary(ref primary, ", Movie.", ref secondary, ", Movie.");
-            /*
-
-            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
-                secondary +=                ", Movie." + parameters[i];*/
             SQLStatement =                  SQLHelper.Select("Movie", 
                                                             " FROM " + "Movie",
                                                             primary, 
@@ -178,14 +176,12 @@ namespace Bookstore
                             while (movieReader.Read())
                             {
                                 objMovie =                      new Movie();
-                                int                             //movie_number,
-                                                                genre_id,
+                                int                             genre_id,
                                                                 movie_year_made,
                                                                 copies_on_hand;
                                 float                           movie_retail_cost;
 
-                                //Int32.TryParse(                 movieReader[parameters[ 0]].ToString(), out movie_number        );
-                                objMovie.movie_number =         parameter;//movie_number;
+                                objMovie.movie_number =         parameter;
                                 objMovie.movie_title =          movieReader[parameters[ 1]].ToString();
                                 objMovie.Description =          movieReader[parameters[ 2]].ToString();
                                 Int32.TryParse(                 movieReader[parameters[ 3]].ToString(), out movie_year_made     );
@@ -224,8 +220,8 @@ namespace Bookstore
         public static bool AddMovie(Movie movie)
         {
             string          primary,
-                            secondary =     string.Empty,
-                            SQLStatement1 = "SELECT MAX(movie_number) AS max_movie FROM Movie",//TODO call SQLHelper.Select
+                            secondary,
+                            SQLStatement1,
                             SQLStatement2;
 
             int             rowsAffected,
@@ -235,13 +231,10 @@ namespace Bookstore
             SqlDataReader   movieReader;
             bool            result =        false;
 
+            SQLStatement1 =                 SQLHelper.Select("MAX(Movie", " FROM " + "Movie", key, ")");
             primary =                       parameters[0];
-            secondary +=                    ", @" + parameters[lowestSecondary];
+            secondary =                     ", @" + parameters[lowestSecondary];
             PrimarySecondary(ref primary, ", @", ref secondary, ", @");
-            /*
-
-            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
-                secondary +=                ", @" + parameters[i];*/
             SQLStatement2 =                 SQLHelper.Insert(   "Movie",
                                                                 primary,
                                                                 secondary
@@ -264,6 +257,7 @@ namespace Bookstore
                     }
                     objConn1.Close();
                 }
+                movie.movie_number =        max + 1;
                 using (SqlConnection objConn2 = AccessDataSQLServer.GetConnection())
                 {
                     objConn2.Open();
@@ -272,7 +266,7 @@ namespace Bookstore
                     //         Add Try..Catch appropriate block and throw exception back to calling program
                     using (objCommand2 = new SqlCommand(SQLStatement2, objConn2))
                     {
-                        objCommand2.Parameters.AddWithValue('@' + parameters[ 0], max + 1                   );//movie.movie_number     );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[ 0], movie.movie_number        );
                         objCommand2.Parameters.AddWithValue('@' + parameters[ 1], movie.movie_title         );
                         objCommand2.Parameters.AddWithValue('@' + parameters[ 2], movie.Description         );
                         objCommand2.Parameters.AddWithValue('@' + parameters[ 3], movie.movie_year_made     );
@@ -312,16 +306,17 @@ namespace Bookstore
         public static bool UpdateMovie(Movie movie)
         {
             string      primary,
-                        secondary =     string.Empty,
+                        secondary,
                         SQLStatement;
             SqlCommand  objCommand;
             int         rowsAffected;
             bool        result =        false;
 
             primary =                   parameters[0              ] + " = @" + parameters[0              ];
-            secondary +=                parameters[lowestSecondary] + " = @" + parameters[lowestSecondary];
+            secondary =                 parameters[lowestSecondary] + " = @" + parameters[lowestSecondary];
 
-            
+
+
             for (int i = lowestSecondary + 1; i < parameters.Length; i++)
                 secondary +=            ", " + parameters[i] + " = @" + parameters[i];
             SQLStatement =              SQLHelper.Update(   "Movie",
@@ -341,7 +336,7 @@ namespace Bookstore
                     //         Add Try..Catch appropriate block and throw exception back to calling program
                     using (objCommand = new SqlCommand(SQLStatement, objConn))
                     {
-                        objCommand.Parameters.AddWithValue('@' + parameters[ 0], movie.movie_number     );//TODO Does primary need to be moved to the end?
+                        objCommand.Parameters.AddWithValue('@' + parameters[ 0], movie.movie_number     );
                         objCommand.Parameters.AddWithValue('@' + parameters[ 1], movie.movie_title      );
                         objCommand.Parameters.AddWithValue('@' + parameters[ 2], movie.Description      );
                         objCommand.Parameters.AddWithValue('@' + parameters[ 3], movie.movie_year_made  );
