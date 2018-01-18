@@ -97,9 +97,6 @@ namespace Bookstore
             {
                 Member                      objMember = new Member();
 
-                int                         number;
-                Int32.TryParse(txtNumber.Text.Trim(), out number);
-                objMember.number =                      number;
                 objMember.joindate =                    dtpJoinDate.Value;
                 objMember.firstname =                   txtFirstName.Text.Trim();
                 objMember.lastname =                    txtLastName.Text.Trim();
@@ -133,6 +130,7 @@ namespace Bookstore
                         MessageBox.Show(MsgBoxHelper.Inserted("Member"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         memberList =                    Members.GetMembers();
 		                memberDataGridView.DataSource = memberList;
+                        txtNumber.Text =                objMember.number.ToString();
                     }
                     else
                     {
