@@ -72,7 +72,7 @@ namespace Bookstore
 
 				try
 				{
-					objRental = Rentals.GetRental((int)cmbMovieNumber.SelectedValue, (int)cmbMemberNumber.SelectedValue, dtpMediaCheckoutDate.Value);//TODO
+					objRental =                             Rentals.GetRental((int)cmbMovieNumber.SelectedValue, (int)cmbMemberNumber.SelectedValue, dtpMediaCheckoutDate.Value);//TODO
 					if (objRental != null)
 					{
 						MessageBox.Show(lblMovieNumber.Text + " and " + lblMemberNumber.Text + " and " + lblMediaCheckoutDate.Text + " already exists.",
@@ -129,28 +129,40 @@ namespace Bookstore
                                                         second;
 
                 if (cmbMovieNumber.SelectedIndex == -1)
-                    first =                             -1;
+                    first =                                         -1;
                 else
-                    first =                             (int)cmbMovieNumber.SelectedValue;
+                    first =                                         (int)cmbMovieNumber.SelectedValue;
                 if (cmbMemberNumber.SelectedIndex == -1)
-                    second =                            -1;
+                    second =                                        -1;
                 else
-                    second =                            (int)cmbMemberNumber.SelectedValue;
+                    second =                                        (int)cmbMemberNumber.SelectedValue;
 
                 Rental                                  objRental;
 
                 try
                 {
-                    objRental =                         Rentals.GetRental(first, second, dtpMediaCheckoutDate.Value);//TODO
+                    objRental =                                     Rentals.GetRental(first, second, dtpMediaCheckoutDate.Value);//TODO
                     if (objRental == null)
                     {
-                        MessageBox.Show(MsgBoxHelper.Selected("Rental " + 
-                            lblMovieNumber.Text + " " + cmbMovieNumber.Text + 
-                            ", " + 
-                            lblMemberNumber.Text + " " + cmbMemberNumber.Text +
-                            ", " +
-                            lblMediaCheckoutDate.Text + " " + dtpMediaCheckoutDate.Text
-                            ), "Failure", MessageBoxButtons.OK, MessageBoxIcon.Information);//TODO if not -1
+                        String                          tableName = "Rental ";
+                        if (first > -1)
+                        {
+                            tableName +=                            lblMovieNumber.Text + " " + cmbMovieNumber.Text;
+                            if ((second > -1) || (dtpMediaCheckoutDate.Value > new DateTime(1753, 1, 1, 0, 0, 0)))
+                                tableName +=                        ", ";
+                        }
+                        if (second > -1)
+                        {
+                            tableName +=                            lblMemberNumber.Text + " " + cmbMemberNumber.Text;
+                            if (dtpMediaCheckoutDate.Value > new DateTime(1753, 1, 1, 0, 0, 0))
+                                tableName +=                        ", ";
+                        }
+                        if (dtpMediaCheckoutDate.Value > new DateTime(1753, 1, 1, 0, 0, 0))
+                        {
+                            tableName +=                            lblMediaCheckoutDate.Text + " " + dtpMediaCheckoutDate.Text;
+                        }
+
+                        MessageBox.Show(MsgBoxHelper.Selected(tableName), "Failure", MessageBoxButtons.OK, MessageBoxIcon.Information);//TODO if not -1
                     }
                     else
                     {
@@ -169,26 +181,72 @@ namespace Bookstore
 
         private void btnUpdate_Click(object sender, EventArgs e)
         {
-            if (CheckAll())
+            if ((cmbMovieNumber.SelectedIndex == -1) && (cmbMemberNumber.SelectedIndex == -1) && dtpMediaCheckoutDate.Value == new DateTime(1753, 1, 1, 0, 0, 0))
             {
-                Rental                          objRental = new Rental();
-                objRental.movie_number =                    (int)cmbMovieNumber.SelectedValue;
-                objRental.member_number =                   (int)cmbMemberNumber.SelectedValue;
-                objRental.media_checkout_date =             dtpMediaCheckoutDate.Value;
-                objRental.media_return_date =               dtpMediaReturnDate.Value;//TODO only add if not blank
+                MessageBox.Show(lblMovieNumber.Text + " and " + lblMemberNumber.Text + " and " + lblMediaCheckoutDate.Text + " must not all be blank.",
+                                "Invalid " + lblMovieNumber.Text + " and/or " + lblMemberNumber.Text + " and/or " + lblMediaCheckoutDate.Text,
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+            }
+            else
+            {
+                int                                     first,
+                                                        second;
+
+                if (cmbMovieNumber.SelectedIndex == -1)
+                    first =                                         -1;
+                else
+                    first =                                         (int)cmbMovieNumber.SelectedValue;
+                if (cmbMemberNumber.SelectedIndex == -1)
+                    second =                                        -1;
+                else
+                    second =                                        (int)cmbMemberNumber.SelectedValue;
+
+                Rental                                  objRental;
 
                 try
                 {
-                    bool                        status =    Rentals.UpdateRental(objRental);
-                    if (status)
+                    objRental =                                     Rentals.GetRental(first, second, dtpMediaCheckoutDate.Value);//TODO
+                    if (objRental == null)
                     {
-                        MessageBox.Show(MsgBoxHelper.Updated("Rental"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        rentalList =                        Rentals.GetRentals();
-                        rentalDataGridView.DataSource =     rentalList;//TODO movie and member not -1?
+                        String                          tableName = "Rental ";
+                        if (first > -1)
+                        {
+                            tableName +=                            lblMovieNumber.Text + " " + cmbMovieNumber.Text;
+                            if ((second > -1) || (dtpMediaCheckoutDate.Value > new DateTime(1753, 1, 1, 0, 0, 0)))
+                                tableName +=                        ", ";
+                        }
+                        if (second > -1)
+                        {
+                            tableName +=                            lblMemberNumber.Text + " " + cmbMemberNumber.Text;
+                            if (dtpMediaCheckoutDate.Value > new DateTime(1753, 1, 1, 0, 0, 0))
+                                tableName +=                        ", ";
+                        }
+                        if (dtpMediaCheckoutDate.Value > new DateTime(1753, 1, 1, 0, 0, 0))
+                        {
+                            tableName +=                            lblMediaCheckoutDate.Text + " " + dtpMediaCheckoutDate.Text;
+                        }
+
+                        MessageBox.Show(MsgBoxHelper.Selected(tableName), "Failure", MessageBoxButtons.OK, MessageBoxIcon.Information);//TODO if not -1
                     }
                     else
                     {
-                        MessageBox.Show(MsgBoxHelper.Updated("Rental not"), "Failure", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        cmbMovieNumber.SelectedValue =              objRental.movie_number;
+                        cmbMemberNumber.SelectedValue =             objRental.member_number;
+                        dtpMediaCheckoutDate.Value =                objRental.media_checkout_date;
+                        objRental.media_return_date =               dtpMediaReturnDate.Value;//TODO only add if not blank
+
+                        bool                            status =    Rentals.UpdateRental(objRental);
+                        if (status)
+                        {
+                            MessageBox.Show(MsgBoxHelper.Updated("Rental"), "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            rentalList =                            Rentals.GetRentals();
+                            rentalDataGridView.DataSource =         rentalList;//TODO movie and member not -1?
+                        }
+                        else
+                        {
+                            MessageBox.Show(MsgBoxHelper.Updated("Rental not"), "Failure", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -262,15 +320,15 @@ namespace Bookstore
                 return  false;
             }
 
-            if      (dtpMediaCheckoutDate.Value >= DateTime.MaxValue)//
+            if      (dtpMediaCheckoutDate.Value > DateTime.MaxValue)//
             {
                 MessageBox.Show(lblMediaCheckoutDate.Text + " must be less than or equal to " + DateTime.MaxValue + ".", "Invalid " + lblMediaCheckoutDate.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 dtpMediaCheckoutDate.Focus();
                 return  false;
             }
-            else if (dtpMediaCheckoutDate.Value <= DateTime.MinValue)//
+            else if (dtpMediaCheckoutDate.Value <= new DateTime(1753, 1, 1, 0, 0, 0))//
             {
-                MessageBox.Show(lblMediaCheckoutDate.Text + " must be greater than or equal to " + DateTime.MinValue + ".", "Invalid " + lblMediaCheckoutDate.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(lblMediaCheckoutDate.Text + " must be greater than " + new DateTime(1753, 1, 1, 0, 0, 0) + ".", "Invalid " + lblMediaCheckoutDate.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 dtpMediaCheckoutDate.Focus();
                 return  false;
             }
