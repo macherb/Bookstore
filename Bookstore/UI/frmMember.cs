@@ -368,15 +368,15 @@ namespace Bookstore
 
         public bool CheckAll()
         {
-            if      (dtpJoinDate.Value >= DateTime.MaxValue)//
+            if      (dtpJoinDate.Value > DateTime.MaxValue)//
             {
                 MessageBox.Show(lblJoinDate.Text + " must be less than or equal to " + DateTime.MaxValue + ".", "Invalid " + lblJoinDate.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 dtpJoinDate.Focus();
                 return  false;
             }
-            else if (dtpJoinDate.Value <= DateTime.MinValue)//
+            else if (dtpJoinDate.Value <= new DateTime(1753, 1, 1, 0, 0, 0))//
             {
-                MessageBox.Show(lblJoinDate.Text + " must be greater than or equal to " + DateTime.MinValue + ".", "Invalid " + lblJoinDate.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(lblJoinDate.Text + " must be greater than " + new DateTime(1753, 1, 1, 0, 0, 0) + ".", "Invalid " + lblJoinDate.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 dtpJoinDate.Focus();
                 return  false;
             }
