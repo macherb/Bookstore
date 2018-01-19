@@ -51,7 +51,7 @@ namespace Bookstore
             SqlCommand      objCommand;
             SqlDataReader   memberReader;
             
-            primary =                       parameters[0];
+            primary =                       key;
             secondary =                     ", Member." + parameters[lowestSecondary];
             PrimarySecondary(ref primary, ", Member.", ref secondary, ", Member.");
             SQLStatement =                  SQLHelper.Select(
@@ -147,7 +147,7 @@ namespace Bookstore
             SqlCommand      objCommand;
             SqlDataReader   memberReader;
 
-            secondary +=                     parameters[lowestSecondary];
+            secondary +=                    parameters[lowestSecondary];
             PrimarySecondary(ref primary, ", Member.", ref secondary, ", Member.");
             SQLStatement =                  SQLHelper.Select("Member", 
                                                             " FROM " + "Member",
@@ -223,25 +223,34 @@ namespace Bookstore
         /// <param name="member">accepts a custom object of that type as a parameter</param>
         public static bool AddMember(Member member)
         {
-            string          primary,
-                            secondary,
+            string          
+                            primary2,
+                            
+                            secondary2,
                             SQLStatement1,
                             SQLStatement2;
 
-            int             rowsAffected,
+            int             
+                            rowsAffected,
                             max;
             SqlCommand      objCommand1,
                             objCommand2;
             SqlDataReader   memberReader;
             bool            result =        false;
 
+
+
             SQLStatement1 =                 SQLHelper.Select("MAX(Member", " FROM " + "Member", key, ")");
-            primary =                       parameters[0];
-            secondary =                     ", @" + parameters[lowestSecondary];
-            PrimarySecondary(ref primary, ", @", ref secondary, ", @");
+
+
+
+
+            primary2 =                      key;
+            secondary2 =                    ", @" + parameters[lowestSecondary];
+            PrimarySecondary(ref primary2, ", @", ref secondary2, ", @");
             SQLStatement2 =                 SQLHelper.Insert(   "Member",
-                                                                primary,
-                                                                secondary
+                                                                primary2,
+                                                                secondary2
                                                             );
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
@@ -262,6 +271,24 @@ namespace Bookstore
                     objConn1.Close();
                 }
                 member.number =             max + 1;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                 using (SqlConnection objConn2 = AccessDataSQLServer.GetConnection())
                 {
                     objConn2.Open();
@@ -270,22 +297,22 @@ namespace Bookstore
                     //         Add Try..Catch appropriate block and throw exception back to calling program
                     using (objCommand2 = new SqlCommand(SQLStatement2, objConn2))
                     {
-                        objCommand2.Parameters.AddWithValue('@' + parameters[ 0],    member.number          );
-                        objCommand2.Parameters.AddWithValue('@' + parameters[ 1],    member.joindate        );
-                        objCommand2.Parameters.AddWithValue('@' + parameters[ 2],    member.firstname       );
-                        objCommand2.Parameters.AddWithValue('@' + parameters[ 3],    member.lastname        );
-                        objCommand2.Parameters.AddWithValue('@' + parameters[ 4],    member.address         );
-                        objCommand2.Parameters.AddWithValue('@' + parameters[ 5],    member.city            );
-                        objCommand2.Parameters.AddWithValue('@' + parameters[ 6],    member.state           );
-                        objCommand2.Parameters.AddWithValue('@' + parameters[ 7],    member.zipcode         );
-                        objCommand2.Parameters.AddWithValue('@' + parameters[ 8],    member.phone           );
-                        objCommand2.Parameters.AddWithValue('@' + parameters[ 9],    member.member_status   );
-                        objCommand2.Parameters.AddWithValue('@' + parameters[10],    member.login_name      );
-                        objCommand2.Parameters.AddWithValue('@' + parameters[11],    member.password        );
-                        objCommand2.Parameters.AddWithValue('@' + parameters[12],    member.email           );
-                        objCommand2.Parameters.AddWithValue('@' + parameters[13],    member.contact_method  );
-                        objCommand2.Parameters.AddWithValue('@' + parameters[14],    member.subscription_id );
-                        objCommand2.Parameters.AddWithValue('@' + parameters[15],    member.photo           );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[ 0],   member.number           );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[ 1],   member.joindate         );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[ 2],   member.firstname        );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[ 3],   member.lastname         );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[ 4],   member.address          );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[ 5],   member.city             );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[ 6],   member.state            );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[ 7],   member.zipcode          );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[ 8],   member.phone            );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[ 9],   member.member_status    );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[10],   member.login_name       );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[11],   member.password         );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[12],   member.email            );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[13],   member.contact_method   );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[14],   member.subscription_id  );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[15],   member.photo            );
                         //Step #3: return false if record was not added successfully
                         //         return true if record was added successfully  
                         rowsAffected =  objCommand2.ExecuteNonQuery();
@@ -321,7 +348,7 @@ namespace Bookstore
             int         rowsAffected;
             bool        result =        false;
 
-            primary =                   parameters[0              ] + " = @" + parameters[0              ];
+            primary =                   key                         + " = @" + key                        ;
             secondary =                 parameters[lowestSecondary] + " = @" + parameters[lowestSecondary];
 
 
@@ -389,16 +416,28 @@ namespace Bookstore
         /// <param name="member">accepts a custom object of that type as a parameter</param>
         public static bool DeleteMember(Member member)
         {
-            string      primary =       string.Empty,
+            string      
+                        primary =       string.Empty,
+                        
+                        
                         SQLStatement;
-            SqlCommand  objCommand;
-            int         rowsAffected;
+            SqlCommand  
+                        objCommand;
+            int         
+                        rowsAffected;
             bool        result =        false;
 
 
 
+
+
+
+
+
+
+
             SQLStatement =              SQLHelper.Delete("Member",
-                                                        parameters[0],
+                                                        key,
                                                         primary
                                                         );
 
@@ -425,6 +464,24 @@ namespace Bookstore
                     }
                     objConn.Close();
                 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             }
             catch (SqlException SQLex)
             {
