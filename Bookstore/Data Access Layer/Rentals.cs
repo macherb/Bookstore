@@ -19,6 +19,12 @@ namespace Bookstore
 
         #endregion
 
+        #region Public variables
+
+        public static string    key =               parameters[0];
+
+        #endregion
+
         #region Private functions
 
         private static void PrimarySecondary(ref string primary, string preprimary, ref string secondary, string presecondary)
@@ -45,7 +51,7 @@ namespace Bookstore
             SqlCommand      objCommand;
             SqlDataReader   rentalReader;
 
-            primary =                       parameters[0];
+            primary =                       key;
             secondary =                     ", Rental." + parameters[lowestSecondary];
             PrimarySecondary(ref primary, ", Rental.", ref secondary, ", Rental.");
             SQLStatement =                  SQLHelper.Select(
@@ -124,7 +130,7 @@ namespace Bookstore
         public static Rental GetRental(int parameter1, int parameter2, DateTime parameter3)//string parameter)
         {
             Rental          objRental =     null;
-            string          primary =       parameters[0],
+            string          primary =       key,
                             secondary =     ", Rental.",
                             SQLStatement;
             SqlCommand      objCommand;
@@ -194,7 +200,7 @@ namespace Bookstore
                                 i++;
                             }
                             if (i > 1)
-                                objRental =                                             null;//TODO tell them more than one Rental was found
+                                throw new Exception("More than one rental found.");
                         }
                     }
                     objConn.Close();
@@ -217,31 +223,41 @@ namespace Bookstore
         /// <param name="rental">accepts a custom object of that type as a parameter</param>
         public static bool AddRental(Rental rental)
         {
-            string          primary,
-                            secondary,
-
+            string          primary1,
+                            primary2,
+                            secondary1,
+                            secondary2,
+                            SQLStatement1,
                             SQLStatement2;
 
-            int             rowsAffected;
+            int             rowsAffected1,
+                            rowsAffected2;
 
-            SqlCommand
+            SqlCommand      objCommand1,
                             objCommand2;
 
             bool            result =        false;
 
-
-            primary =                       parameters[0];
-            secondary =                     ", @" + parameters[lowestSecondary];
-            PrimarySecondary(ref primary, ", @", ref secondary, ", @");
+            primary1 =                      Movies.key   + " = CASE WHEN copies_on_hand > 0 THEN @" + Movies.key + " ELSE -1 END";
+            secondary1 =                    Movies.count + " = " + Movies.count + " - 1";
+            SQLStatement1 =                 SQLHelper.Update(   "Movie",
+                                                                primary1,
+                                                                secondary1//"copies_on_hand = copies_on_hand - CASE WHEN copies_on_hand > 0 THEN 1 ELSE 0 END"
+                                                            );
+            
+            primary2 =                      key;
+            secondary2 =                    ", @" + parameters[lowestSecondary];
+            PrimarySecondary(ref primary2, ", @", ref secondary2, ", @");
             SQLStatement2 =                 SQLHelper.Insert(   "Rental", 
-                                                                primary, 
-                                                                secondary
+                                                                primary2, 
+                                                                secondary2
                                                             );//TODO make sure not before joindate, and if not returned make sure number of copies not zero
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
             try
             {
+                // 1
 
 
 
@@ -254,8 +270,25 @@ namespace Bookstore
 
 
 
-
-
+                //14
+                using (SqlConnection objConn1 = AccessDataSQLServer.GetConnection())
+                {
+                    objConn1.Open();
+                    using (objCommand1 = new SqlCommand(SQLStatement1, objConn1))
+                    {
+                        objCommand1.Parameters.AddWithValue('@' + parameters[0],    rental.movie_number );
+                        rowsAffected1 = objCommand1.ExecuteNonQuery();
+                        if (rowsAffected1 > 0)
+                        {
+                            result =    true;   //Record was added successfully
+                        }
+                    }
+                    objConn1.Close();
+                }
+                if (!result)
+                {
+                    throw new Exception("There are no copies of this movie."); //Record was not added successfully
+                }
                 using (SqlConnection objConn2 = AccessDataSQLServer.GetConnection())
                 {
                     objConn2.Open();
@@ -264,14 +297,14 @@ namespace Bookstore
                     //         Add Try..Catch appropriate block and throw exception back to calling program
                     using (objCommand2 = new SqlCommand(SQLStatement2, objConn2))
                     {
-                        objCommand2.Parameters.AddWithValue('@' + parameters[0], rental.movie_number         );
-                        objCommand2.Parameters.AddWithValue('@' + parameters[1], rental.member_number        );
-                        objCommand2.Parameters.AddWithValue('@' + parameters[2], rental.media_checkout_date  );
-                        objCommand2.Parameters.AddWithValue('@' + parameters[3], rental.media_return_date    );//TODO if after checkout, add to number of copies
+                        objCommand2.Parameters.AddWithValue('@' + parameters[0],    rental.movie_number         );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[1],    rental.member_number        );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[2],    rental.media_checkout_date  );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[3],    rental.media_return_date    );//TODO if after checkout, add to number of copies
                         //Step #3: return false if record was not added successfully
                         //         return true if record was added successfully  
-                        rowsAffected =  objCommand2.ExecuteNonQuery();
-                        if (rowsAffected > 0)
+                        rowsAffected2 = objCommand2.ExecuteNonQuery();
+                        if (rowsAffected2 > 0)
                         {
                             result =    true;   //Record was added successfully
                         }
@@ -303,7 +336,7 @@ namespace Bookstore
             int         rowsAffected;
             bool        result =        false;
 
-            primary =                   parameters[0              ] + " = @" + parameters[0              ];
+            primary =                   key                         + " = @" + key                        ;
             secondary =                 parameters[lowestSecondary] + " = @" + parameters[lowestSecondary];
 
             for (int i = 1; i < lowestSecondary; i++)
@@ -359,43 +392,73 @@ namespace Bookstore
         /// <param name="rental">accepts a custom object of that type as a parameter</param>
         public static bool DeleteRental(Rental rental)
         {
-            string      primary =       string.Empty,
-                        SQLStatement;
-            SqlCommand  objCommand;
-            int         rowsAffected;
+            string      primary1,
+                        primary2 =      string.Empty,
+                        secondary1,
+                        SQLStatement1,
+                        SQLStatement2;
+            SqlCommand  objCommand1,
+                        objCommand2;
+            int         rowsAffected1,
+                        rowsAffected2;
             bool        result =        false;
+
+            primary1 =                  Movies.key   + " = @" + Movies.key  ;
+            secondary1 =                Movies.count + " = " + Movies.count + " + 1";
+            SQLStatement1 =             SQLHelper.Update(   "Movie",
+                                                            primary1,
+                                                            secondary1
+                                                        );
             
             for (int i = 1; i < lowestSecondary; i++)
-                primary +=              " AND " + parameters[i] + " = @" + parameters[i];
-            SQLStatement =              SQLHelper.Delete("Rental",
-                                                        parameters[0],
-                                                        primary
+                primary2 +=             " AND " + parameters[i] + " = @" + parameters[i];
+            SQLStatement2 =             SQLHelper.Delete("Rental",
+                                                        key,
+                                                        primary2
                                                         );
 
             //Step# 1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
             try
             {
-                using (SqlConnection objConn = AccessDataSQLServer.GetConnection())
+                using (SqlConnection objConn2 = AccessDataSQLServer.GetConnection())
                 {
-                    objConn.Open();
+                    objConn2.Open();
                     //Step #2: Code logic to create appropriate SQL Server objects calls
                     //         Code logic to retrieve data from database
                     //         Add Try..Catch appropriate block and throw exception back to calling program
-                    using (objCommand = new SqlCommand(SQLStatement, objConn))
+                    using (objCommand2 = new SqlCommand(SQLStatement2, objConn2))
                     {
-                        objCommand.Parameters.AddWithValue('@' + parameters[0], rental.movie_number         );
-                        objCommand.Parameters.AddWithValue('@' + parameters[1], rental.member_number        );
-                        objCommand.Parameters.AddWithValue('@' + parameters[2], rental.media_checkout_date  );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[0],    rental.movie_number         );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[1],    rental.member_number        );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[2],    rental.media_checkout_date  );
                         //Step #3: return false if record was not added successfully
                         //         return true if record was added successfully
-                        rowsAffected =  objCommand.ExecuteNonQuery();
-                        if (rowsAffected > 0)
+                        rowsAffected2 = objCommand2.ExecuteNonQuery();
+                        if (rowsAffected2 > 0)
                         {
                             result =    true;   //Record was added successfully
                         }
                     }
-                    objConn.Close();
+                    objConn2.Close();
+                }
+                if (!result)
+                {
+                    throw new Exception("This rental does not exist."); //Record was not added successfully
+                }
+                using (SqlConnection objConn1 = AccessDataSQLServer.GetConnection())
+                {
+                    objConn1.Open();
+                    using (objCommand1 = new SqlCommand(SQLStatement1, objConn1))
+                    {
+                        objCommand1.Parameters.AddWithValue('@' + parameters[0],    rental.movie_number );
+                        rowsAffected1 = objCommand1.ExecuteNonQuery();
+                        if (rowsAffected1 > 0)
+                        {
+                            result =    true;   //Record was added successfully
+                        }
+                    }
+                    objConn1.Close();
                 }
             }
             catch (SqlException SQLex)
@@ -406,7 +469,7 @@ namespace Bookstore
             {
                 throw new Exception(IOex.Message);  //Record was not added successfully
             }
-            return result;
+            return  result;
         }
 
         #endregion
