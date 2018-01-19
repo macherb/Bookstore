@@ -50,7 +50,7 @@ namespace Bookstore
             SqlCommand          objCommand;
             SqlDataReader       subscriptionReader;
             
-            primary =                               parameters[0];
+            primary =                               key;
             secondary =                             ", Subscription." + parameters[lowestSecondary];
             PrimarySecondary(ref primary, ", Subscription.", ref secondary, ", Subscription.");
             SQLStatement =                          SQLHelper.Select(
@@ -186,25 +186,34 @@ namespace Bookstore
         /// <param name="subscription">accepts a custom object of that type as a parameter</param>
         public static bool AddSubscription(Subscription subscription)
         {
-            string          primary,
-                            secondary,
+            string
+                            primary2,
+                            
+                            secondary2,
                             SQLStatement1,
                             SQLStatement2;
             //TODO what if MAX is 32767
-            int             rowsAffected,
+            int
+                            rowsAffected,
                             max;
             SqlCommand      objCommand1,
                             objCommand2;
             SqlDataReader   subscriptionReader;
             bool            result =        false;
 
+
+
             SQLStatement1 =                 SQLHelper.Select("MAX(Subscription", " FROM " + "Subscription", key, ")");
-            primary =                       parameters[0];
-            secondary =                     ", @" + parameters[lowestSecondary];
-            PrimarySecondary(ref primary, ", @", ref secondary, ", @");
+
+
+
+
+            primary2 =                      key;
+            secondary2 =                    ", @" + parameters[lowestSecondary];
+            PrimarySecondary(ref primary2, ", @", ref secondary2, ", @");
             SQLStatement2 =                 SQLHelper.Insert(   "Subscription",
-                                                                primary,
-                                                                secondary
+                                                                primary2,
+                                                                secondary2
                                                             );
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
@@ -225,6 +234,24 @@ namespace Bookstore
                     objConn1.Close();
                 }
                 subscription.id =           max + 1;
+                // 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                //18
                 using (SqlConnection objConn2 = AccessDataSQLServer.GetConnection())
                 {
                     objConn2.Open();
@@ -233,9 +260,9 @@ namespace Bookstore
                     //         Add Try..Catch appropriate block and throw exception back to calling program
                     using (objCommand2 = new SqlCommand(SQLStatement2, objConn2))
                     {
-                        objCommand2.Parameters.AddWithValue('@' + parameters[0], subscription.id    );
-                        objCommand2.Parameters.AddWithValue('@' + parameters[1], subscription.name  );
-                        objCommand2.Parameters.AddWithValue('@' + parameters[2], subscription.cost  );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[0],    subscription.id     );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[1],    subscription.name   );
+                        objCommand2.Parameters.AddWithValue('@' + parameters[2],    subscription.cost   );
                         //Step #3: return false if record was not added successfully
                         //         return true if record was added successfully  
                         rowsAffected =  objCommand2.ExecuteNonQuery();
@@ -271,7 +298,7 @@ namespace Bookstore
             int         rowsAffected;
             bool        result =        false;
 
-            primary =                   parameters[0              ] + " = @" + parameters[0              ];
+            primary =                   key                         + " = @" + key                        ;
             secondary =                 parameters[lowestSecondary] + " = @" + parameters[lowestSecondary];
 
 
@@ -326,16 +353,28 @@ namespace Bookstore
         /// <param name="subscription">accepts a custom object of that type as a parameter</param>
         public static bool DeleteSubscription(Subscription subscription)
         {
-            string      primary =       string.Empty,
+            string      
+                        primary =       string.Empty,
+
+
                         SQLStatement;
-            SqlCommand  objCommand;
-            int         rowsAffected;
+            SqlCommand  
+                        objCommand;
+            int         
+                        rowsAffected;
             bool        result =        false;
 
 
 
+
+
+
+
+
+
+
             SQLStatement =              SQLHelper.Delete("Subscription",
-                                                        parameters[0],
+                                                        key,
                                                         primary
                                                         );
 
@@ -362,6 +401,24 @@ namespace Bookstore
                     }
                     objConn.Close();
                 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             }
             catch (SqlException SQLex)
             {
