@@ -181,9 +181,11 @@ namespace Bookstore
         public static bool AddGenre(Genre genre)
         {
             string          
+                            
                             primary2,
                             
                             secondary2,
+
                             SQLStatement1,
                             SQLStatement2;
             //TODO what if MAX is 32767
@@ -197,10 +199,19 @@ namespace Bookstore
 
 
 
-            SQLStatement1 =                 SQLHelper.Select("MAX(Genre", " FROM " + "Genre", key, ")");
 
 
 
+
+
+
+
+
+
+            SQLStatement1 =                 SQLHelper.Select(   "MAX(Genre",
+                                                                " FROM " + "Genre",
+                                                                key,
+                                                                ")");
 
             primary2 =                      key;
             secondary2 =                    ", @" + parameters[lowestSecondary];
@@ -228,6 +239,36 @@ namespace Bookstore
                     objConn1.Close();
                 }
                 genre.id =                  max + 1;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -284,29 +325,116 @@ namespace Bookstore
         /// <param name="genre">accepts a custom object of that type as a parameter</param>
         public static bool UpdateGenre(Genre genre)
         {
-            string      primary,
-                        secondary,
-                        SQLStatement;
-            SqlCommand  objCommand;
-            int         rowsAffected;
-            bool        result =        false;
+            string          
+                            primary,
+                            
+                            
+                            secondary,
 
-            primary =                   key                         + " = @" + key                        ;
-            secondary =                 parameters[lowestSecondary] + " = @" + parameters[lowestSecondary];
+
+                            SQLStatement
+                            
+                            
+                            ;
+
+            SqlCommand      objCommand
+                
+                            ;
+            int             rowsAffected
+                            ;
+            bool            result =        false;
+
+
+
+
+
+
+
+
+
+
+            primary =                      key                         + " = @" + key                        ;
+            secondary =                     parameters[lowestSecondary] + " = @" + parameters[lowestSecondary];
             
 
 
             for (int i = lowestSecondary + 1; i < parameters.Length; i++)
-                secondary +=            ", " + parameters[i] + " = @" + parameters[i];
-            SQLStatement =              SQLHelper.Update(   "Genre", 
-                                                            primary,
-                                                            secondary
-                                                        );
+                secondary +=                ", " + parameters[i] + " = @" + parameters[i];
+            SQLStatement =                  SQLHelper.Update(   "Genre", 
+                                                                primary,
+                                                                secondary
+                                                            );
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
             
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
             try
             {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                 using (SqlConnection objConn = AccessDataSQLServer.GetConnection())
                 {
                     objConn.Open();
@@ -327,6 +455,43 @@ namespace Bookstore
                     }
                     objConn.Close();
                 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+
+
+
+
+
+
+
+
+
+
             }
             catch (SqlException SQLex)
             {
@@ -346,53 +511,63 @@ namespace Bookstore
         public static bool DeleteGenre(Genre genre)
         {
             string      
-                        primary =       string.Empty,
-                        
-                        
-                        SQLStatement;
-            SqlCommand  
-                        objCommand;
-            int         
-                        rowsAffected;
+                        primary1 =      string.Empty,
+
+
+                        SQLStatement1
+                        ;
+            SqlCommand  objCommand1
+                        ;
+            int         rowsAffected1
+                        ;
             bool        result =        false;
 
 
 
-
-
-
-
-
-
-
-            SQLStatement =              SQLHelper.Delete("Genre",
+            SQLStatement1 =             SQLHelper.Delete("Genre",
                                                         key,
-                                                        primary
+                                                        primary1
                                                         );
+
+
+
+
+
+
+
 
             //Step# 1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
             try
             {
-                using (SqlConnection objConn = AccessDataSQLServer.GetConnection())
+
+
+
+
+
+
+                using (SqlConnection objConn1 = AccessDataSQLServer.GetConnection())
                 {
-                    objConn.Open();
+                    objConn1.Open();
                     //Step #2: Code logic to create appropriate SQL Server objects calls
                     //         Code logic to retrieve data from database
                     //         Add Try..Catch appropriate block and throw exception back to calling program
-                    using (objCommand = new SqlCommand(SQLStatement, objConn))
+                    using (objCommand1 = new SqlCommand(SQLStatement1, objConn1))
                     {
-                        objCommand.Parameters.AddWithValue('@' + parameters[0], genre.id);
+                        objCommand1.Parameters.AddWithValue('@' + parameters[0], genre.id);
                         //Step #3: return false if record was not added successfully
                         //         return true if record was added successfully
-                        rowsAffected =  objCommand.ExecuteNonQuery();
-                        if (rowsAffected > 0)
+                        rowsAffected1 =  objCommand1.ExecuteNonQuery();
+                        if (rowsAffected1 > 0)
                         {
                             result =    true;   //Record was added successfully
                         }
                     }
-                    objConn.Close();
+                    objConn1.Close();
                 }
+
+
+
 
 
 
