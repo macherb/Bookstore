@@ -187,19 +187,18 @@ namespace Bookstore
         public static bool AddSubscription(Subscription subscription)
         {
             string
+                            primaryInsertSubscription,
 
-                            primary2,
-                            
-                            secondary2,
+                            secondaryInsertSubscription,
 
-                            SQLStatement1,
-                            SQLStatement2;
+                            SQLMax,
+                            SQLInsertSubscription;
             //TODO what if MAX is 32767
             int
-                            rowsAffected,
+                            rowsAffectedInsertSubscription,
                             max;
-            SqlCommand      objCommand1,
-                            objCommand2;
+            SqlCommand      objCommandMax,
+                            objCommandInsertSubscription;
             SqlDataReader   subscriptionReader;
             bool            result =        false;
 
@@ -214,35 +213,35 @@ namespace Bookstore
 
 
 
-            SQLStatement1 =                 SQLHelper.Select(   "MAX(Subscription",
+            SQLMax =                        SQLHelper.Select(   "MAX(Subscription",
                                                                 " FROM " + "Subscription",
                                                                 key,
                                                                 ")");
 
-            primary2 =                      key;
-            secondary2 =                    ", @" + parameters[lowestSecondary];
-            PrimarySecondary(ref primary2, ", @", ref secondary2, ", @");
-            SQLStatement2 =                 SQLHelper.Insert(   "Subscription",
-                                                                primary2,
-                                                                secondary2
+            primaryInsertSubscription =     key;
+            secondaryInsertSubscription =   ", @" + parameters[lowestSecondary];
+            PrimarySecondary(ref primaryInsertSubscription, ", @", ref secondaryInsertSubscription, ", @");
+            SQLInsertSubscription =         SQLHelper.Insert(   "Subscription",
+                                                                primaryInsertSubscription,
+                                                                secondaryInsertSubscription
                                                             );
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
             try
             {
-                using (SqlConnection objConn1 = AccessDataSQLServer.GetConnection())
+                using (SqlConnection objConnMax = AccessDataSQLServer.GetConnection())
                 {
-                    objConn1.Open();
-                    using (objCommand1 = new SqlCommand(SQLStatement1, objConn1))
+                    objConnMax.Open();
+                    using (objCommandMax = new SqlCommand(SQLMax, objConnMax))
                     {
-                        using ((subscriptionReader = objCommand1.ExecuteReader(CommandBehavior.CloseConnection)))
+                        using ((subscriptionReader = objCommandMax.ExecuteReader(CommandBehavior.CloseConnection)))
                         {
                             subscriptionReader.Read();
                             Int32.TryParse(subscriptionReader[0].ToString(), out max);
                         }
                     }
-                    objConn1.Close();
+                    objConnMax.Close();
                 }
                 subscription.id =           max + 1;
                 // 1
@@ -293,26 +292,26 @@ namespace Bookstore
                 
                 
                 //
-                using (SqlConnection objConn2 = AccessDataSQLServer.GetConnection())
+                using (SqlConnection objConnInsertSubscription = AccessDataSQLServer.GetConnection())
                 {
-                    objConn2.Open();
+                    objConnInsertSubscription.Open();
                     //Step #2: Code logic to create appropriate SQL Server objects calls
                     //         Cod Logic to retrieve data from database
                     //         Add Try..Catch appropriate block and throw exception back to calling program
-                    using (objCommand2 = new SqlCommand(SQLStatement2, objConn2))
+                    using (objCommandInsertSubscription = new SqlCommand(SQLInsertSubscription, objConnInsertSubscription))
                     {
-                        objCommand2.Parameters.AddWithValue('@' + parameters[0],    subscription.id     );
-                        objCommand2.Parameters.AddWithValue('@' + parameters[1],    subscription.name   );
-                        objCommand2.Parameters.AddWithValue('@' + parameters[2],    subscription.cost   );
+                        objCommandInsertSubscription.Parameters.AddWithValue('@' + parameters[0],   subscription.id     );
+                        objCommandInsertSubscription.Parameters.AddWithValue('@' + parameters[1],   subscription.name   );
+                        objCommandInsertSubscription.Parameters.AddWithValue('@' + parameters[2],   subscription.cost   );
                         //Step #3: return false if record was not added successfully
                         //         return true if record was added successfully  
-                        rowsAffected =  objCommand2.ExecuteNonQuery();
-                        if (rowsAffected > 0)
+                        rowsAffectedInsertSubscription =    objCommandInsertSubscription.ExecuteNonQuery();
+                        if (rowsAffectedInsertSubscription > 0)
                         {
                             result =    true;   //Record was added successfully
                         }
                     }
-                    objConn2.Close();
+                    objConnInsertSubscription.Close();
                 }
             }
             catch (SqlException SQLex)
@@ -518,23 +517,22 @@ namespace Bookstore
         /// <param name="subscription">accepts a custom object of that type as a parameter</param>
         public static bool DeleteSubscription(Subscription subscription)
         {
-            string      
-                        primary1 =      string.Empty,
+            string      primaryDeleteSubscription = string.Empty,
 
 
-                        SQLStatement1
+                        SQLDeleteSubscription
                         ;
-            SqlCommand  objCommand1
+            SqlCommand  objCommandDeleteSubscription
                         ;
-            int         rowsAffected1
+            int         rowsAffectedDeleteSubscription
                         ;
-            bool        result =        false;
+            bool        result =                    false;
 
 
 
-            SQLStatement1 =             SQLHelper.Delete("Subscription",
+            SQLDeleteSubscription =     SQLHelper.Delete("Subscription",
                                                         key,
-                                                        primary1
+                                                        primaryDeleteSubscription
                                                         );
 
 
@@ -554,24 +552,24 @@ namespace Bookstore
 
 
 
-                using (SqlConnection objConn1 = AccessDataSQLServer.GetConnection())
+                using (SqlConnection objConnDeleteSubscription = AccessDataSQLServer.GetConnection())
                 {
-                    objConn1.Open();
+                    objConnDeleteSubscription.Open();
                     //Step #2: Code logic to create appropriate SQL Server objects calls
                     //         Code logic to retrieve data from database
                     //         Add Try..Catch appropriate block and throw exception back to calling program
-                    using (objCommand1 = new SqlCommand(SQLStatement1, objConn1))
+                    using (objCommandDeleteSubscription = new SqlCommand(SQLDeleteSubscription, objConnDeleteSubscription))
                     {
-                        objCommand1.Parameters.AddWithValue('@' + parameters[0], subscription.id);
+                        objCommandDeleteSubscription.Parameters.AddWithValue('@' + parameters[0],   subscription.id);
                         //Step #3: return false if record was not added successfully
                         //         return true if record was added successfully
-                        rowsAffected1 =  objCommand1.ExecuteNonQuery();
-                        if (rowsAffected1 > 0)
+                        rowsAffectedDeleteSubscription =    objCommandDeleteSubscription.ExecuteNonQuery();
+                        if (rowsAffectedDeleteSubscription > 0)
                         {
                             result =    true;   //Record was added successfully
                         }
                     }
-                    objConn1.Close();
+                    objConnDeleteSubscription.Close();
                 }
 
 
