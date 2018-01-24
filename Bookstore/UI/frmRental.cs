@@ -124,33 +124,8 @@ namespace Bookstore
                 try
                 {
                     objRental =                                         Rentals.GetRental(first, second, dtpMediaCheckoutDate.Value);//TODO
-                    if (objRental == null)
+                    if (!BadKey(objRental, first, second))
                     {
-                        String                              tableName = "Rental ";
-                        if (first > -1)
-                        {
-                            tableName +=                                lblMovieNumber.Text + " " + cmbMovieNumber.Text;
-                            if ((second > -1) || (dtpMediaCheckoutDate.Value > new DateTime(1753, 1, 1, 0, 0, 0)))
-                                tableName +=                            ", ";
-                        }
-                        if (second > -1)
-                        {
-                            tableName +=                                lblMemberNumber.Text + " " + cmbMemberNumber.Text;
-                            if (dtpMediaCheckoutDate.Value > new DateTime(1753, 1, 1, 0, 0, 0))
-                                tableName +=                            ", ";
-                        }
-                        if (dtpMediaCheckoutDate.Value > new DateTime(1753, 1, 1, 0, 0, 0))
-                        {
-                            tableName +=                                lblMediaCheckoutDate.Text + " " + dtpMediaCheckoutDate.Text;
-                        }
-
-                        MessageBox.Show(MsgBoxHelper.Selected(tableName), "Failure", MessageBoxButtons.OK, MessageBoxIcon.Information);//TODO if not -1
-                    }
-                    else
-                    {
-                        cmbMovieNumber.SelectedValue =                  objRental.movie_number;
-                        cmbMemberNumber.SelectedValue =                 objRental.member_number;
-                        dtpMediaCheckoutDate.Value =                    objRental.media_checkout_date;
                         dtpMediaReturnDate.Value =                      objRental.media_return_date;
                     }
                 }
@@ -193,33 +168,8 @@ namespace Bookstore
                 try
                 {
                     bool                                    status =    Rentals.UpdateRental(ref objRental);
-                    if (objRental == null)
+                    if (!BadKey(objRental, first, second))
                     {
-                        String                              tableName = "Rental ";
-                        if (first > -1)
-                        {
-                            tableName +=                                lblMovieNumber.Text + " " + cmbMovieNumber.Text;
-                            if ((second > -1) || (dtpMediaCheckoutDate.Value > new DateTime(1753, 1, 1, 0, 0, 0)))
-                                tableName +=                            ", ";
-                        }
-                        if (second > -1)
-                        {
-                            tableName +=                                lblMemberNumber.Text + " " + cmbMemberNumber.Text;
-                            if (dtpMediaCheckoutDate.Value > new DateTime(1753, 1, 1, 0, 0, 0))
-                                tableName +=                            ", ";
-                        }
-                        if (dtpMediaCheckoutDate.Value > new DateTime(1753, 1, 1, 0, 0, 0))
-                        {
-                            tableName +=                                lblMediaCheckoutDate.Text + " " + dtpMediaCheckoutDate.Text;
-                        }
-
-                        MessageBox.Show(MsgBoxHelper.Selected(tableName), "Failure", MessageBoxButtons.OK, MessageBoxIcon.Information);//TODO if not -1
-                    }
-                    else
-                    {
-                        cmbMovieNumber.SelectedValue =                  objRental.movie_number;
-                        cmbMemberNumber.SelectedValue =                 objRental.member_number;
-                        dtpMediaCheckoutDate.Value =                    objRental.media_checkout_date;
                         //objRental.media_return_date =                   dtpMediaReturnDate.Value;//TODO only add if not blank
 
                         if (status)
@@ -273,33 +223,8 @@ namespace Bookstore
                 try
                 {
                     bool                                    status =    Rentals.DeleteRental(ref objRental);
-                    if (objRental == null)
+                    if (!BadKey(objRental, first, second))
                     {
-                        String                              tableName = "Rental ";
-                        if (first > -1)
-                        {
-                            tableName +=                                lblMovieNumber.Text + " " + cmbMovieNumber.Text;
-                            if ((second > -1) || (dtpMediaCheckoutDate.Value > new DateTime(1753, 1, 1, 0, 0, 0)))
-                                tableName +=                            ", ";
-                        }
-                        if (second > -1)
-                        {
-                            tableName +=                                lblMemberNumber.Text + " " + cmbMemberNumber.Text;
-                            if (dtpMediaCheckoutDate.Value > new DateTime(1753, 1, 1, 0, 0, 0))
-                                tableName +=                            ", ";
-                        }
-                        if (dtpMediaCheckoutDate.Value > new DateTime(1753, 1, 1, 0, 0, 0))
-                        {
-                            tableName +=                                lblMediaCheckoutDate.Text + " " + dtpMediaCheckoutDate.Text;
-                        }
-
-                        MessageBox.Show(MsgBoxHelper.Selected(tableName), "Failure", MessageBoxButtons.OK, MessageBoxIcon.Information);//TODO if not -1
-                    }
-                    else
-                    {
-                        cmbMovieNumber.SelectedValue =                  objRental.movie_number;
-                        cmbMemberNumber.SelectedValue =                 objRental.member_number;
-                        dtpMediaCheckoutDate.Value =                    objRental.media_checkout_date;
                         dtpMediaReturnDate.Value =                      objRental.media_return_date;
 
                         if (status)
@@ -327,6 +252,39 @@ namespace Bookstore
             cmbMemberNumber.SelectedIndex = -1;
             dtpMediaCheckoutDate.Value =    new DateTime(1753, 1, 1, 0, 0, 0);
             dtpMediaReturnDate.Value =      new DateTime(1753, 1, 1, 0, 0, 0);
+        }
+
+        private bool BadKey(Rental objRental, int first, int second)
+        {
+            if (objRental == null)
+            {
+                String              tableName = "Rental ";
+                if (first > -1)
+                {
+                    tableName +=                lblMovieNumber.Text + " " + cmbMovieNumber.Text;
+                    if ((second > -1) || (dtpMediaCheckoutDate.Value > new DateTime(1753, 1, 1, 0, 0, 0)))
+                        tableName +=            ", ";
+                }
+                if (second > -1)
+                {
+                    tableName +=                lblMemberNumber.Text + " " + cmbMemberNumber.Text;
+                    if (dtpMediaCheckoutDate.Value > new DateTime(1753, 1, 1, 0, 0, 0))
+                        tableName +=            ", ";
+                }
+                if (dtpMediaCheckoutDate.Value > new DateTime(1753, 1, 1, 0, 0, 0))
+                {
+                    tableName +=                lblMediaCheckoutDate.Text + " " + dtpMediaCheckoutDate.Text;
+                }
+                MessageBox.Show(MsgBoxHelper.Selected(tableName), "Failure", MessageBoxButtons.OK, MessageBoxIcon.Information);//TODO if not -1
+                return  true;
+            }
+            else
+            {
+                cmbMovieNumber.SelectedValue =  objRental.movie_number;
+                cmbMemberNumber.SelectedValue = objRental.member_number;
+                dtpMediaCheckoutDate.Value =    objRental.media_checkout_date;
+                return  false;
+            }
         }
 
         public bool CheckAll()
