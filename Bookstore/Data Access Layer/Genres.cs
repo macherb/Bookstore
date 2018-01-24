@@ -180,20 +180,19 @@ namespace Bookstore
         /// <param name="genre">accepts a custom object of that type as a parameter</param>
         public static bool AddGenre(Genre genre)
         {
-            string          
-                            
-                            primary2,
-                            
-                            secondary2,
+            string
+                            primaryInsertGenre,
 
-                            SQLStatement1,
-                            SQLStatement2;
+                            secondaryInsertGenre,
+
+                            SQLMax,
+                            SQLInsertGenre;
             //TODO what if MAX is 32767
-            int             
-                            rowsAffected,
+            int
+                            rowsAffectedInsertGenre,
                             max;
-            SqlCommand      objCommand1,
-                            objCommand2;
+            SqlCommand      objCommandMax,
+                            objCommandInsertGenre;
             SqlDataReader   genreReader;
             bool            result =        false;
 
@@ -208,35 +207,35 @@ namespace Bookstore
 
 
 
-            SQLStatement1 =                 SQLHelper.Select(   "MAX(Genre",
+            SQLMax =                        SQLHelper.Select(   "MAX(Genre",
                                                                 " FROM " + "Genre",
                                                                 key,
                                                                 ")");
 
-            primary2 =                      key;
-            secondary2 =                    ", @" + parameters[lowestSecondary];
-            PrimarySecondary(ref primary2, ", @", ref secondary2, ", @");
-            SQLStatement2 =                 SQLHelper.Insert(   "Genre",
-                                                                primary2,
-                                                                secondary2
+            primaryInsertGenre =            key;
+            secondaryInsertGenre =          ", @" + parameters[lowestSecondary];
+            PrimarySecondary(ref primaryInsertGenre, ", @", ref secondaryInsertGenre, ", @");
+            SQLInsertGenre =                SQLHelper.Insert(   "Genre",
+                                                                primaryInsertGenre,
+                                                                secondaryInsertGenre
                                                             );
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
             try
             {
-                using (SqlConnection objConn1 = AccessDataSQLServer.GetConnection())
+                using (SqlConnection objConnMax = AccessDataSQLServer.GetConnection())
                 {
-                    objConn1.Open();
-                    using (objCommand1 = new SqlCommand(SQLStatement1, objConn1))
+                    objConnMax.Open();
+                    using (objCommandMax = new SqlCommand(SQLMax, objConnMax))
                     {
-                        using ((genreReader = objCommand1.ExecuteReader(CommandBehavior.CloseConnection)))
+                        using ((genreReader = objCommandMax.ExecuteReader(CommandBehavior.CloseConnection)))
                         {
                             genreReader.Read();
                             Int32.TryParse(genreReader[0].ToString(), out max);
                         }
                     }
-                    objConn1.Close();
+                    objConnMax.Close();
                 }
                 genre.id =                  max + 1;
 
@@ -287,25 +286,25 @@ namespace Bookstore
 
 
 
-                using (SqlConnection objConn2 = AccessDataSQLServer.GetConnection())
+                using (SqlConnection objConnInsertGenre = AccessDataSQLServer.GetConnection())
                 {
-                    objConn2.Open();
+                    objConnInsertGenre.Open();
                     //Step #2: Code logic to create appropriate SQL Server objects calls
                     //         Cod Logic to retrieve data from database
                     //         Add Try..Catch appropriate block and throw exception back to calling program
-                    using (objCommand2 = new SqlCommand(SQLStatement2, objConn2))
+                    using (objCommandInsertGenre = new SqlCommand(SQLInsertGenre, objConnInsertGenre))
                     {
-                        objCommand2.Parameters.AddWithValue('@' + parameters[0],    genre.id    );
-                        objCommand2.Parameters.AddWithValue('@' + parameters[1],    genre.name  );
+                        objCommandInsertGenre.Parameters.AddWithValue('@' + parameters[0],  genre.id    );
+                        objCommandInsertGenre.Parameters.AddWithValue('@' + parameters[1],  genre.name  );
                         //Step #3: return false if record was not added successfully
                         //         return true if record was added successfully  
-                        rowsAffected =  objCommand2.ExecuteNonQuery();
-                        if (rowsAffected > 0)
+                        rowsAffectedInsertGenre =   objCommandInsertGenre.ExecuteNonQuery();
+                        if (rowsAffectedInsertGenre > 0)
                         {
                             result =    true;   //Record was added successfully
                         }
                     }
-                    objConn2.Close();
+                    objConnInsertGenre.Close();
                 }
             }
             catch (SqlException SQLex)
@@ -353,7 +352,7 @@ namespace Bookstore
 
 
 
-            primary =                      key                         + " = @" + key                        ;
+            primary =                       key                         + " = @" + key                        ;
             secondary =                     parameters[lowestSecondary] + " = @" + parameters[lowestSecondary];
             
 
@@ -450,7 +449,7 @@ namespace Bookstore
                         rowsAffected =  objCommand.ExecuteNonQuery();
                         if (rowsAffected > 0)
                         {
-                            result = true;   //Record was added successfully
+                            result =    true;   //Record was added successfully
                         }
                     }
                     objConn.Close();
@@ -510,23 +509,22 @@ namespace Bookstore
         /// <param name="genre">accepts a custom object of that type as a parameter</param>
         public static bool DeleteGenre(Genre genre)
         {
-            string      
-                        primary1 =      string.Empty,
+            string      primaryDeleteGenre =    string.Empty,
 
 
-                        SQLStatement1
+                        SQLDeleteGenre
                         ;
-            SqlCommand  objCommand1
+            SqlCommand  objCommandDeleteGenre
                         ;
-            int         rowsAffected1
+            int         rowsAffectedDeleteGenre
                         ;
-            bool        result =        false;
+            bool        result =                false;
 
 
 
-            SQLStatement1 =             SQLHelper.Delete("Genre",
+            SQLDeleteGenre =            SQLHelper.Delete("Genre",
                                                         key,
-                                                        primary1
+                                                        primaryDeleteGenre
                                                         );
 
 
@@ -546,24 +544,24 @@ namespace Bookstore
 
 
 
-                using (SqlConnection objConn1 = AccessDataSQLServer.GetConnection())
+                using (SqlConnection objConnDeleteGenre = AccessDataSQLServer.GetConnection())
                 {
-                    objConn1.Open();
+                    objConnDeleteGenre.Open();
                     //Step #2: Code logic to create appropriate SQL Server objects calls
                     //         Code logic to retrieve data from database
                     //         Add Try..Catch appropriate block and throw exception back to calling program
-                    using (objCommand1 = new SqlCommand(SQLStatement1, objConn1))
+                    using (objCommandDeleteGenre = new SqlCommand(SQLDeleteGenre, objConnDeleteGenre))
                     {
-                        objCommand1.Parameters.AddWithValue('@' + parameters[0], genre.id);
+                        objCommandDeleteGenre.Parameters.AddWithValue('@' + parameters[0],  genre.id);
                         //Step #3: return false if record was not added successfully
                         //         return true if record was added successfully
-                        rowsAffected1 =  objCommand1.ExecuteNonQuery();
-                        if (rowsAffected1 > 0)
+                        rowsAffectedDeleteGenre =   objCommandDeleteGenre.ExecuteNonQuery();
+                        if (rowsAffectedDeleteGenre > 0)
                         {
                             result =    true;   //Record was added successfully
                         }
                     }
-                    objConn1.Close();
+                    objConnDeleteGenre.Close();
                 }
 
 
