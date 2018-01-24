@@ -179,20 +179,19 @@ namespace Bookstore
         /// <param name="vendor">accepts a custom object of that type as a parameter</param>
         public static bool AddVendor(Vendor vendor)
         {
-            string          
-                            
-                            primary2,
-                            
-                            secondary2,
+            string
+                            primaryInsertVendor,
 
-                            SQLStatement1,
-                            SQLStatement2;
+                            secondaryInsertVendor,
+
+                            SQLMax,
+                            SQLInsertVendor;
             //TODO what if MAX is 32767
-            int             
-                            rowsAffected,
+            int
+                            rowsAffectedInsertVendor,
                             max;
-            SqlCommand      objCommand1,
-                            objCommand2;
+            SqlCommand      objCommandMax,
+                            objCommandInsertVendor;
             SqlDataReader   vendorReader;
             bool            result =        false;
 
@@ -207,35 +206,35 @@ namespace Bookstore
 
 
 
-            SQLStatement1 =                 SQLHelper.Select(   "MAX(Vendor",
+            SQLMax =                        SQLHelper.Select(   "MAX(Vendor",
                                                                 " FROM " + "Vendor",
                                                                 key,
                                                                 ")");
 
-            primary2 =                      key;
-            secondary2 =                    ", @" + parameters[lowestSecondary];
-            PrimarySecondary(ref primary2, ", @", ref secondary2, ", @");
-            SQLStatement2 =                 SQLHelper.Insert(   "Vendor",
-                                                                primary2,
-                                                                secondary2
+            primaryInsertVendor =           key;
+            secondaryInsertVendor =         ", @" + parameters[lowestSecondary];
+            PrimarySecondary(ref primaryInsertVendor, ", @", ref secondaryInsertVendor, ", @");
+            SQLInsertVendor =               SQLHelper.Insert(   "Vendor",
+                                                                primaryInsertVendor,
+                                                                secondaryInsertVendor
                                                             );
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
             try
             {
-                using (SqlConnection objConn1 = AccessDataSQLServer.GetConnection())
+                using (SqlConnection objConnMax = AccessDataSQLServer.GetConnection())
                 {
-                    objConn1.Open();
-                    using (objCommand1 = new SqlCommand(SQLStatement1, objConn1))
+                    objConnMax.Open();
+                    using (objCommandMax = new SqlCommand(SQLMax, objConnMax))
                     {
-                        using ((vendorReader = objCommand1.ExecuteReader(CommandBehavior.CloseConnection)))
+                        using ((vendorReader = objCommandMax.ExecuteReader(CommandBehavior.CloseConnection)))
                         {
                             vendorReader.Read();
                             Int32.TryParse(vendorReader[0].ToString(), out max);
                         }
                     }
-                    objConn1.Close();
+                    objConnMax.Close();
                 }
                 vendor.id =                 max + 1;
 
@@ -286,25 +285,25 @@ namespace Bookstore
 
 
 
-                using (SqlConnection objConn2 = AccessDataSQLServer.GetConnection())
+                using (SqlConnection objConnInsertVendor = AccessDataSQLServer.GetConnection())
                 {
-                    objConn2.Open();
+                    objConnInsertVendor.Open();
                     //Step #2: Code logic to create appropriate SQL Server objects calls
                     //         Cod Logic to retrieve data from database
                     //         Add Try..Catch appropriate block and throw exception back to calling program
-                    using (objCommand2 = new SqlCommand(SQLStatement2, objConn2))
+                    using (objCommandInsertVendor = new SqlCommand(SQLInsertVendor, objConnInsertVendor))
                     {
-                        objCommand2.Parameters.AddWithValue('@' + parameters[0],    vendor.id   );
-                        objCommand2.Parameters.AddWithValue('@' + parameters[1],    vendor.name );
+                        objCommandInsertVendor.Parameters.AddWithValue('@' + parameters[0], vendor.id   );
+                        objCommandInsertVendor.Parameters.AddWithValue('@' + parameters[1], vendor.name );
                         //Step #3: return false if record was not added successfully
                         //         return true if record was added successfully  
-                        rowsAffected =  objCommand2.ExecuteNonQuery();
-                        if (rowsAffected > 0)
+                        rowsAffectedInsertVendor =  objCommandInsertVendor.ExecuteNonQuery();
+                        if (rowsAffectedInsertVendor > 0)
                         {
                             result =    true;   //Record was added successfully
                         }
                     }
-                    objConn2.Close();
+                    objConnInsertVendor.Close();
                 }
             }
             catch (SqlException SQLex)
@@ -509,23 +508,22 @@ namespace Bookstore
         /// <param name="vendor">accepts a custom object of that type as a parameter</param>
         public static bool DeleteVendor(Vendor vendor)
         {
-            string      
-                        primary1 =      string.Empty,
+            string      primaryDeleteVendor =   string.Empty,
 
 
-                        SQLStatement1
+                        SQLDeleteVendor
                         ;
-            SqlCommand  objCommand1
+            SqlCommand  objCommandDeleteVendor
                         ;
-            int         rowsAffected1
+            int         rowsAffectedDeleteVendor
                         ;
-            bool        result =        false;
-            
+            bool        result =                false;
 
 
-            SQLStatement1 =             SQLHelper.Delete("Vendor",
+
+            SQLDeleteVendor =           SQLHelper.Delete("Vendor",
                                                         key,
-                                                        primary1
+                                                        primaryDeleteVendor
                                                         );
 
             
@@ -545,24 +543,24 @@ namespace Bookstore
 
 
 
-                using (SqlConnection objConn1 = AccessDataSQLServer.GetConnection())
+                using (SqlConnection objConnDeleteVendor = AccessDataSQLServer.GetConnection())
                 {
-                    objConn1.Open();
+                    objConnDeleteVendor.Open();
                     //Step #2: Code logic to create appropriate SQL Server objects calls
                     //         Code logic to retrieve data from database
                     //         Add Try..Catch appropriate block and throw exception back to calling program
-                    using (objCommand1 = new SqlCommand(SQLStatement1, objConn1))
+                    using (objCommandDeleteVendor = new SqlCommand(SQLDeleteVendor, objConnDeleteVendor))
                     {
-                        objCommand1.Parameters.AddWithValue('@' + parameters[0], vendor.id   );
+                        objCommandDeleteVendor.Parameters.AddWithValue('@' + parameters[0], vendor.id   );
                         //Step #3: return false if record was not added successfully
                         //         return true if record was added successfully
-                        rowsAffected1 =  objCommand1.ExecuteNonQuery();
-                        if (rowsAffected1 > 0)
+                        rowsAffectedDeleteVendor =  objCommandDeleteVendor.ExecuteNonQuery();
+                        if (rowsAffectedDeleteVendor > 0)
                         {
                             result =    true;   //Record was added successfully
                         }
                     }
-                    objConn1.Close();
+                    objConnDeleteVendor.Close();
                 }
 
 
