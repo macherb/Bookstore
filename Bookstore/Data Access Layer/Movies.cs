@@ -28,6 +28,39 @@ namespace Bookstore
 
         #region Private functions
 
+        private static bool WriteMovie(string SQLStatement, Movie movie)
+        {
+            SqlCommand  objCommand;
+            int         rowsAffected;
+            bool        result =        false;
+
+            using (SqlConnection objConn = AccessDataSQLServer.GetConnection())
+            {
+                objConn.Open();
+                using (objCommand = new SqlCommand(SQLStatement, objConn))
+                {
+                    objCommand.Parameters.AddWithValue('@' + parameters[ 0],    movie.movie_number      );
+                    objCommand.Parameters.AddWithValue('@' + parameters[ 1],    movie.movie_title       );
+                    objCommand.Parameters.AddWithValue('@' + parameters[ 2],    movie.Description       );
+                    objCommand.Parameters.AddWithValue('@' + parameters[ 3],    movie.movie_year_made   );
+                    objCommand.Parameters.AddWithValue('@' + parameters[ 4],    movie.genre_id          );
+                    objCommand.Parameters.AddWithValue('@' + parameters[ 5],    movie.movie_rating      );
+                    objCommand.Parameters.AddWithValue('@' + parameters[ 6],    movie.media_type        );
+                    objCommand.Parameters.AddWithValue('@' + parameters[ 7],    movie.movie_retail_cost );
+                    objCommand.Parameters.AddWithValue('@' + parameters[ 8],    movie.copies_on_hand    );
+                    objCommand.Parameters.AddWithValue('@' + parameters[ 9],    movie.image             );
+                    objCommand.Parameters.AddWithValue('@' + parameters[10],    movie.trailer           );
+                    rowsAffected =  objCommand.ExecuteNonQuery();
+                    if (rowsAffected > 0)
+                    {
+                        result =    true;   //Record was added successfully
+                    }
+                }
+                objConn.Close();
+            }
+            return  result;
+        }
+
         private static void PrimarySecondary(ref string primary, string preprimary, ref string secondary, string presecondary)
         {
             for (int i = 1                  ; i < lowestSecondary  ; i++)
@@ -35,6 +68,12 @@ namespace Bookstore
             for (int i = lowestSecondary + 1; i < parameters.Length; i++)
                 secondary +=    presecondary + parameters[i];
         }
+
+
+
+
+
+
 
         #endregion
 
@@ -168,6 +207,7 @@ namespace Bookstore
                     //Step #2: Code logic to create appropriate SQL Server objects calls
                     //         Code logic to retrieve data from database
                     //         Add Try..Catch appropriate block and throw exception back to calling program            
+
                     using (objCommand = new SqlCommand(SQLStatement, objConn))
                     {
                         objCommand.Parameters.AddWithValue('@' + parameters[0], parameter);
@@ -201,6 +241,8 @@ namespace Bookstore
                         }
                     }
                     objConn.Close();
+
+
                 }
             }
             catch (SqlException SQLex)
@@ -220,64 +262,52 @@ namespace Bookstore
         /// <param name="movie">accepts a custom object of that type as a parameter</param>
         public static bool AddMovie(Movie movie)
         {
-            string
-                            primaryInsertMovie,
-
-                            secondaryInsertMovie,
-
+            string          primary,
+                            secondary,
                             SQLMax,
                             SQLInsertMovie;
 
-            int
-                            rowsAffectedInsertMovie,
-                            max;
-            SqlCommand      objCommandMax,
-                            objCommandInsertMovie;
+            int             max;
+            SqlCommand      objCommand;
             SqlDataReader   movieReader;
-            bool            result =        false;
-
-
-
-
-
-
-
-
-
-
-
+            bool            result;
 
             SQLMax =                        SQLHelper.Select(   "MAX(Movie",
                                                                 " FROM " + "Movie",
                                                                 key,
                                                                 ")");
 
-            primaryInsertMovie =            key;
-            secondaryInsertMovie =          ", @" + parameters[lowestSecondary];
-            PrimarySecondary(ref primaryInsertMovie, ", @", ref secondaryInsertMovie, ", @");
+            primary =                       key;
+            secondary =                     ", @" + parameters[lowestSecondary];
+            PrimarySecondary(ref primary, ", @", ref secondary, ", @");
             SQLInsertMovie =                SQLHelper.Insert(   "Movie",
-                                                                primaryInsertMovie,
-                                                                secondaryInsertMovie
+                                                                primary,
+                                                                secondary
                                                             );
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
             try
             {
-                using (SqlConnection objConnMax = AccessDataSQLServer.GetConnection())
+                using (SqlConnection objConn = AccessDataSQLServer.GetConnection())
                 {
-                    objConnMax.Open();
-                    using (objCommandMax = new SqlCommand(SQLMax, objConnMax))
+                    objConn.Open();
+                    using (objCommand = new SqlCommand(SQLMax, objConn))
                     {
-                        using ((movieReader = objCommandMax.ExecuteReader(CommandBehavior.CloseConnection)))
+                        using ((movieReader = objCommand.ExecuteReader(CommandBehavior.CloseConnection)))
                         {
                             movieReader.Read();
                             Int32.TryParse(movieReader[0].ToString(), out max);
                         }
                     }
-                    objConnMax.Close();
+                    objConn.Close();
                 }
                 movie.movie_number =        max + 1;
+                
+
+
+
+                
 
 
 
@@ -287,74 +317,7 @@ namespace Bookstore
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                using (SqlConnection objConnInsertMovie = AccessDataSQLServer.GetConnection())
-                {
-                    objConnInsertMovie.Open();
-                    //Step #2: Code logic to create appropriate SQL Server objects calls
-                    //         Cod Logic to retrieve data from database
-                    //         Add Try..Catch appropriate block and throw exception back to calling program
-                    using (objCommandInsertMovie = new SqlCommand(SQLInsertMovie, objConnInsertMovie))
-                    {
-                        objCommandInsertMovie.Parameters.AddWithValue('@' + parameters[ 0], movie.movie_number      );
-                        objCommandInsertMovie.Parameters.AddWithValue('@' + parameters[ 1], movie.movie_title       );
-                        objCommandInsertMovie.Parameters.AddWithValue('@' + parameters[ 2], movie.Description       );
-                        objCommandInsertMovie.Parameters.AddWithValue('@' + parameters[ 3], movie.movie_year_made   );
-                        objCommandInsertMovie.Parameters.AddWithValue('@' + parameters[ 4], movie.genre_id          );
-                        objCommandInsertMovie.Parameters.AddWithValue('@' + parameters[ 5], movie.movie_rating      );
-                        objCommandInsertMovie.Parameters.AddWithValue('@' + parameters[ 6], movie.media_type        );
-                        objCommandInsertMovie.Parameters.AddWithValue('@' + parameters[ 7], movie.movie_retail_cost );
-                        objCommandInsertMovie.Parameters.AddWithValue('@' + parameters[ 8], movie.copies_on_hand    );
-                        objCommandInsertMovie.Parameters.AddWithValue('@' + parameters[ 9], movie.image             );
-                        objCommandInsertMovie.Parameters.AddWithValue('@' + parameters[10], movie.trailer           );
-                        //Step #3: return false if record was not added successfully
-                        //         return true if record was added successfully
-                        rowsAffectedInsertMovie =   objCommandInsertMovie.ExecuteNonQuery();
-                        if (rowsAffectedInsertMovie > 0)
-                        {
-                            result =    true;   //Record was added successfully
-                        }
-                    }
-                    objConnInsertMovie.Close();
-                }
+                result =    WriteMovie(SQLInsertMovie, movie);
             }
             catch (SqlException SQLex)
             {
@@ -373,33 +336,11 @@ namespace Bookstore
         /// <param name="movie">accepts a custom object of that type as a parameter</param>
         public static bool UpdateMovie(Movie movie)
         {
-            string      
-                            primary,
-                        
 
-                            secondary,
-                        
-
-                            SQLStatement
-                            
-                            
-                            ;
-
-            SqlCommand      objCommand
-
-                            ;
-            int             rowsAffected
-                            ;
-            bool            result =        false;
-
-
-
-
-
-
-
-
-
+            string          primary,
+                            secondary,                        
+                            SQLStatement;
+            bool            result;
 
             primary =                       key                         + " = @" + key                        ;
             secondary =                     parameters[lowestSecondary] + " = @" + parameters[lowestSecondary];
@@ -413,20 +354,6 @@ namespace Bookstore
                                                                 secondary
                                                             );
 
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
             try
@@ -437,9 +364,11 @@ namespace Bookstore
 
 
 
+                
 
 
 
+                
 
 
 
@@ -456,6 +385,7 @@ namespace Bookstore
 
 
 
+                
 
 
 
@@ -470,85 +400,7 @@ namespace Bookstore
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-                using (SqlConnection objConn = AccessDataSQLServer.GetConnection())
-                {
-                    objConn.Open();
-                    //Step #2: Code logic to create appropriate SQL Server objects calls
-                    //         Code logic to retrieve data from database
-                    //         Add Try..Catch appropriate block and throw exception back to calling program
-                    using (objCommand = new SqlCommand(SQLStatement, objConn))
-                    {
-                        objCommand.Parameters.AddWithValue('@' + parameters[ 0], movie.movie_number     );
-                        objCommand.Parameters.AddWithValue('@' + parameters[ 1], movie.movie_title      );
-                        objCommand.Parameters.AddWithValue('@' + parameters[ 2], movie.Description      );
-                        objCommand.Parameters.AddWithValue('@' + parameters[ 3], movie.movie_year_made  );
-                        objCommand.Parameters.AddWithValue('@' + parameters[ 4], movie.genre_id         );
-                        objCommand.Parameters.AddWithValue('@' + parameters[ 5], movie.movie_rating     );
-                        objCommand.Parameters.AddWithValue('@' + parameters[ 6], movie.media_type       );
-                        objCommand.Parameters.AddWithValue('@' + parameters[ 7], movie.movie_retail_cost);
-                        objCommand.Parameters.AddWithValue('@' + parameters[ 8], movie.copies_on_hand   );
-                        objCommand.Parameters.AddWithValue('@' + parameters[ 9], movie.image            );
-                        objCommand.Parameters.AddWithValue('@' + parameters[10], movie.trailer          );
-                        //Step #3: return false if record was not added successfully
-                        //         return true if record was added successfully
-                        rowsAffected =  objCommand.ExecuteNonQuery();
-                        if (rowsAffected > 0)
-                        {
-                            result =    true;   //Record was added successfully
-                        }
-                    }
-                    objConn.Close();
-                }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                result =    WriteMovie(SQLStatement, movie);
             }
             catch (SqlException SQLex)
             {
@@ -567,31 +419,19 @@ namespace Bookstore
         /// <param name="movie">accepts a custom object of that type as a parameter</param>
         public static bool DeleteMovie(Movie movie)
         {
-            string      primaryDeleteMovie =    string.Empty,
-
-
-                        SQLDeleteMovie
-                        ;
-            SqlCommand  objCommandDeleteMovie
-                        ;
-            int         rowsAffectedDeleteMovie
-                        ;
-            bool        result =                false;
+            string      primary =       string.Empty,
+                        SQLStatement;
+            SqlCommand  objCommand;
+            int         rowsAffected;
+            bool        result =        false;
 
 
 
-            SQLDeleteMovie =            SQLHelper.Delete("Movie",
+            SQLStatement =              SQLHelper.Delete("Movie",
                                                         key,
-                                                        primaryDeleteMovie
+                                                        primary
                                                         );
 
-
-            
-            
-            
-            
-            
-            
             //Step# 1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
             try
@@ -602,38 +442,25 @@ namespace Bookstore
 
 
 
-                using (SqlConnection objConnDeleteMovie = AccessDataSQLServer.GetConnection())
+                using (SqlConnection objConn = AccessDataSQLServer.GetConnection())
                 {
-                    objConnDeleteMovie.Open();
+                    objConn.Open();
                     //Step #2: Code logic to create appropriate SQL Server objects calls
                     //         Code logic to retrieve data from database
                     //         Add Try..Catch appropriate block and throw exception back to calling program
-                    using (objCommandDeleteMovie = new SqlCommand(SQLDeleteMovie, objConnDeleteMovie))
+                    using (objCommand = new SqlCommand(SQLStatement, objConn))
                     {
-                        objCommandDeleteMovie.Parameters.AddWithValue('@' + parameters[0],  movie.movie_number);
+                        objCommand.Parameters.AddWithValue('@' + parameters[0], movie.movie_number  );
                         //Step #3: return false if record was not added successfully
                         //         return true if record was added successfully
-                        rowsAffectedDeleteMovie =   objCommandDeleteMovie.ExecuteNonQuery();
-                        if (rowsAffectedDeleteMovie > 0)
+                        rowsAffected =  objCommand.ExecuteNonQuery();
+                        if (rowsAffected > 0)
                         {
                             result =    true;   //Record was added successfully
                         }
                     }
-                    objConnDeleteMovie.Close();
+                    objConn.Close();
                 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
