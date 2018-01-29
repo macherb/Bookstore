@@ -25,6 +25,30 @@ namespace Bookstore
 
         #region Private functions
 
+        private static bool WriteVendor(string SQLStatement, Vendor vendor)
+        {
+            SqlCommand  objCommand;
+            int         rowsAffected;
+            bool        result =        false;
+
+            using (SqlConnection objConn = AccessDataSQLServer.GetConnection())
+            {
+                objConn.Open();
+                using (objCommand = new SqlCommand(SQLStatement, objConn))
+                {
+                    objCommand.Parameters.AddWithValue('@' + parameters[0], vendor.id   );
+                    objCommand.Parameters.AddWithValue('@' + parameters[1], vendor.name );
+                    rowsAffected =  objCommand.ExecuteNonQuery();
+                    if (rowsAffected > 0)
+                    {
+                        result =    true;   //Record was added successfully
+                    }
+                }
+                objConn.Close();
+            }
+            return  result;
+        }
+
         private static void PrimarySecondary(ref string primary, string preprimary, ref string secondary, string presecondary)
         {
             for (int i = 1                  ; i < lowestSecondary  ; i++)
@@ -33,6 +57,12 @@ namespace Bookstore
                 secondary +=    presecondary + parameters[i];
         }
 
+
+        
+        
+        
+        
+        
         #endregion
 
         #region Public functions
@@ -145,6 +175,7 @@ namespace Bookstore
                     //Step #2: Code logic to create appropriate SQL Server objects calls
                     //         Code logic to retrieve data from database
                     //         Add Try..Catch appropriate block and throw exception back to calling program            
+
                     using (objCommand = new SqlCommand(SQLStatement, objConn))
                     {
                         objCommand.Parameters.AddWithValue('@' + parameters[0], parameter);
@@ -160,6 +191,8 @@ namespace Bookstore
                         }
                     }
                     objConn.Close();
+
+
                 }
             }
             catch (SqlException SQLex)
@@ -179,64 +212,52 @@ namespace Bookstore
         /// <param name="vendor">accepts a custom object of that type as a parameter</param>
         public static bool AddVendor(Vendor vendor)
         {
-            string
-                            primaryInsertVendor,
-
-                            secondaryInsertVendor,
-
+            string          primary,
+                            secondary,
                             SQLMax,
                             SQLInsertVendor;
             //TODO what if MAX is 32767
-            int
-                            rowsAffectedInsertVendor,
-                            max;
-            SqlCommand      objCommandMax,
-                            objCommandInsertVendor;
+            int             max;
+            SqlCommand      objCommand;
             SqlDataReader   vendorReader;
-            bool            result =        false;
-
-
-
-
-
-
-
-
-
-
-
+            bool            result;
 
             SQLMax =                        SQLHelper.Select(   "MAX(Vendor",
                                                                 " FROM " + "Vendor",
                                                                 key,
                                                                 ")");
 
-            primaryInsertVendor =           key;
-            secondaryInsertVendor =         ", @" + parameters[lowestSecondary];
-            PrimarySecondary(ref primaryInsertVendor, ", @", ref secondaryInsertVendor, ", @");
+            primary =                       key;
+            secondary =                     ", @" + parameters[lowestSecondary];
+            PrimarySecondary(ref primary, ", @", ref secondary, ", @");
             SQLInsertVendor =               SQLHelper.Insert(   "Vendor",
-                                                                primaryInsertVendor,
-                                                                secondaryInsertVendor
+                                                                primary,
+                                                                secondary
                                                             );
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
             try
             {
-                using (SqlConnection objConnMax = AccessDataSQLServer.GetConnection())
+                using (SqlConnection objConn = AccessDataSQLServer.GetConnection())
                 {
-                    objConnMax.Open();
-                    using (objCommandMax = new SqlCommand(SQLMax, objConnMax))
+                    objConn.Open();
+                    using (objCommand = new SqlCommand(SQLMax, objConn))
                     {
-                        using ((vendorReader = objCommandMax.ExecuteReader(CommandBehavior.CloseConnection)))
+                        using ((vendorReader = objCommand.ExecuteReader(CommandBehavior.CloseConnection)))
                         {
                             vendorReader.Read();
                             Int32.TryParse(vendorReader[0].ToString(), out max);
                         }
                     }
-                    objConnMax.Close();
+                    objConn.Close();
                 }
                 vendor.id =                 max + 1;
+                
+
+
+
+                
 
 
 
@@ -246,65 +267,7 @@ namespace Bookstore
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                using (SqlConnection objConnInsertVendor = AccessDataSQLServer.GetConnection())
-                {
-                    objConnInsertVendor.Open();
-                    //Step #2: Code logic to create appropriate SQL Server objects calls
-                    //         Cod Logic to retrieve data from database
-                    //         Add Try..Catch appropriate block and throw exception back to calling program
-                    using (objCommandInsertVendor = new SqlCommand(SQLInsertVendor, objConnInsertVendor))
-                    {
-                        objCommandInsertVendor.Parameters.AddWithValue('@' + parameters[0], vendor.id   );
-                        objCommandInsertVendor.Parameters.AddWithValue('@' + parameters[1], vendor.name );
-                        //Step #3: return false if record was not added successfully
-                        //         return true if record was added successfully  
-                        rowsAffectedInsertVendor =  objCommandInsertVendor.ExecuteNonQuery();
-                        if (rowsAffectedInsertVendor > 0)
-                        {
-                            result =    true;   //Record was added successfully
-                        }
-                    }
-                    objConnInsertVendor.Close();
-                }
+                result =    WriteVendor(SQLInsertVendor, vendor);
             }
             catch (SqlException SQLex)
             {
@@ -323,33 +286,11 @@ namespace Bookstore
         /// <param name="vendor">accepts a custom object of that type as a parameter</param>
         public static bool UpdateVendor(Vendor vendor)
         {
-            string      
-                            primary,
-                        
-
+            
+            string          primary,
                             secondary,
-                        
-
-                            SQLStatement
-                            
-                            
-                            ;
-
-            SqlCommand      objCommand
-
-                            ;
-            int             rowsAffected
-                            ;
-            bool            result =        false;
-
-
-
-
-
-
-
-
-
+                            SQLStatement;
+            bool            result;
 
             primary =                       key                         + " = @" + key                        ;
             secondary =                     parameters[lowestSecondary] + " = @" + parameters[lowestSecondary];
@@ -363,20 +304,6 @@ namespace Bookstore
                                                                 secondary
                                                             );
 
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
             try
@@ -387,9 +314,11 @@ namespace Bookstore
 
 
 
+                
 
 
 
+                
 
 
 
@@ -406,6 +335,7 @@ namespace Bookstore
 
 
 
+                
 
 
 
@@ -420,76 +350,7 @@ namespace Bookstore
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-                using (SqlConnection objConn = AccessDataSQLServer.GetConnection())
-                {
-                    objConn.Open();
-                    //Step #2: Code logic to create appropriate SQL Server objects calls
-                    //         Code logic to retrieve data from database
-                    //         Add Try..Catch appropriate block and throw exception back to calling program
-                    using (objCommand = new SqlCommand(SQLStatement, objConn))
-                    {
-                        objCommand.Parameters.AddWithValue('@' + parameters[0], vendor.id   );
-                        objCommand.Parameters.AddWithValue('@' + parameters[1], vendor.name );
-                        //Step #3: return false if record was not added successfully
-                        //         return true if record was added successfully           
-                        rowsAffected =  objCommand.ExecuteNonQuery();
-                        if (rowsAffected > 0)
-                        {
-                            result =    true;   //Record was added successfully
-                        }
-                    }
-                    objConn.Close();
-                }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                result =    WriteVendor(SQLStatement, vendor);
             }
             catch (SqlException SQLex)
             {
@@ -508,31 +369,19 @@ namespace Bookstore
         /// <param name="vendor">accepts a custom object of that type as a parameter</param>
         public static bool DeleteVendor(Vendor vendor)
         {
-            string      primaryDeleteVendor =   string.Empty,
-
-
-                        SQLDeleteVendor
-                        ;
-            SqlCommand  objCommandDeleteVendor
-                        ;
-            int         rowsAffectedDeleteVendor
-                        ;
-            bool        result =                false;
+            string      primary =       string.Empty,
+                        SQLStatement;
+            SqlCommand  objCommand;
+            int         rowsAffected;
+            bool        result =        false;
 
 
 
-            SQLDeleteVendor =           SQLHelper.Delete("Vendor",
+            SQLStatement =              SQLHelper.Delete("Vendor",
                                                         key,
-                                                        primaryDeleteVendor
+                                                        primary
                                                         );
 
-            
-            
-            
-            
-            
-            
-            
             //Step# 1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
             try
@@ -543,38 +392,25 @@ namespace Bookstore
 
 
 
-                using (SqlConnection objConnDeleteVendor = AccessDataSQLServer.GetConnection())
+                using (SqlConnection objConn = AccessDataSQLServer.GetConnection())
                 {
-                    objConnDeleteVendor.Open();
+                    objConn.Open();
                     //Step #2: Code logic to create appropriate SQL Server objects calls
                     //         Code logic to retrieve data from database
                     //         Add Try..Catch appropriate block and throw exception back to calling program
-                    using (objCommandDeleteVendor = new SqlCommand(SQLDeleteVendor, objConnDeleteVendor))
+                    using (objCommand = new SqlCommand(SQLStatement, objConn))
                     {
-                        objCommandDeleteVendor.Parameters.AddWithValue('@' + parameters[0], vendor.id   );
+                        objCommand.Parameters.AddWithValue('@' + parameters[0], vendor.id   );
                         //Step #3: return false if record was not added successfully
                         //         return true if record was added successfully
-                        rowsAffectedDeleteVendor =  objCommandDeleteVendor.ExecuteNonQuery();
-                        if (rowsAffectedDeleteVendor > 0)
+                        rowsAffected =  objCommand.ExecuteNonQuery();
+                        if (rowsAffected > 0)
                         {
                             result =    true;   //Record was added successfully
                         }
                     }
-                    objConnDeleteVendor.Close();
+                    objConn.Close();
                 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
