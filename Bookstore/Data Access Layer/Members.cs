@@ -8,14 +8,15 @@ using System.Threading.Tasks;
 
 namespace Bookstore
 {
-    class Members
+    class Members : BaseTable
     {
         #region Private variables
 
         private static string[] parameters =        { "number", "joindate", "firstname", "lastname", "address", "city", "state", "zipcode", "phone", "member_status", "login_name", "password", "email", "contact_method", "subscription_id", "photo" };
         private static string   foreign =           "Member." + parameters[14];
-        private static int      lowestSecondary =   1;
 
+        private static int      lowestSecondary =   1;
+        //TODO put all SQLStatements here
         #endregion
 
         #region Public variables
@@ -28,6 +29,43 @@ namespace Bookstore
 
         #region Private functions
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="memberReader"></param>
+        /// <param name="objMember"></param>
+        private static void SetSecondary(SqlDataReader memberReader, Member objMember)
+        {
+            int                     contact_method,
+                                    subscription_id;
+            DateTime                joindate;
+
+            DateTime.TryParse(                      memberReader[parameters[ 1]     ].ToString(), out joindate       );
+            objMember.joindate =                    joindate;
+            objMember.firstname =                   memberReader[parameters[ 2]     ].ToString();
+            objMember.lastname =                    memberReader[parameters[ 3]     ].ToString();
+            objMember.address =                     memberReader[parameters[ 4]     ].ToString();
+            objMember.city =                        memberReader[parameters[ 5]     ].ToString();
+            objMember.state =                       memberReader[parameters[ 6]     ].ToString();
+            objMember.zipcode =                     memberReader[parameters[ 7]     ].ToString();
+            objMember.phone =                       memberReader[parameters[ 8]     ].ToString();
+            objMember.member_status =               memberReader[parameters[ 9]     ].ToString();
+            objMember.login_name =                  memberReader[parameters[10]     ].ToString();
+            objMember.password =                    memberReader[parameters[11]     ].ToString();
+            objMember.email =                       memberReader[parameters[12]     ].ToString();
+            Int32.TryParse(                         memberReader[parameters[13]     ].ToString(), out contact_method );
+            objMember.contact_method =              contact_method;
+            Int32.TryParse(                         memberReader[parameters[14]     ].ToString(), out subscription_id);
+            objMember.subscription_id =             subscription_id;
+            objMember.photo =                       memberReader[parameters[15]     ].ToString();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="SQLStatement"></param>
+        /// <param name="member"></param>
+        /// <returns></returns>
         private static bool WriteMember(string SQLStatement, Member member)
         {
             SqlCommand  objCommand;
@@ -66,6 +104,13 @@ namespace Bookstore
             return  result;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="primary"></param>
+        /// <param name="preprimary"></param>
+        /// <param name="secondary"></param>
+        /// <param name="presecondary"></param>
         private static void PrimarySecondary(ref string primary, string preprimary, ref string secondary, string presecondary)
         {
             for (int i = 1                  ; i < lowestSecondary  ; i++)
@@ -73,6 +118,9 @@ namespace Bookstore
             for (int i = lowestSecondary + 1; i < parameters.Length; i++)
                 secondary +=    presecondary + parameters[i];
         }
+
+
+
 
 
 
@@ -135,32 +183,18 @@ namespace Bookstore
                         {
                             while (memberReader.Read())
                             {
-                                Member                  objMember =     new Member();
-                                int                     number,
-                                                        contact_method,
-                                                        subscription_id;
-                                DateTime                joindate;
-                                Int32.TryParse(                         memberReader[parameters[ 0]     ].ToString(), out number         );
-                                objMember.number =                      number;
-                                DateTime.TryParse(                      memberReader[parameters[ 1]     ].ToString(), out joindate       );
-                                objMember.joindate =                    joindate;
-                                objMember.firstname =                   memberReader[parameters[ 2]     ].ToString();
-                                objMember.lastname =                    memberReader[parameters[ 3]     ].ToString();
-                                objMember.address =                     memberReader[parameters[ 4]     ].ToString();
-                                objMember.city =                        memberReader[parameters[ 5]     ].ToString();
-                                objMember.state =                       memberReader[parameters[ 6]     ].ToString();
-                                objMember.zipcode =                     memberReader[parameters[ 7]     ].ToString();
-                                objMember.phone =                       memberReader[parameters[ 8]     ].ToString();
-                                objMember.member_status =               memberReader[parameters[ 9]     ].ToString();
-                                objMember.login_name =                  memberReader[parameters[10]     ].ToString();
-                                objMember.password =                    memberReader[parameters[11]     ].ToString();
-                                objMember.email =                       memberReader[parameters[12]     ].ToString();
-                                Int32.TryParse(                         memberReader[parameters[13]     ].ToString(), out contact_method );
-                                objMember.contact_method =              contact_method;
-                                Int32.TryParse(                         memberReader[parameters[14]     ].ToString(), out subscription_id);
-                                objMember.subscription_id =             subscription_id;
-                                objMember.photo =                       memberReader[parameters[15]     ].ToString();
-                                objMember.name =                        memberReader[Subscriptions.extra].ToString();
+                                Member              objMember = new Member();
+                                int                 number;
+
+
+                                Int32.TryParse(                 memberReader[parameters[ 0]     ].ToString(),   out number  );
+                                objMember.number =              number;
+
+                                SetSecondary(memberReader, objMember);
+                                objMember.name =                memberReader[Subscriptions.extra].ToString();
+
+
+
                                 members.Add(objMember);
                             }
                         }
@@ -201,7 +235,7 @@ namespace Bookstore
                                                             ) + " WHERE ";
 
 
-            SQLStatement +=                 "Member." + parameters[0] + " = @" + parameters[0];
+            SQLStatement +=                 "Member." + parameters[ 0] + " = @" + parameters[ 0];
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -216,36 +250,18 @@ namespace Bookstore
 
                     using (objCommand = new SqlCommand(SQLStatement, objConn))
                     {
-                        objCommand.Parameters.AddWithValue('@' + parameters[0], parameter);
+                        objCommand.Parameters.AddWithValue('@' + parameters[ 0],    parameter   );
                         //Step #3: Return the objtemp variable back to the calling UI 
                         using ((memberReader = objCommand.ExecuteReader(CommandBehavior.CloseConnection)))
                         {
                             while (memberReader.Read())
                             {
-                                objMember =                             new Member();
-                                int                     contact_method,
-                                                        subscription_id;
-                                DateTime                joindate =      new DateTime(1753, 1, 1, 0, 0, 0);
+                                objMember =         new Member();
 
-                                objMember.number =                      parameter;
-                                DateTime.TryParse(                      memberReader[parameters[ 1]].ToString(), out joindate       );
-                                objMember.joindate =                    joindate;
-                                objMember.firstname =                   memberReader[parameters[ 2]].ToString();
-                                objMember.lastname =                    memberReader[parameters[ 3]].ToString();
-                                objMember.address =                     memberReader[parameters[ 4]].ToString();
-                                objMember.city =                        memberReader[parameters[ 5]].ToString();
-                                objMember.state =                       memberReader[parameters[ 6]].ToString();
-                                objMember.zipcode =                     memberReader[parameters[ 7]].ToString();
-                                objMember.phone =                       memberReader[parameters[ 8]].ToString();
-                                objMember.member_status =               memberReader[parameters[ 9]].ToString();
-                                objMember.login_name =                  memberReader[parameters[10]].ToString();
-                                objMember.password =                    memberReader[parameters[11]].ToString();
-                                objMember.email =                       memberReader[parameters[12]].ToString();
-                                Int32.TryParse(                         memberReader[parameters[13]].ToString(), out contact_method );
-                                objMember.contact_method =              contact_method;
-                                Int32.TryParse(                         memberReader[parameters[14]].ToString(), out subscription_id);
-                                objMember.subscription_id =             subscription_id;
-                                objMember.photo =                       memberReader[parameters[15]].ToString();
+                                objMember.number =  parameter;
+
+                                SetSecondary(memberReader, objMember);
+
                             }
                         }
                     }
@@ -262,7 +278,7 @@ namespace Bookstore
             {
                 throw new Exception(IOex.Message);
             }
-            return objMember;
+            return  objMember;
         }
 
         /// <summary>
@@ -273,23 +289,14 @@ namespace Bookstore
         {
             string          primary,
                             secondary,
-                            SQLMax,
-                            SQLInsertMember;
+                            SQLStatement;
             
-            int             max;
-            SqlCommand      objCommand;            
-            SqlDataReader   memberReader;
             bool            result;
-
-            SQLMax =                        SQLHelper.Select(   "MAX(Member",
-                                                                " FROM " + "Member",
-                                                                key,
-                                                                ")");
 
             primary =                       key;
             secondary =                     ", @" + parameters[lowestSecondary];
             PrimarySecondary(ref primary, ", @", ref secondary, ", @");
-            SQLInsertMember =               SQLHelper.Insert(   "Member",
+            SQLStatement =                  SQLHelper.Insert(   "Member",
                                                                 primary,
                                                                 secondary
                                                             );
@@ -298,20 +305,7 @@ namespace Bookstore
             //To return a database connection object
             try
             {
-                using (SqlConnection objConn = AccessDataSQLServer.GetConnection())
-                {
-                    objConn.Open();
-                    using (objCommand = new SqlCommand(SQLMax, objConn))
-                    {
-                        using ((memberReader = objCommand.ExecuteReader(CommandBehavior.CloseConnection)))
-                        {
-                            memberReader.Read();
-                            Int32.TryParse(memberReader[0].ToString(), out max);
-                        }
-                    }
-                    objConn.Close();
-                }
-                member.number =             max + 1;
+                member.number =             GetMax("Member", key) + 1;
                 
 
 
@@ -326,7 +320,7 @@ namespace Bookstore
 
 
 
-                result =    WriteMember(SQLInsertMember, member);
+                result =    WriteMember(SQLStatement, member);
             }
             catch (SqlException SQLex)
             {
@@ -459,7 +453,7 @@ namespace Bookstore
                     //         Add Try..Catch appropriate block and throw exception back to calling program
                     using (objCommand = new SqlCommand(SQLStatement, objConn))
                     {
-                        objCommand.Parameters.AddWithValue('@' + parameters[0], member.number   );
+                        objCommand.Parameters.AddWithValue('@' + parameters[ 0],    member.number   );
                         //Step #3: return false if record was not added successfully
                         //         return true if record was added successfully
                         rowsAffected =  objCommand.ExecuteNonQuery();
