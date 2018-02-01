@@ -8,26 +8,61 @@ using System.Threading.Tasks;
 
 namespace Bookstore
 {
-    class Movies
+    class Movies : BaseTable
     {
         #region Private variables
 
         private static string[] parameters =        { "movie_number", "movie_title", "Description", "movie_year_made", "genre_id", "movie_rating", "media_type", "movie_retail_cost", "copies_on_hand", "image", "trailer" };
         private static string   foreign =           "Movie." + parameters[4];
+
         private static int      lowestSecondary =   1;
 
         #endregion
 
         #region Public variables
 
-        public static string    key =               parameters[0];
-        public static string    extra =             parameters[1];
-        public static string    count =             parameters[8];
+        public static string    key =               parameters[ 0];
+        public static string    extra =             parameters[ 1];
+        public static string    count =             parameters[ 8];
 
         #endregion
 
         #region Private functions
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="movieReader"></param>
+        /// <param name="objMovie"></param>
+        private static void SetSecondary(SqlDataReader movieReader, Movie objMovie)
+        {
+            int                     genre_id,
+                                    movie_year_made,
+                                    copies_on_hand;
+            float                   movie_retail_cost;
+
+            objMovie.movie_title =                      movieReader[parameters[ 1]].ToString();
+            objMovie.Description =                      movieReader[parameters[ 2]].ToString();
+            Int32.TryParse(                             movieReader[parameters[ 3]].ToString(), out movie_year_made     );
+            objMovie.movie_year_made =                  movie_year_made;
+            Int32.TryParse(                             movieReader[parameters[ 4]].ToString(), out genre_id            );
+            objMovie.genre_id =                         genre_id;
+            objMovie.movie_rating =                     movieReader[parameters[ 5]].ToString();
+            objMovie.media_type =                       movieReader[parameters[ 6]].ToString();
+            float.TryParse(                             movieReader[parameters[ 7]].ToString(), out movie_retail_cost   );
+            objMovie.movie_retail_cost =                movie_retail_cost;
+            Int32.TryParse(                             movieReader[parameters[ 8]].ToString(), out copies_on_hand      );
+            objMovie.copies_on_hand =                   copies_on_hand;
+            objMovie.image =                            movieReader[parameters[ 9]].ToString();
+            objMovie.trailer =                          movieReader[parameters[10]].ToString();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="SQLStatement"></param>
+        /// <param name="movie"></param>
+        /// <returns></returns>
         private static bool WriteMovie(string SQLStatement, Movie movie)
         {
             SqlCommand  objCommand;
@@ -61,6 +96,13 @@ namespace Bookstore
             return  result;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="primary"></param>
+        /// <param name="preprimary"></param>
+        /// <param name="secondary"></param>
+        /// <param name="presecondary"></param>
         private static void PrimarySecondary(ref string primary, string preprimary, ref string secondary, string presecondary)
         {
             for (int i = 1                  ; i < lowestSecondary  ; i++)
@@ -68,6 +110,9 @@ namespace Bookstore
             for (int i = lowestSecondary + 1; i < parameters.Length; i++)
                 secondary +=    presecondary + parameters[i];
         }
+
+
+
 
 
 
@@ -130,30 +175,17 @@ namespace Bookstore
                         {
                             while (movieReader.Read())
                             {
-                                Movie                   objMovie =          new Movie();
-                                int                     movie_number,
-                                                        genre_id,
-                                                        movie_year_made,
-                                                        copies_on_hand;
-                                float                   movie_retail_cost;
+                                Movie                   objMovie =      new Movie();
+                                int                     movie_number;
 
-                                Int32.TryParse(                             movieReader[parameters[ 0]].ToString(), out movie_number        );
-                                objMovie.movie_number =                     movie_number;
-                                objMovie.movie_title =                      movieReader[parameters[ 1]].ToString();
-                                objMovie.Description =                      movieReader[parameters[ 2]].ToString();
-                                Int32.TryParse(                             movieReader[parameters[ 3]].ToString(), out movie_year_made     );
-                                objMovie.movie_year_made =                  movie_year_made;
-                                Int32.TryParse(                             movieReader[parameters[ 4]].ToString(), out genre_id            );
-                                objMovie.genre_id =                         genre_id;
-                                objMovie.movie_rating =                     movieReader[parameters[ 5]].ToString();
-                                objMovie.media_type =                       movieReader[parameters[ 6]].ToString();
-                                float.TryParse(                             movieReader[parameters[ 7]].ToString(), out movie_retail_cost   );
-                                objMovie.movie_retail_cost =                movie_retail_cost;
-                                Int32.TryParse(                             movieReader[parameters[ 8]].ToString(), out copies_on_hand      );
-                                objMovie.copies_on_hand =                   copies_on_hand;
-                                objMovie.image =                            movieReader[parameters[ 9]].ToString();
-                                objMovie.trailer =                          movieReader[parameters[10]].ToString();
-                                objMovie.name =                             movieReader[Genres.extra  ].ToString();
+
+                                Int32.TryParse(                         movieReader[parameters[ 0]].ToString(), out movie_number        );
+                                objMovie.movie_number =                 movie_number;
+
+                                SetSecondary(movieReader, objMovie);
+                                objMovie.name =                         movieReader[Genres.extra  ].ToString();
+
+
 
                                 movies.Add(objMovie);
                             }
@@ -195,7 +227,7 @@ namespace Bookstore
                                                             ) + " WHERE ";
 
 
-            SQLStatement +=                 "Movie." + parameters[0] + " = @" + parameters[0];
+            SQLStatement +=                 "Movie." + parameters[ 0] + " = @" + parameters[ 0];
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -210,33 +242,18 @@ namespace Bookstore
 
                     using (objCommand = new SqlCommand(SQLStatement, objConn))
                     {
-                        objCommand.Parameters.AddWithValue('@' + parameters[0], parameter);
+                        objCommand.Parameters.AddWithValue('@' + parameters[ 0],    parameter   );
                         //Step #3: Return the objtemp variable back to the calling UI
                         using ((movieReader = objCommand.ExecuteReader(CommandBehavior.CloseConnection)))
                         {
                             while (movieReader.Read())
                             {
-                                objMovie =                      new Movie();
-                                int                             genre_id,
-                                                                movie_year_made,
-                                                                copies_on_hand;
-                                float                           movie_retail_cost;
+                                objMovie =              new Movie();
 
-                                objMovie.movie_number =         parameter;
-                                objMovie.movie_title =          movieReader[parameters[ 1]].ToString();
-                                objMovie.Description =          movieReader[parameters[ 2]].ToString();
-                                Int32.TryParse(                 movieReader[parameters[ 3]].ToString(), out movie_year_made     );
-                                objMovie.movie_year_made =      movie_year_made;
-                                Int32.TryParse(                 movieReader[parameters[ 4]].ToString(), out genre_id            );
-                                objMovie.genre_id =             genre_id;
-                                objMovie.movie_rating =         movieReader[parameters[ 5]].ToString();
-                                objMovie.media_type =           movieReader[parameters[ 6]].ToString();
-                                float.TryParse(                 movieReader[parameters[ 7]].ToString(), out movie_retail_cost   );
-                                objMovie.movie_retail_cost =    movie_retail_cost;
-                                Int32.TryParse(                 movieReader[parameters[ 8]].ToString(), out copies_on_hand      );
-                                objMovie.copies_on_hand =       copies_on_hand;
-                                objMovie.image =                movieReader[parameters[ 9]].ToString();
-                                objMovie.trailer =              movieReader[parameters[10]].ToString();
+                                objMovie.movie_number = parameter;
+
+                                SetSecondary(movieReader, objMovie);
+
                             }
                         }
                     }
@@ -264,23 +281,14 @@ namespace Bookstore
         {
             string          primary,
                             secondary,
-                            SQLMax,
-                            SQLInsertMovie;
-
-            int             max;
-            SqlCommand      objCommand;
-            SqlDataReader   movieReader;
+                            SQLStatement;
+            
             bool            result;
-
-            SQLMax =                        SQLHelper.Select(   "MAX(Movie",
-                                                                " FROM " + "Movie",
-                                                                key,
-                                                                ")");
 
             primary =                       key;
             secondary =                     ", @" + parameters[lowestSecondary];
             PrimarySecondary(ref primary, ", @", ref secondary, ", @");
-            SQLInsertMovie =                SQLHelper.Insert(   "Movie",
+            SQLStatement =                  SQLHelper.Insert(   "Movie",
                                                                 primary,
                                                                 secondary
                                                             );
@@ -289,20 +297,7 @@ namespace Bookstore
             //To return a database connection object
             try
             {
-                using (SqlConnection objConn = AccessDataSQLServer.GetConnection())
-                {
-                    objConn.Open();
-                    using (objCommand = new SqlCommand(SQLMax, objConn))
-                    {
-                        using ((movieReader = objCommand.ExecuteReader(CommandBehavior.CloseConnection)))
-                        {
-                            movieReader.Read();
-                            Int32.TryParse(movieReader[0].ToString(), out max);
-                        }
-                    }
-                    objConn.Close();
-                }
-                movie.movie_number =        max + 1;
+                movie.movie_number =        GetMax("Movie", key) + 1;
                 
 
 
@@ -317,7 +312,7 @@ namespace Bookstore
 
 
 
-                result =    WriteMovie(SQLInsertMovie, movie);
+                result =    WriteMovie(SQLStatement, movie);
             }
             catch (SqlException SQLex)
             {
@@ -450,7 +445,7 @@ namespace Bookstore
                     //         Add Try..Catch appropriate block and throw exception back to calling program
                     using (objCommand = new SqlCommand(SQLStatement, objConn))
                     {
-                        objCommand.Parameters.AddWithValue('@' + parameters[0], movie.movie_number  );
+                        objCommand.Parameters.AddWithValue('@' + parameters[ 0],    movie.movie_number  );
                         //Step #3: return false if record was not added successfully
                         //         return true if record was added successfully
                         rowsAffected =  objCommand.ExecuteNonQuery();
