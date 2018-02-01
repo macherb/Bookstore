@@ -13,20 +13,41 @@ namespace Bookstore
         #region Private variables
 
         private static string[] parameters =        { "movie_number", "member_number", "media_checkout_date", "media_return_date" };
-        private static string   foreignMovie =      "Rental." + parameters[0];
-        private static string   foreignMember =     "Rental." + parameters[1];
+        private static string   foreignMovie =      "Rental." + parameters[ 0];
+        private static string   foreignMember =     "Rental." + parameters[ 1];
         private static int      lowestSecondary =   3;
 
         #endregion
 
         #region Public variables
 
-        public static string    key =               parameters[0];
+        public static string    key =               parameters[ 0];
+
+
 
         #endregion
 
         #region Private functions
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="rentalReader"></param>
+        /// <param name="objRental"></param>
+        private static void SetSecondary(SqlDataReader rentalReader, Rental objRental)
+        {
+            DateTime                        media_return_date;
+
+            DateTime.TryParse(                                  rentalReader[parameters[ 3]].ToString(),    out media_return_date   );
+            objRental.media_return_date =                       media_return_date;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="SQLStatement"></param>
+        /// <param name="rental"></param>
+        /// <returns></returns>
         private static bool WriteRental(string SQLStatement, Rental rental)
         {
             SqlCommand  objCommand;
@@ -38,10 +59,10 @@ namespace Bookstore
                 objConn.Open();
                 using (objCommand = new SqlCommand(SQLStatement, objConn))
                 {
-                    objCommand.Parameters.AddWithValue('@' + parameters[0], rental.movie_number          );
-                    objCommand.Parameters.AddWithValue('@' + parameters[1], rental.member_number         );
-                    objCommand.Parameters.AddWithValue('@' + parameters[2], rental.media_checkout_date   );
-                    objCommand.Parameters.AddWithValue('@' + parameters[3], rental.media_return_date     );
+                    objCommand.Parameters.AddWithValue('@' + parameters[ 0],    rental.movie_number         );
+                    objCommand.Parameters.AddWithValue('@' + parameters[ 1],    rental.member_number        );
+                    objCommand.Parameters.AddWithValue('@' + parameters[ 2],    rental.media_checkout_date  );
+                    objCommand.Parameters.AddWithValue('@' + parameters[ 3],    rental.media_return_date    );
                     rowsAffected =  objCommand.ExecuteNonQuery();
                     if (rowsAffected > 0)
                     {
@@ -53,6 +74,13 @@ namespace Bookstore
             return result;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="primary"></param>
+        /// <param name="preprimary"></param>
+        /// <param name="secondary"></param>
+        /// <param name="presecondary"></param>
         private static void PrimarySecondary(ref string primary, string preprimary, ref string secondary, string presecondary)
         {
             for (int i = 1                  ; i < lowestSecondary  ; i++)
@@ -61,6 +89,11 @@ namespace Bookstore
                 secondary +=    presecondary + parameters[i];
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="rental"></param>
+        /// <returns></returns>
         private static bool ReadJoindate(Rental rental)
         {
             string          SQLStatement;
@@ -103,13 +136,18 @@ namespace Bookstore
             return  result;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="rental"></param>
+        /// <returns></returns>
         private static bool SQLUpdateMovieSubtract(Rental rental)
         {
             string          primary,
                             secondary,
                             SQLStatement;
-            int             rowsAffected;
             SqlCommand      objCommand;
+            int             rowsAffected;
             bool            result =        false;
 
             primary =                       Movies.key   + " = CASE WHEN " + Movies.count + " > 0 THEN @" + Movies.key + " ELSE -1 END";
@@ -124,7 +162,7 @@ namespace Bookstore
                 objConn.Open();
                 using (objCommand = new SqlCommand(SQLStatement, objConn))
                 {
-                    objCommand.Parameters.AddWithValue('@' + parameters[0],  rental.movie_number);
+                    objCommand.Parameters.AddWithValue('@' + parameters[ 0],    rental.movie_number );
                     rowsAffected =  objCommand.ExecuteNonQuery();
                     if (rowsAffected > 0)
                     {
@@ -137,6 +175,11 @@ namespace Bookstore
             return          result;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="rental"></param>
+        /// <returns></returns>
         private static bool SQLUpdateMovieAdd(Rental rental)
         {
             string          primary,
@@ -155,10 +198,10 @@ namespace Bookstore
             
             using (SqlConnection objConn = AccessDataSQLServer.GetConnection())
             {
-                 objConn.Open();
+                objConn.Open();
                 using (objCommand = new SqlCommand(SQLStatement, objConn))
-                 {
-                     objCommand.Parameters.AddWithValue('@' + parameters[0],  rental.movie_number);
+                {
+                    objCommand.Parameters.AddWithValue('@' + parameters[ 0],    rental.movie_number );
                     rowsAffected =  objCommand.ExecuteNonQuery();
                     if (rowsAffected > 0)
                     {
@@ -230,18 +273,16 @@ namespace Bookstore
                                 int                             movie_number,
                                                                 member_number;
                                 DateTime                        media_checkout_date,
-                                                                media_return_date,
                                                                 joindate;
-                                Int32.TryParse(                                     rentalReader[parameters[0]].ToString(), out movie_number        );
+                                Int32.TryParse(                                     rentalReader[parameters[ 0]].ToString(),    out movie_number        );
                                 objRental.movie_number =                            movie_number;
-                                Int32.TryParse(                                     rentalReader[parameters[1]].ToString(), out member_number       );
+                                Int32.TryParse(                                     rentalReader[parameters[ 1]].ToString(),    out member_number       );
                                 objRental.member_number =                           member_number;
-                                DateTime.TryParse(                                  rentalReader[parameters[2]].ToString(), out media_checkout_date );
+                                DateTime.TryParse(                                  rentalReader[parameters[ 2]].ToString(),    out media_checkout_date );
                                 objRental.media_checkout_date =                     media_checkout_date;
-                                DateTime.TryParse(                                  rentalReader[parameters[3]].ToString(), out media_return_date   );
-                                objRental.media_return_date =                       media_return_date;
-                                objRental.movie_title =                             rentalReader[Movies.extra ].ToString();
-                                DateTime.TryParse(                                  rentalReader[Members.extra1].ToString(), out joindate   );
+                                SetSecondary(rentalReader, objRental);
+                                objRental.movie_title =                             rentalReader[Movies.extra  ].ToString();
+                                DateTime.TryParse(                                  rentalReader[Members.extra1].ToString(),    out joindate            );
                                 objRental.joindate =                                joindate;
                                 objRental.login_name =                              rentalReader[Members.extra2].ToString();
                                 rentals.Add(objRental);
@@ -287,21 +328,21 @@ namespace Bookstore
                                                             ) + " WHERE ";
             if (parameter1 > -1)
             {
-                SQLStatement +=             "Rental." + parameters[0] + " = @" + parameters[0];
+                SQLStatement +=             "Rental." + parameters[ 0] + " = @" + parameters[ 0];
                 if ((parameter2 > -1) || (parameter3 > new DateTime(1753, 1, 1, 0, 0, 0)))
                     SQLStatement +=         " AND ";
             }
 
             if (parameter2 > -1)
             {
-                SQLStatement +=             "Rental." + parameters[1] + " = @" + parameters[1];
+                SQLStatement +=             "Rental." + parameters[ 1] + " = @" + parameters[ 1];
                 if (parameter3 > new DateTime(1753, 1, 1, 0, 0, 0))
                     SQLStatement +=         " AND ";
             }
 
             if (parameter3 > new DateTime(1753, 1, 1, 0, 0, 0))
             {
-                SQLStatement +=             "Rental." + parameters[2] + " = @" + parameters[2];//TODO make four parameters
+                SQLStatement +=             "Rental." + parameters[ 2] + " = @" + parameters[ 2];//TODO make four parameters
             }
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
@@ -317,9 +358,9 @@ namespace Bookstore
                     int i = 0;
                     using (objCommand = new SqlCommand(SQLStatement, objConn))
                     {
-                        objCommand.Parameters.AddWithValue('@' + parameters[0], parameter1);
-                        objCommand.Parameters.AddWithValue('@' + parameters[1], parameter2);
-                        objCommand.Parameters.AddWithValue('@' + parameters[2], parameter3);
+                        objCommand.Parameters.AddWithValue('@' + parameters[ 0],    parameter1  );
+                        objCommand.Parameters.AddWithValue('@' + parameters[ 1],    parameter2  );
+                        objCommand.Parameters.AddWithValue('@' + parameters[ 2],    parameter3  );
                         //Step #3: Return the objtemp variable back to the calling UI 
                         using ((rentalReader = objCommand.ExecuteReader(CommandBehavior.CloseConnection)))
                         {
@@ -328,17 +369,15 @@ namespace Bookstore
                                 objRental =                                             new Rental();
                                 int                             movie_number,
                                                                 member_number;
-                                DateTime                        media_checkout_date =   new DateTime(1753, 1, 1, 0, 0, 0),
-                                                                media_return_date =     new DateTime(1753, 1, 1, 0, 0, 0);
+                                DateTime                        media_checkout_date =   new DateTime(1753, 1, 1, 0, 0, 0);
 
-                                Int32.TryParse(                                         rentalReader[parameters[0]].ToString(), out movie_number        );
+                                Int32.TryParse(                                         rentalReader[parameters[ 0]].ToString(),    out movie_number        );
                                 objRental.movie_number =                                movie_number;
-                                Int32.TryParse(                                         rentalReader[parameters[1]].ToString(), out member_number       );
+                                Int32.TryParse(                                         rentalReader[parameters[ 1]].ToString(),    out member_number       );
                                 objRental.member_number =                               member_number;
-                                DateTime.TryParse(                                      rentalReader[parameters[2]].ToString(), out media_checkout_date );
+                                DateTime.TryParse(                                      rentalReader[parameters[ 2]].ToString(),    out media_checkout_date );
                                 objRental.media_checkout_date =                         media_checkout_date;
-                                DateTime.TryParse(                                      rentalReader[parameters[3]].ToString(), out media_return_date   );
-                                objRental.media_return_date =                           media_return_date;
+                                SetSecondary(rentalReader, objRental);
                                 i++;
                             }
                         }
@@ -356,7 +395,7 @@ namespace Bookstore
             {
                 throw new Exception(IOex.Message);
             }
-            return objRental;
+            return  objRental;
         }
 
         /// <summary>
@@ -367,18 +406,9 @@ namespace Bookstore
         {
             string          primary,
                             secondary,
+                            SQLStatement; 
 
-                            SQLStatement;
-            
-                            
-
-            
             bool            result =        false;
-
-
-
-
-
 
             primary =                       key;
             secondary =                     ", @" + parameters[lowestSecondary];
@@ -392,19 +422,6 @@ namespace Bookstore
             //To return a database connection object
             try
             {
-
-
-
-
-
-
-
-
-
-
-
-
-
 
                 result =    ReadJoindate(rental);
                 if (result)
@@ -553,9 +570,9 @@ namespace Bookstore
                     //         Add Try..Catch appropriate block and throw exception back to calling program
                     using (objCommand = new SqlCommand(SQLStatement, objConn))
                     {
-                        objCommand.Parameters.AddWithValue('@' + parameters[0], rental.movie_number         );
-                        objCommand.Parameters.AddWithValue('@' + parameters[1], rental.member_number        );
-                        objCommand.Parameters.AddWithValue('@' + parameters[2], rental.media_checkout_date  );
+                        objCommand.Parameters.AddWithValue('@' + parameters[ 0],    rental.movie_number         );
+                        objCommand.Parameters.AddWithValue('@' + parameters[ 1],    rental.member_number        );
+                        objCommand.Parameters.AddWithValue('@' + parameters[ 2],    rental.media_checkout_date  );
                         //Step #3: return false if record was not added successfully
                         //         return true if record was added successfully
                         rowsAffected =  objCommand.ExecuteNonQuery();
