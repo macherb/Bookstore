@@ -8,24 +8,43 @@ using System.Threading.Tasks;
 
 namespace Bookstore
 {
-    class Genres
+    class Genres : BaseTable
     {
         #region Private variables
 
         private static string[] parameters =        { "id", "name" };
+
+
         private static int      lowestSecondary =   1;
 
         #endregion
 
         #region Public variables
 
-        public static string    key =               parameters[0];
-        public static string    extra =             parameters[1];
+        public static string    key =               parameters[ 0];
+        public static string    extra =             parameters[ 1];
+
 
         #endregion
 
         #region Private functions
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="genreReader"></param>
+        /// <param name="objGenre"></param>
+        private static void SetSecondary(SqlDataReader genreReader, Genre objGenre)
+        {
+            objGenre.name = genreReader[parameters[ 1]].ToString();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="SQLStatement"></param>
+        /// <param name="genre"></param>
+        /// <returns></returns>
         private static bool WriteGenre(string SQLStatement, Genre genre)
         {
             SqlCommand  objCommand;
@@ -37,8 +56,8 @@ namespace Bookstore
                 objConn.Open();
                 using (objCommand = new SqlCommand(SQLStatement, objConn))
                 {
-                    objCommand.Parameters.AddWithValue('@' + parameters[0], genre.id    );
-                    objCommand.Parameters.AddWithValue('@' + parameters[1], genre.name  );
+                    objCommand.Parameters.AddWithValue('@' + parameters[ 0],    genre.id    );
+                    objCommand.Parameters.AddWithValue('@' + parameters[ 1],    genre.name  );
                     rowsAffected =  objCommand.ExecuteNonQuery();
                     if (rowsAffected > 0)
                     {
@@ -50,6 +69,13 @@ namespace Bookstore
             return  result;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="primary"></param>
+        /// <param name="preprimary"></param>
+        /// <param name="secondary"></param>
+        /// <param name="presecondary"></param>
         private static void PrimarySecondary(ref string primary, string preprimary, ref string secondary, string presecondary)
         {
             for (int i = 1                  ; i < lowestSecondary  ; i++)
@@ -64,10 +90,13 @@ namespace Bookstore
 
 
 
+
+
+
         #endregion
 
         #region Public functions
-//TODO get max should be its own function
+
         /// <summary>
         /// Returns a list of generic  type objects from the table
         /// </summary>
@@ -121,9 +150,16 @@ namespace Bookstore
                             {
                                 Genre           objGenre =  new Genre();
                                 int             id;
-                                Int32.TryParse(             genreReader[parameters[0]].ToString(), out id);
+
+
+                                Int32.TryParse(             genreReader[parameters[ 0]].ToString(), out id  );
                                 objGenre.id =               id;
-                                objGenre.name =             genreReader[parameters[1]].ToString();
+
+                                SetSecondary(genreReader, objGenre);
+
+
+
+
                                 genres.Add(objGenre);
                             }
                         }
@@ -164,7 +200,7 @@ namespace Bookstore
                                                             ) + " WHERE ";
 
 
-            SQLStatement +=                 "Genre." + parameters[0] + " = @" + parameters[0];
+            SQLStatement +=                 "Genre." + parameters[ 0] + " = @" + parameters[ 0];
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -179,15 +215,18 @@ namespace Bookstore
 
                     using (objCommand = new SqlCommand(SQLStatement, objConn))
                     {
-                        objCommand.Parameters.AddWithValue('@' + parameters[0], parameter);
+                        objCommand.Parameters.AddWithValue('@' + parameters[ 0],    parameter   );
                         //Step #3: Return the objtemp variable back to the calling UI 
                         using ((genreReader = objCommand.ExecuteReader(CommandBehavior.CloseConnection)))
                         {
                             while (genreReader.Read())
                             {
                                 objGenre =      new Genre();
+
                                 objGenre.id =   parameter;
-                                objGenre.name = genreReader[parameters[1]].ToString();
+
+                                SetSecondary(genreReader, objGenre);
+
                             }
                         }
                     }
@@ -215,23 +254,14 @@ namespace Bookstore
         {
             string          primary,
                             secondary,
-                            SQLMax,
-                            SQLInsertGenre;
+                            SQLStatement;
             //TODO what if MAX is 32767
-            int             max;
-            SqlCommand      objCommand;
-            SqlDataReader   genreReader;
-            bool            result;
-
-            SQLMax =                        SQLHelper.Select(   "MAX(Genre",
-                                                                " FROM " + "Genre",
-                                                                key,
-                                                                ")");
+             bool            result;
 
             primary =                       key;
             secondary =                     ", @" + parameters[lowestSecondary];
             PrimarySecondary(ref primary, ", @", ref secondary, ", @");
-            SQLInsertGenre =                SQLHelper.Insert(   "Genre",
+            SQLStatement =                  SQLHelper.Insert(   "Genre",
                                                                 primary,
                                                                 secondary
                                                             );
@@ -240,20 +270,7 @@ namespace Bookstore
             //To return a database connection object
             try
             {
-                using (SqlConnection objConn = AccessDataSQLServer.GetConnection())
-                {
-                    objConn.Open();
-                    using (objCommand = new SqlCommand(SQLMax, objConn))
-                    {
-                        using ((genreReader = objCommand.ExecuteReader(CommandBehavior.CloseConnection)))
-                        {
-                            genreReader.Read();
-                            Int32.TryParse(genreReader[0].ToString(), out max);
-                        }
-                    }
-                    objConn.Close();
-                }
-                genre.id =                  max + 1;
+                genre.id =                  GetMax("Genre", key) + 1;
                 
 
 
@@ -268,7 +285,7 @@ namespace Bookstore
 
 
 
-                result =    WriteGenre(SQLInsertGenre, genre);
+                result =    WriteGenre(SQLStatement, genre);
             }
             catch (SqlException SQLex)
             {
@@ -401,7 +418,7 @@ namespace Bookstore
                     //         Add Try..Catch appropriate block and throw exception back to calling program
                     using (objCommand = new SqlCommand(SQLStatement, objConn))
                     {
-                        objCommand.Parameters.AddWithValue('@' + parameters[0], genre.id);
+                        objCommand.Parameters.AddWithValue('@' + parameters[ 0],    genre.id);
                         //Step #3: return false if record was not added successfully
                         //         return true if record was added successfully
                         rowsAffected =  objCommand.ExecuteNonQuery();
