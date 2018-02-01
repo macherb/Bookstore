@@ -8,23 +8,43 @@ using System.Threading.Tasks;
 
 namespace Bookstore
 {
-    class Vendors
+    class Vendors : BaseTable
     {
         #region Private variables
 
         private static string[] parameters =        { "id", "name" };
+
+
         private static int      lowestSecondary =   1;
 
         #endregion
 
         #region Public variables
 
-        public static string    key =               parameters[0];
+        public static string    key =               parameters[ 0];
+
+
 
         #endregion
 
         #region Private functions
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="vendorReader"></param>
+        /// <param name="objVendor"></param>
+        private static void SetSecondary(SqlDataReader vendorReader, Vendor objVendor)
+        {
+            objVendor.name =    vendorReader[parameters[ 1]].ToString();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="SQLStatement"></param>
+        /// <param name="vendor"></param>
+        /// <returns></returns>
         private static bool WriteVendor(string SQLStatement, Vendor vendor)
         {
             SqlCommand  objCommand;
@@ -36,8 +56,8 @@ namespace Bookstore
                 objConn.Open();
                 using (objCommand = new SqlCommand(SQLStatement, objConn))
                 {
-                    objCommand.Parameters.AddWithValue('@' + parameters[0], vendor.id   );
-                    objCommand.Parameters.AddWithValue('@' + parameters[1], vendor.name );
+                    objCommand.Parameters.AddWithValue('@' + parameters[ 0],    vendor.id   );
+                    objCommand.Parameters.AddWithValue('@' + parameters[ 1],    vendor.name );
                     rowsAffected =  objCommand.ExecuteNonQuery();
                     if (rowsAffected > 0)
                     {
@@ -49,6 +69,13 @@ namespace Bookstore
             return  result;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="primary"></param>
+        /// <param name="preprimary"></param>
+        /// <param name="secondary"></param>
+        /// <param name="presecondary"></param>
         private static void PrimarySecondary(ref string primary, string preprimary, ref string secondary, string presecondary)
         {
             for (int i = 1                  ; i < lowestSecondary  ; i++)
@@ -56,6 +83,9 @@ namespace Bookstore
             for (int i = lowestSecondary + 1; i < parameters.Length; i++)
                 secondary +=    presecondary + parameters[i];
         }
+
+
+
 
 
         
@@ -120,9 +150,16 @@ namespace Bookstore
                             {
                                 Vendor          objVendor = new Vendor();
                                 int             id;
-                                Int32.TryParse(             vendorReader[parameters[0]].ToString(), out id);
+
+
+                                Int32.TryParse(             vendorReader[parameters[ 0]].ToString(),    out id  );
                                 objVendor.id =              id;
-                                objVendor.name =            vendorReader[parameters[1]].ToString();
+
+                                SetSecondary(vendorReader, objVendor);
+
+
+
+
                                 vendors.Add(objVendor);
                             }
                         }
@@ -163,7 +200,7 @@ namespace Bookstore
                                                             ) + " WHERE ";
 
 
-            SQLStatement +=                 "Vendor." + parameters[0] + " = @" + parameters[0];
+            SQLStatement +=                 "Vendor." + parameters[ 0] + " = @" + parameters[ 0];
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -178,15 +215,18 @@ namespace Bookstore
 
                     using (objCommand = new SqlCommand(SQLStatement, objConn))
                     {
-                        objCommand.Parameters.AddWithValue('@' + parameters[0], parameter);
+                        objCommand.Parameters.AddWithValue('@' + parameters[ 0],    parameter   );
                         //Step #3: Return the objtemp variable back to the calling UI 
                         using ((vendorReader = objCommand.ExecuteReader(CommandBehavior.CloseConnection)))
                         {
                             while (vendorReader.Read())
                             {
                                 objVendor =         new Vendor();
+
                                 objVendor.id =      parameter;
-                                objVendor.name =    vendorReader[parameters[1]].ToString();
+
+                                SetSecondary(vendorReader, objVendor);
+
                             }
                         }
                     }
@@ -214,23 +254,14 @@ namespace Bookstore
         {
             string          primary,
                             secondary,
-                            SQLMax,
-                            SQLInsertVendor;
+                            SQLStatement;
             //TODO what if MAX is 32767
-            int             max;
-            SqlCommand      objCommand;
-            SqlDataReader   vendorReader;
             bool            result;
-
-            SQLMax =                        SQLHelper.Select(   "MAX(Vendor",
-                                                                " FROM " + "Vendor",
-                                                                key,
-                                                                ")");
 
             primary =                       key;
             secondary =                     ", @" + parameters[lowestSecondary];
             PrimarySecondary(ref primary, ", @", ref secondary, ", @");
-            SQLInsertVendor =               SQLHelper.Insert(   "Vendor",
+            SQLStatement =                  SQLHelper.Insert(   "Vendor",
                                                                 primary,
                                                                 secondary
                                                             );
@@ -239,20 +270,7 @@ namespace Bookstore
             //To return a database connection object
             try
             {
-                using (SqlConnection objConn = AccessDataSQLServer.GetConnection())
-                {
-                    objConn.Open();
-                    using (objCommand = new SqlCommand(SQLMax, objConn))
-                    {
-                        using ((vendorReader = objCommand.ExecuteReader(CommandBehavior.CloseConnection)))
-                        {
-                            vendorReader.Read();
-                            Int32.TryParse(vendorReader[0].ToString(), out max);
-                        }
-                    }
-                    objConn.Close();
-                }
-                vendor.id =                 max + 1;
+                vendor.id =                 GetMax("Vendor", key) + 1;
                 
 
 
@@ -267,7 +285,7 @@ namespace Bookstore
 
 
 
-                result =    WriteVendor(SQLInsertVendor, vendor);
+                result =    WriteVendor(SQLStatement, vendor);
             }
             catch (SqlException SQLex)
             {
@@ -400,7 +418,7 @@ namespace Bookstore
                     //         Add Try..Catch appropriate block and throw exception back to calling program
                     using (objCommand = new SqlCommand(SQLStatement, objConn))
                     {
-                        objCommand.Parameters.AddWithValue('@' + parameters[0], vendor.id   );
+                        objCommand.Parameters.AddWithValue('@' + parameters[ 0],    vendor.id   );
                         //Step #3: return false if record was not added successfully
                         //         return true if record was added successfully
                         rowsAffected =  objCommand.ExecuteNonQuery();
