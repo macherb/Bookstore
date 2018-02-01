@@ -8,24 +8,47 @@ using System.Threading.Tasks;
 
 namespace Bookstore
 {
-    class Subscriptions
+    class Subscriptions : BaseTable
     {
         #region Private variables
 
         private static string[] parameters =        { "id", "name", "cost" };
+
+
         private static int      lowestSecondary =   1;
 
         #endregion
 
         #region Public variables
 
-        public static string    key =               parameters[0];
-        public static string    extra =             parameters[1];
+        public static string    key =               parameters[ 0];
+        public static string    extra =             parameters[ 1];
+
 
         #endregion
 
         #region Private functions
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="subscriptionReader"></param>
+        /// <param name="objSubscription"></param>
+        private static void SetSecondary(SqlDataReader subscriptionReader, Subscription objSubscription)
+        {
+            float                   cost;
+
+            objSubscription.name =          subscriptionReader[parameters[ 1]].ToString();
+            float.TryParse(                 subscriptionReader[parameters[ 2]].ToString(),  out cost);
+            objSubscription.cost =          cost;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="SQLStatement"></param>
+        /// <param name="subscription"></param>
+        /// <returns></returns>
         private static bool WriteSubscription(string SQLStatement, Subscription subscription)
         {
             SqlCommand  objCommand;
@@ -37,9 +60,9 @@ namespace Bookstore
                 objConn.Open();
                 using (objCommand = new SqlCommand(SQLStatement, objConn))
                 {
-                    objCommand.Parameters.AddWithValue('@' + parameters[0], subscription.id     );
-                    objCommand.Parameters.AddWithValue('@' + parameters[1], subscription.name   );
-                    objCommand.Parameters.AddWithValue('@' + parameters[2], subscription.cost   );
+                    objCommand.Parameters.AddWithValue('@' + parameters[ 0],    subscription.id     );
+                    objCommand.Parameters.AddWithValue('@' + parameters[ 1],    subscription.name   );
+                    objCommand.Parameters.AddWithValue('@' + parameters[ 2],    subscription.cost   );
                     rowsAffected =  objCommand.ExecuteNonQuery();
                     if (rowsAffected > 0)
                     {
@@ -51,6 +74,13 @@ namespace Bookstore
             return  result;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="primary"></param>
+        /// <param name="preprimary"></param>
+        /// <param name="secondary"></param>
+        /// <param name="presecondary"></param>
         private static void PrimarySecondary(ref string primary, string preprimary, ref string secondary, string presecondary)
         {
             for (int i = 1                  ; i < lowestSecondary  ; i++)
@@ -58,6 +88,9 @@ namespace Bookstore
             for (int i = lowestSecondary + 1; i < parameters.Length; i++)
                 secondary +=    presecondary + parameters[i];
         }
+
+
+
 
 
 
@@ -120,14 +153,18 @@ namespace Bookstore
                         {
                             while (subscriptionReader.Read())
                             {
-                                Subscription            objSubscription =   new Subscription();
-                                int                     id;
-                                float                   cost;
-                                Int32.TryParse(                             subscriptionReader[parameters[0]].ToString(), out id    );
-                                objSubscription.id =                        id;
-                                objSubscription.name =                      subscriptionReader[parameters[1]].ToString();
-                                float.TryParse(                             subscriptionReader[parameters[2]].ToString(), out cost  );
-                                objSubscription.cost =                      cost;
+                                Subscription        objSubscription =   new Subscription();
+                                int                 id;
+
+
+                                Int32.TryParse(                         subscriptionReader[parameters[ 0]].ToString(),  out id  );
+                                objSubscription.id =                    id;
+
+                                SetSecondary(subscriptionReader, objSubscription);
+
+
+
+
                                 subscriptions.Add(objSubscription);
                             }
                         }
@@ -168,7 +205,7 @@ namespace Bookstore
                                                                 ) + " WHERE ";
 
 
-            SQLStatement +=                     "Subscription." + parameters[0] + " = @" + parameters[0];
+            SQLStatement +=                     "Subscription." + parameters[ 0] + " = @" + parameters[ 0];
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -183,18 +220,18 @@ namespace Bookstore
 
                     using (objCommand = new SqlCommand(SQLStatement, objConn))
                     {
-                        objCommand.Parameters.AddWithValue('@' + parameters[0], parameter);
+                        objCommand.Parameters.AddWithValue('@' + parameters[ 0],    parameter   );
                         //Step #3: Return the objtemp variable back to the calling UI 
                         using ((subscriptionReader = objCommand.ExecuteReader(CommandBehavior.CloseConnection)))
                         {
                             while (subscriptionReader.Read())
                             {
                                 objSubscription =       new Subscription();
-                                float                   cost;
+
                                 objSubscription.id =    parameter;
-                                objSubscription.name =  subscriptionReader[parameters[1]].ToString();
-                                float.TryParse(         subscriptionReader[parameters[2]].ToString(), out cost  );
-                                objSubscription.cost =  cost;
+
+                                SetSecondary(subscriptionReader, objSubscription);
+
                             }
                         }
                     }
@@ -222,23 +259,14 @@ namespace Bookstore
         {
             string          primary,
                             secondary,
-                            SQLMax,
-                            SQLInsertSubscription;
-            //TODO what if MAX is 32767
-            int             max;
-            SqlCommand      objCommand;
-            SqlDataReader   subscriptionReader;
+                            SQLStatement;
+            //TODO what if MAX is 32767            
             bool            result;
-
-            SQLMax =                        SQLHelper.Select(   "MAX(Subscription",
-                                                                " FROM " + "Subscription",
-                                                                key,
-                                                                ")");
 
             primary =                       key;
             secondary =                     ", @" + parameters[lowestSecondary];
             PrimarySecondary(ref primary, ", @", ref secondary, ", @");
-            SQLInsertSubscription =         SQLHelper.Insert(   "Subscription",
+            SQLStatement =                  SQLHelper.Insert(   "Subscription",
                                                                 primary,
                                                                 secondary
                                                             );
@@ -246,21 +274,8 @@ namespace Bookstore
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
             try
-            {
-                using (SqlConnection objConn = AccessDataSQLServer.GetConnection())
-                {
-                    objConn.Open();
-                    using (objCommand = new SqlCommand(SQLMax, objConn))
-                    {
-                        using ((subscriptionReader = objCommand.ExecuteReader(CommandBehavior.CloseConnection)))
-                        {
-                            subscriptionReader.Read();
-                            Int32.TryParse(subscriptionReader[0].ToString(), out max);
-                        }
-                    }
-                    objConn.Close();
-                }
-                subscription.id =           max + 1;
+            {                
+                subscription.id =           GetMax("Subscription", key) + 1;
                 
 
 
@@ -275,7 +290,7 @@ namespace Bookstore
 
 
                 //
-                result =    WriteSubscription(SQLInsertSubscription, subscription);
+                result =    WriteSubscription(SQLStatement, subscription);
             }
             catch (SqlException SQLex)
             {
@@ -408,7 +423,7 @@ namespace Bookstore
                     //         Add Try..Catch appropriate block and throw exception back to calling program
                     using (objCommand = new SqlCommand(SQLStatement, objConn))
                     {
-                        objCommand.Parameters.AddWithValue('@' + parameters[0], subscription.id );
+                        objCommand.Parameters.AddWithValue('@' + parameters[ 0],    subscription.id );
                         //Step #3: return false if record was not added successfully
                         //         return true if record was added successfully
                         rowsAffected =  objCommand.ExecuteNonQuery();
