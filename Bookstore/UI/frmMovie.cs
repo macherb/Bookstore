@@ -45,38 +45,38 @@ namespace Bookstore
             toolTip.SetToolTip(btnDelete, "Delete Movie Number");
             toolTip.SetToolTip(btnClear, "Clear all Movie fields");
 
-            toolTip.SetToolTip(txtMovieNumber, "movie unique identifier");
-            toolTip.SetToolTip(lblMovieNumber, "movie unique identifier");
+            toolTip.SetToolTip(txtMovieNumber, Movie.movie_numberTip);
+            toolTip.SetToolTip(lblMovieNumber, Movie.movie_numberTip);
 
-            toolTip.SetToolTip(txtMovieTitle, "movie title");
-            toolTip.SetToolTip(lblMovieTitle, "movie title");
+            toolTip.SetToolTip(txtMovieTitle, Movie.movie_titleTip);
+            toolTip.SetToolTip(lblMovieTitle, Movie.movie_titleTip);
 
-            toolTip.SetToolTip(txtDescription, "movie descriptions");
-            toolTip.SetToolTip(lblDescription, "movie descriptions");
+            toolTip.SetToolTip(txtDescription, Movie.DescriptionTip);
+            toolTip.SetToolTip(lblDescription, Movie.DescriptionTip);
 
-            toolTip.SetToolTip(txtMovieYearMade, "year the movie was made");
-            toolTip.SetToolTip(lblMovieYearMade, "year the movie was made");
+            toolTip.SetToolTip(txtMovieYearMade, Movie.movie_year_madeTip);
+            toolTip.SetToolTip(lblMovieYearMade, Movie.movie_year_madeTip);
 
-            toolTip.SetToolTip(cmbGenreID, "Type of movie genre");
-            toolTip.SetToolTip(lblGenreID, "Type of movie genre");
+            toolTip.SetToolTip(cmbGenreID, Movie.genre_idTip);
+            toolTip.SetToolTip(lblGenreID, Movie.genre_idTip);
 
-            toolTip.SetToolTip(cmbMovieRating, "rating of the movie");
-            toolTip.SetToolTip(lblMovieRating, "rating of the movie");
+            toolTip.SetToolTip(cmbMovieRating, Movie.movie_ratingTip);
+            toolTip.SetToolTip(lblMovieRating, Movie.movie_ratingTip);
 
-            toolTip.SetToolTip(cmbMediaType, "What type of medium is the media");
-            toolTip.SetToolTip(lblMediaType, "What type of medium is the media");
+            toolTip.SetToolTip(cmbMediaType, Movie.media_typeTip);
+            toolTip.SetToolTip(lblMediaType, Movie.media_typeTip);
 
-            toolTip.SetToolTip(txtMovieRetailCost, "retail cost of the movie");
-            toolTip.SetToolTip(lblMovieRetailCost, "retail cost of the movie");
+            toolTip.SetToolTip(txtMovieRetailCost, Movie.movie_retail_costTip);
+            toolTip.SetToolTip(lblMovieRetailCost, Movie.movie_retail_costTip);
 
-            toolTip.SetToolTip(txtCopiesOnHand, "number of copies the stores has");
-            toolTip.SetToolTip(lblCopiesOnHand, "number of copies the stores has");
+            toolTip.SetToolTip(txtCopiesOnHand, Movie.copies_on_handTip);
+            toolTip.SetToolTip(lblCopiesOnHand, Movie.copies_on_handTip);
 
-            toolTip.SetToolTip(txtImage, "Movie image filename including file format extension");
-            toolTip.SetToolTip(lblImage, "Movie image filename including file format extension");
+            toolTip.SetToolTip(txtImage, Movie.imageTip);
+            toolTip.SetToolTip(lblImage, Movie.imageTip);
 
-            toolTip.SetToolTip(txtTrailer, "Web/Youtube url of the video trailer");
-            toolTip.SetToolTip(lblTrailer, "Web/Youtube url of the video trailer");
+            toolTip.SetToolTip(txtTrailer, Movie.trailerTip);
+            toolTip.SetToolTip(lblTrailer, Movie.trailerTip);
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
@@ -309,9 +309,9 @@ namespace Bookstore
         {
             if (txtMovieTitle.Text.Trim() != string.Empty)
             {
-                if (txtMovieTitle.Text.Trim().Length > 100)
+                if (txtMovieTitle.Text.Trim().Length > Movie.movie_titleLength)
                 {
-                    MessageBox.Show(MsgBoxHelper.LTETmax(lblMovieTitle.Text, 100), "Invalid " + lblMovieTitle.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblMovieTitle.Text, Movie.movie_titleLength), "Invalid " + lblMovieTitle.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtMovieTitle.Focus();
                     return  false;
                 }
@@ -325,9 +325,9 @@ namespace Bookstore
 
             if (txtDescription.Text.Trim() != string.Empty)
             {
-                if (txtDescription.Text.Trim().Length > 255)
+                if (txtDescription.Text.Trim().Length > Movie.DescriptionLength)
                 {
-                    MessageBox.Show(MsgBoxHelper.LTETmax(lblDescription.Text, 255), "Invalid " + lblDescription.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblDescription.Text, Movie.DescriptionLength), "Invalid " + lblDescription.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtDescription.Focus();
                     return  false;
                 }
@@ -429,16 +429,16 @@ namespace Bookstore
                 return  false;
             }
 
-            if (txtImage.Text.Trim().Length > 255)
+            if (txtImage.Text.Trim().Length > Movie.imageLength)
             {
-                MessageBox.Show(MsgBoxHelper.LTETmax(lblImage.Text, 255), "Invalid " + lblImage.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(MsgBoxHelper.LTETmax(lblImage.Text, Movie.imageLength), "Invalid " + lblImage.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtImage.Focus();
                 return  false;
             }
 
-            if (txtTrailer.Text.Trim().Length > 255)
+            if (txtTrailer.Text.Trim().Length > Movie.trailerLength)
             {
-                MessageBox.Show(MsgBoxHelper.LTETmax(lblTrailer.Text, 255), "Invalid " + lblTrailer.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(MsgBoxHelper.LTETmax(lblTrailer.Text, Movie.trailerLength), "Invalid " + lblTrailer.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtTrailer.Focus();
                 return  false;
             }
