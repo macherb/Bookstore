@@ -37,11 +37,11 @@ namespace Bookstore
             toolTip.SetToolTip(btnDelete, "Delete Genre Number");
             toolTip.SetToolTip(btnClear, "Clear all Genre fields");
 
-            toolTip.SetToolTip(txtID, "Unique genre id");
-            toolTip.SetToolTip(lblID, "Unique genre id");
+            toolTip.SetToolTip(txtID, Genre.idTip);
+            toolTip.SetToolTip(lblID, Genre.idTip);
 
-            toolTip.SetToolTip(txtName, "Movie genre description");
-            toolTip.SetToolTip(lblName, "Movie genre description");
+            toolTip.SetToolTip(txtName, Genre.nameTip);
+            toolTip.SetToolTip(lblName, Genre.nameTip);
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
@@ -218,9 +218,9 @@ namespace Bookstore
         {
             if (txtName.Text.Trim() != string.Empty)
             {
-                if (txtName.Text.Trim().Length > 30)
+                if (txtName.Text.Trim().Length > Genre.nameLength)
                 {
-                    MessageBox.Show(MsgBoxHelper.LTETmax(lblName.Text, 30), "Invalid " + lblName.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblName.Text, Genre.nameLength), "Invalid " + lblName.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtName.Focus();
                     return  false;
                 }
