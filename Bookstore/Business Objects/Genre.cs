@@ -10,8 +10,13 @@ namespace Bookstore
     {
         #region Public variables
 
-        public int      id      { get; set; }
-        public string   name    { get; set; }
+        public          int     id      { get; set; }
+        public          string  name    { get; set; }
+
+        public  static  int     nameLength =    30;
+
+        public static   string  idTip =         "Unique genre id";
+        public static   string  nameTip =       "Movie genre description";
 
         #endregion
 
