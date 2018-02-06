@@ -24,20 +24,20 @@ namespace Bookstore
             toolTip.SetToolTip(btnSignIn, "Sign In");
             toolTip.SetToolTip(btnSignUp, "Sign Up");
 
-            toolTip.SetToolTip(txtLoginName, "member login credentials");
-            toolTip.SetToolTip(lblLoginName, "member login credentials");
+            toolTip.SetToolTip(txtLoginName, Login.CredentialsTip);
+            toolTip.SetToolTip(lblLoginName, Login.CredentialsTip);
 
-            toolTip.SetToolTip(txtPassword, "member login password");
-            toolTip.SetToolTip(lblPassword, "member login password");
+            toolTip.SetToolTip(txtPassword, Login.PasswordTip);
+            toolTip.SetToolTip(lblPassword, Login.PasswordTip);
         }
 
         private void btnSignIn_Click(object sender, EventArgs e)
         {
             if (txtLoginName.Text.Trim() != string.Empty)
             {
-                if (txtLoginName.Text.Trim().Length > 20)
+                if (txtLoginName.Text.Trim().Length > Member.login_nameLength)
                 {
-                    MessageBox.Show(MsgBoxHelper.LTETmax(lblLoginName.Text, 20), "Invalid " + lblLoginName.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblLoginName.Text, Member.login_nameLength), "Invalid " + lblLoginName.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtLoginName.Focus();
                     return;
                 }
@@ -51,9 +51,9 @@ namespace Bookstore
 
             if (txtPassword.Text.Trim() != string.Empty)
             {
-                if (txtPassword.Text.Trim().Length > 20)
+                if (txtPassword.Text.Trim().Length > Member.passwordLength)
                 {
-                    MessageBox.Show(MsgBoxHelper.LTETmax(lblPassword.Text, 20), "Invalid " + lblPassword.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblPassword.Text, Member.passwordLength), "Invalid " + lblPassword.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtPassword.Focus();
                     return;
                 }
