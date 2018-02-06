@@ -37,11 +37,11 @@ namespace Bookstore
             toolTip.SetToolTip(btnDelete, "Delete Vendor Number");
             toolTip.SetToolTip(btnClear, "Clear all Vendor fields");
 
-            toolTip.SetToolTip(txtID, "Unique vendor id");
-            toolTip.SetToolTip(lblID, "Unique vendor id");
+            toolTip.SetToolTip(txtID, Vendor.idTip);
+            toolTip.SetToolTip(lblID, Vendor.idTip);
 
-            toolTip.SetToolTip(txtName, "Movie vendor description");
-            toolTip.SetToolTip(lblName, "Movie vendor description");
+            toolTip.SetToolTip(txtName, Vendor.nameTip);
+            toolTip.SetToolTip(lblName, Vendor.nameTip);
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
@@ -218,9 +218,9 @@ namespace Bookstore
         {
             if (txtName.Text.Trim() != string.Empty)
             {
-                if (txtName.Text.Trim().Length > 30)
+                if (txtName.Text.Trim().Length > Vendor.nameLength)
                 {
-                    MessageBox.Show(MsgBoxHelper.LTETmax(lblName.Text, 30), "Invalid " + lblName.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblName.Text, Vendor.nameLength), "Invalid " + lblName.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtName.Focus();
                     return  false;
                 }
