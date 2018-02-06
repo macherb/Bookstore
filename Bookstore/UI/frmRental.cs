@@ -51,17 +51,17 @@ namespace Bookstore
             toolTip.SetToolTip(btnDelete, "Delete Movie, Member and Checkout");
             toolTip.SetToolTip(btnClear, "Clear all Rental fields");
 
-            toolTip.SetToolTip(cmbMovieNumber, "movie unique identifier");
-            toolTip.SetToolTip(lblMovieNumber, "movie unique identifier");
+            toolTip.SetToolTip(cmbMovieNumber, Rental.movie_numberTip);
+            toolTip.SetToolTip(lblMovieNumber, Rental.movie_numberTip);
 
-            toolTip.SetToolTip(cmbMemberNumber, "member unique number");
-            toolTip.SetToolTip(lblMemberNumber, "member unique number");
+            toolTip.SetToolTip(cmbMemberNumber, Rental.member_numberTip);
+            toolTip.SetToolTip(lblMemberNumber, Rental.member_numberTip);
 
-            toolTip.SetToolTip(dtpMediaCheckoutDate, "date the media (dvd) was checked out");
-            toolTip.SetToolTip(lblMediaCheckoutDate, "date the media (dvd) was checked out");
+            toolTip.SetToolTip(dtpMediaCheckoutDate, Rental.media_checkout_dateTip);
+            toolTip.SetToolTip(lblMediaCheckoutDate, Rental.media_checkout_dateTip);
 
-            toolTip.SetToolTip(dtpMediaReturnDate, "date the media (dvd) was returned to store");
-            toolTip.SetToolTip(lblMediaReturnDate, "date the media (dvd) was returned to store");
+            toolTip.SetToolTip(dtpMediaReturnDate, Rental.media_return_dateTip);
+            toolTip.SetToolTip(lblMediaReturnDate, Rental.media_return_dateTip);
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
