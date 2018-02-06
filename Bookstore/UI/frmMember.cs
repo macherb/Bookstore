@@ -48,47 +48,47 @@ namespace Bookstore
             toolTip.SetToolTip(btnDelete, "Delete Member Number");
             toolTip.SetToolTip(btnClear, "Clear all Member fields");
 
-            toolTip.SetToolTip(txtNumber, "customer or member unique number");
-            toolTip.SetToolTip(lblNumber, "customer or member unique number");
+            toolTip.SetToolTip(txtNumber, Member.numberTip);
+            toolTip.SetToolTip(lblNumber, Member.numberTip);
 
-            toolTip.SetToolTip(dtpJoinDate, "date in which the member join club");
-            toolTip.SetToolTip(lblJoinDate, "date in which the member join club");
+            toolTip.SetToolTip(dtpJoinDate, Member.joindateTip);
+            toolTip.SetToolTip(lblJoinDate, Member.joindateTip);
 
-            toolTip.SetToolTip(txtFirstName, "first name of the member");
-            toolTip.SetToolTip(lblFirstName, "first name of the member");
+            toolTip.SetToolTip(txtFirstName, Member.firstnameTip);
+            toolTip.SetToolTip(lblFirstName, Member.firstnameTip);
 
-            toolTip.SetToolTip(txtLastName, "last name of the member");
-            toolTip.SetToolTip(lblLastName, "last name of the member");
+            toolTip.SetToolTip(txtLastName, Member.lastnameTip);
+            toolTip.SetToolTip(lblLastName, Member.lastnameTip);
 
-            toolTip.SetToolTip(txtAddress, "address of the member");
-            toolTip.SetToolTip(lblAddress, "address of the member");
+            toolTip.SetToolTip(txtAddress, Member.addressTip);
+            toolTip.SetToolTip(lblAddress, Member.addressTip);
 
-            toolTip.SetToolTip(txtCity, "city where the member resides");
-            toolTip.SetToolTip(lblCity, "city where the member resides");
+            toolTip.SetToolTip(txtCity, Member.cityTip);
+            toolTip.SetToolTip(lblCity, Member.cityTip);
 
-            toolTip.SetToolTip(txtState, "state where the member resides");
-            toolTip.SetToolTip(lblState, "state where the member resides");
+            toolTip.SetToolTip(txtState, Member.stateTip);
+            toolTip.SetToolTip(lblState, Member.stateTip);
 
-            toolTip.SetToolTip(txtZipCode, "zipcode of the member");
-            toolTip.SetToolTip(lblZipCode, "zipcode of the member");
+            toolTip.SetToolTip(txtZipCode, Member.zipcodeTip);
+            toolTip.SetToolTip(lblZipCode, Member.zipcodeTip);
 
-            toolTip.SetToolTip(txtPhone, "daytime phone number of the member");
-            toolTip.SetToolTip(lblPhone, "daytime phone number of the member");
+            toolTip.SetToolTip(txtPhone, Member.phoneTip);
+            toolTip.SetToolTip(lblPhone, Member.phoneTip);
 
 
-            toolTip.SetToolTip(txtLoginName, "member login credentials");
-            toolTip.SetToolTip(lblLoginName, "member login credentials");
+            toolTip.SetToolTip(txtLoginName, Member.login_nameTip);
+            toolTip.SetToolTip(lblLoginName, Member.login_nameTip);
 
-            toolTip.SetToolTip(txtPassword, "member login password");
-            toolTip.SetToolTip(lblPassword, "member login password");
+            toolTip.SetToolTip(txtPassword, Member.passwordTip);
+            toolTip.SetToolTip(lblPassword, Member.passwordTip);
 
-            toolTip.SetToolTip(txtEmail, "member email address");
-            toolTip.SetToolTip(lblEmail, "member email address");
+            toolTip.SetToolTip(txtEmail, Member.emailTip);
+            toolTip.SetToolTip(lblEmail, Member.emailTip);
 
-            toolTip.SetToolTip(grpContactMethod, "How does the member preferred to be contacted");
+            toolTip.SetToolTip(grpContactMethod, Member.contact_methodTip);
 
-            toolTip.SetToolTip(cmbSubscriptionID, "Member subscription type");
-            toolTip.SetToolTip(lblSubscriptionID, "Member subscription type");
+            toolTip.SetToolTip(cmbSubscriptionID, Member.subscription_idTip);
+            toolTip.SetToolTip(lblSubscriptionID, Member.subscription_idTip);
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
@@ -383,9 +383,9 @@ namespace Bookstore
 
             if (txtFirstName.Text.Trim() != string.Empty)
             {
-                if (txtFirstName.Text.Trim().Length > 15)
+                if (txtFirstName.Text.Trim().Length > Member.firstnameLength)
                 {
-                    MessageBox.Show(MsgBoxHelper.LTETmax(lblFirstName.Text, 15), "Invalid " + lblFirstName.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblFirstName.Text, Member.firstnameLength), "Invalid " + lblFirstName.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtFirstName.Focus();
                     return  false;
                 }
@@ -399,9 +399,9 @@ namespace Bookstore
 
             if (txtLastName.Text.Trim() != string.Empty)
             {
-                if (txtLastName.Text.Trim().Length > 25)
+                if (txtLastName.Text.Trim().Length > Member.lastnameLength)
                 {
-                    MessageBox.Show(MsgBoxHelper.LTETmax(lblLastName.Text, 25), "Invalid " + lblLastName.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblLastName.Text, Member.lastnameLength), "Invalid " + lblLastName.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtLastName.Focus();
                     return  false;
                 }
@@ -415,9 +415,9 @@ namespace Bookstore
 
             if (txtAddress.Text.Trim() != string.Empty)
             {
-                if (txtAddress.Text.Trim().Length > 30)
+                if (txtAddress.Text.Trim().Length > Member.addressLength)
                 {
-                    MessageBox.Show(MsgBoxHelper.LTETmax(lblAddress.Text, 30), "Invalid " + lblAddress.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblAddress.Text, Member.addressLength), "Invalid " + lblAddress.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtAddress.Focus();
                     return  false;
                 }
@@ -431,9 +431,9 @@ namespace Bookstore
 
             if (txtCity.Text.Trim() != string.Empty)
             {
-                if (txtCity.Text.Trim().Length > 20)
+                if (txtCity.Text.Trim().Length > Member.cityLength)
                 {
-                    MessageBox.Show(MsgBoxHelper.LTETmax(lblCity.Text, 20), "Invalid " + lblCity.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblCity.Text, Member.cityLength), "Invalid " + lblCity.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtCity.Focus();
                     return  false;
                 }
@@ -447,9 +447,9 @@ namespace Bookstore
 
             if (txtState.Text.Trim() != string.Empty)
             {
-                if (txtState.Text.Trim().Length > 2)
+                if (txtState.Text.Trim().Length > Member.stateLength)
                 {
-                    MessageBox.Show(MsgBoxHelper.LTETmax(lblState.Text, 2), "Invalid " + lblState.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblState.Text, Member.stateLength), "Invalid " + lblState.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtState.Focus();
                     return  false;
                 }
@@ -463,9 +463,9 @@ namespace Bookstore
 
             if (txtZipCode.Text.Trim() != string.Empty)
             {
-                if (txtZipCode.Text.Trim().Length > 5)
+                if (txtZipCode.Text.Trim().Length > Member.zipcodeLength)
                 {
-                    MessageBox.Show(MsgBoxHelper.LTETmax(lblZipCode.Text, 5), "Invalid " + lblZipCode.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblZipCode.Text, Member.zipcodeLength), "Invalid " + lblZipCode.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtZipCode.Focus();
                     return  false;
                 }
@@ -479,9 +479,9 @@ namespace Bookstore
 
             if (txtPhone.Text.Trim() != string.Empty)
             {
-                if (txtPhone.Text.Trim().Length > 10)
+                if (txtPhone.Text.Trim().Length > Member.phoneLength)
                 {
-                    MessageBox.Show(MsgBoxHelper.LTETmax(lblPhone.Text, 10), "Invalid " + lblPhone.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblPhone.Text, Member.phoneLength), "Invalid " + lblPhone.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtPhone.Focus();
                     return  false;
                 }
@@ -505,9 +505,9 @@ namespace Bookstore
 
             if (txtLoginName.Text.Trim() != string.Empty)
             {
-                if (txtLoginName.Text.Trim().Length > 20)
+                if (txtLoginName.Text.Trim().Length > Member.login_nameLength)
                 {
-                    MessageBox.Show(MsgBoxHelper.LTETmax(lblLoginName.Text, 20), "Invalid " + lblLoginName.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblLoginName.Text, Member.login_nameLength), "Invalid " + lblLoginName.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtLoginName.Focus();
                     return  false;
                 }
@@ -521,9 +521,9 @@ namespace Bookstore
 
             if (txtPassword.Text.Trim() != string.Empty)
             {
-                if (txtPassword.Text.Trim().Length > 20)
+                if (txtPassword.Text.Trim().Length > Member.passwordLength)
                 {
-                    MessageBox.Show(MsgBoxHelper.LTETmax(lblPassword.Text, 20), "Invalid " + lblPassword.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblPassword.Text, Member.passwordLength), "Invalid " + lblPassword.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtPassword.Focus();
                     return  false;
                 }
@@ -537,9 +537,9 @@ namespace Bookstore
 
             if (txtEmail.Text.Trim() != string.Empty)
             {
-                if (txtEmail.Text.Trim().Length > 20)
+                if (txtEmail.Text.Trim().Length > Member.emailLength)
                 {
-                    MessageBox.Show(MsgBoxHelper.LTETmax(lblEmail.Text, 20), "Invalid " + lblEmail.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(MsgBoxHelper.LTETmax(lblEmail.Text, Member.emailLength), "Invalid " + lblEmail.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtEmail.Focus();
                     return  false;
                 }
