@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace Bookstore
 {
+    /// <summary>
+    /// 
+    /// </summary>
     class Subscriptions : BaseTable
     {
         #region Private variables
@@ -30,10 +33,10 @@ namespace Bookstore
         #region Private functions
 
         /// <summary>
-        /// 
+        /// Sets all the non-primary key(s) in a <see cref="Bookstore.Subscription"/>
         /// </summary>
-        /// <param name="subscriptionReader"></param>
-        /// <param name="objSubscription"></param>
+        /// <param name="subscriptionReader">The <see cref="Bookstore.Subscription"/> that was read from</param>
+        /// <param name="objSubscription">The <see cref="Bookstore.Subscription"/> that will be written to</param>
         private static void SetSecondary(SqlDataReader subscriptionReader, Subscription objSubscription)
         {
             float                   cost;
@@ -44,11 +47,11 @@ namespace Bookstore
         }
 
         /// <summary>
-        /// 
+        /// Writes a <see cref="Bookstore.Subscription"/> to the database's table
         /// </summary>
-        /// <param name="SQLStatement"></param>
-        /// <param name="subscription"></param>
-        /// <returns></returns>
+        /// <param name="SQLStatement">The command to write a <see cref="Bookstore.Subscription"/></param>
+        /// <param name="subscription">The <see cref="Bookstore.Subscription"/> that will have its data written to the table</param>
+        /// <returns>Whether or not the <see cref="Bookstore.Subscription"/> was successfully written</returns>
         private static bool WriteSubscription(string SQLStatement, Subscription subscription)
         {
             SqlCommand  objCommand;
@@ -75,12 +78,12 @@ namespace Bookstore
         }
 
         /// <summary>
-        /// 
+        /// Sets the list of field(s) that will be SELECT'ed
         /// </summary>
-        /// <param name="primary"></param>
-        /// <param name="preprimary"></param>
-        /// <param name="secondary"></param>
-        /// <param name="presecondary"></param>
+        /// <param name="primary">The list of primary key(s)</param>
+        /// <param name="preprimary">What will be placed before every primary key</param>
+        /// <param name="secondary">The list of non-primary key(s)</param>
+        /// <param name="presecondary">What will be placed before every non-primary key</param>
         private static void PrimarySecondary(ref string primary, string preprimary, ref string secondary, string presecondary)
         {
             for (int i = 1                  ; i < lowestSecondary  ; i++)
@@ -105,6 +108,8 @@ namespace Bookstore
         /// <summary>
         /// Returns a list of generic  type objects from the table
         /// </summary>
+        /// <returns>All fields of all <see cref="Bookstore.Subscription"/>'s</returns>
+        /// <exception cref="System.Exception" />
         public static List<Subscription> GetSubscriptions()
         {
             List<Subscription>  subscriptions =     new List<Subscription>();
@@ -187,6 +192,8 @@ namespace Bookstore
         /// Returns a single record  from the table whose parameter matches a table field condition
         /// </summary>
         /// <param name="parameter">accepts a parameter to return a specific record</param>
+        /// <returns>All the fields (except the primary key) of a <see cref="Bookstore.Subscription"/></returns>
+        /// <exception cref="System.Exception" />
         public static Subscription GetSubscription(int parameter)//(string parameter)
         {
             Subscription    objSubscription =   null;
@@ -255,6 +262,8 @@ namespace Bookstore
         /// Adds a record to the table with a Boolean returned status of True or False.
         /// </summary>
         /// <param name="subscription">accepts a custom object of that type as a parameter</param>
+        /// <returns>Whether or not the <see cref="Bookstore.Subscription"/> was successfully written</returns>
+        /// <exception cref="System.Exception" />
         public static bool AddSubscription(Subscription subscription)
         {
             string          primary,
@@ -289,6 +298,9 @@ namespace Bookstore
 
 
 
+                
+                
+                
                 //
                 result =    WriteSubscription(SQLStatement, subscription);
             }
@@ -307,6 +319,8 @@ namespace Bookstore
         /// Updates a record in the table with a Boolean returned status of True or False
         /// </summary>
         /// <param name="subscription">accepts a custom object of that type as a parameter</param>
+        /// <returns>Whether or not the <see cref="Bookstore.Subscription"/> was successfully written</returns>
+        /// <exception cref="System.Exception" />
         public static bool UpdateSubscription(Subscription subscription)
         {
 
@@ -337,11 +351,6 @@ namespace Bookstore
 
 
 
-                
-
-
-
-                
 
 
 
@@ -358,7 +367,16 @@ namespace Bookstore
 
 
 
-                
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -390,6 +408,8 @@ namespace Bookstore
         /// Deletes a record from the database with a Boolean returned status of True or False
         /// </summary>
         /// <param name="subscription">accepts a custom object of that type as a parameter</param>
+        /// <returns>Whether or not the <see cref="Bookstore.Subscription"/> was successfully deleted</returns>
+        /// <exception cref="System.Exception" />
         public static bool DeleteSubscription(Subscription subscription)
         {
             string      primary =       string.Empty,
@@ -434,10 +454,6 @@ namespace Bookstore
                     }
                     objConn.Close();
                 }
-
-
-
-
 
 
 
