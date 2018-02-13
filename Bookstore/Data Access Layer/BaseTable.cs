@@ -8,14 +8,17 @@ using System.Threading.Tasks;
 
 namespace Bookstore
 {
+    /// <summary>
+    /// A table that is not aggregate
+    /// </summary>
     class BaseTable
     {
         /// <summary>
-        /// 
+        /// Get the maximum value of the primary key in a table
         /// </summary>
-        /// <param name="tableName"></param>
-        /// <param name="key"></param>
-        /// <returns></returns>
+        /// <param name="tableName">The name of the table to get the MAX of</param>
+        /// <param name="key">The field to get the MAX of</param>
+        /// <returns>The maximum value of the primary key</returns>
         public static int GetMax(string tableName, string key)
         {
             string          SQLStatement;
