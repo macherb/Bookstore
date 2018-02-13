@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace Bookstore
 {
+    /// <summary>
+    /// 
+    /// </summary>
     class Vendors : BaseTable
     {
         #region Private variables
@@ -30,21 +33,21 @@ namespace Bookstore
         #region Private functions
 
         /// <summary>
-        /// 
+        /// Sets all the non-primary key(s) in a <see cref="Bookstore.Vendor"/>
         /// </summary>
-        /// <param name="vendorReader"></param>
-        /// <param name="objVendor"></param>
+        /// <param name="vendorReader">The <see cref="Bookstore.Vendor"/> that was read from</param>
+        /// <param name="objVendor">The <see cref="Bookstore.Vendor"/> that will be written to</param>
         private static void SetSecondary(SqlDataReader vendorReader, Vendor objVendor)
         {
             objVendor.name =    vendorReader[parameters[ 1]].ToString();
         }
 
         /// <summary>
-        /// 
+        /// Writes a <see cref="Bookstore.Vendor"/> to the database's table
         /// </summary>
-        /// <param name="SQLStatement"></param>
-        /// <param name="vendor"></param>
-        /// <returns></returns>
+        /// <param name="SQLStatement">The command to write a <see cref="Bookstore.Vendor"/></param>
+        /// <param name="vendor">The <see cref="Bookstore.Vendor"/> that will have its data written to the table</param>
+        /// <returns>Whether or not the <see cref="Bookstore.Vendor"/> was successfully written</returns>
         private static bool WriteVendor(string SQLStatement, Vendor vendor)
         {
             SqlCommand  objCommand;
@@ -70,12 +73,12 @@ namespace Bookstore
         }
 
         /// <summary>
-        /// 
+        /// Sets the list of field(s) that will be SELECT'ed
         /// </summary>
-        /// <param name="primary"></param>
-        /// <param name="preprimary"></param>
-        /// <param name="secondary"></param>
-        /// <param name="presecondary"></param>
+        /// <param name="primary">The list of primary key(s)</param>
+        /// <param name="preprimary">What will be placed before every primary key</param>
+        /// <param name="secondary">The list of non-primary key(s)</param>
+        /// <param name="presecondary">What will be placed before every non-primary key</param>
         private static void PrimarySecondary(ref string primary, string preprimary, ref string secondary, string presecondary)
         {
             for (int i = 1                  ; i < lowestSecondary  ; i++)
@@ -88,11 +91,11 @@ namespace Bookstore
 
 
 
-        
-        
-        
-        
-        
+
+
+
+
+
         #endregion
 
         #region Public functions
@@ -100,6 +103,8 @@ namespace Bookstore
         /// <summary>
         /// Returns a list of generic  type objects from the table
         /// </summary>
+        /// <returns>All fields of all <see cref="Bookstore.Vendor"/>'s</returns>
+        /// <exception cref="System.Exception" />
         public static List<Vendor> GetVendors()
         {
             List<Vendor>    vendors =       new List<Vendor>();
@@ -182,6 +187,8 @@ namespace Bookstore
         /// Returns a single record  from the table whose parameter matches a table field condition
         /// </summary>
         /// <param name="parameter">accepts a parameter to return a specific record</param>
+        /// <returns>All the fields (except the primary key) of a <see cref="Bookstore.Vendor"/></returns>
+        /// <exception cref="System.Exception" />
         public static Vendor GetVendor(int parameter)//(string parameter)
         {
             Vendor          objVendor =     null;
@@ -250,6 +257,8 @@ namespace Bookstore
         /// Adds a record to the table with a Boolean returned status of True or False.
         /// </summary>
         /// <param name="vendor">accepts a custom object of that type as a parameter</param>
+        /// <returns>Whether or not the <see cref="Bookstore.Vendor"/> was successfully written</returns>
+        /// <exception cref="System.Exception" />
         public static bool AddVendor(Vendor vendor)
         {
             string          primary,
@@ -271,11 +280,14 @@ namespace Bookstore
             try
             {
                 vendor.id =                 GetMax("Vendor", key) + 1;
-                
 
 
 
-                
+
+
+
+
+
 
 
 
@@ -302,6 +314,8 @@ namespace Bookstore
         /// Updates a record in the table with a Boolean returned status of True or False
         /// </summary>
         /// <param name="vendor">accepts a custom object of that type as a parameter</param>
+        /// <returns>Whether or not the <see cref="Bookstore.Vendor"/> was successfully written</returns>
+        /// <exception cref="System.Exception" />
         public static bool UpdateVendor(Vendor vendor)
         {
             
@@ -332,11 +346,6 @@ namespace Bookstore
 
 
 
-                
-
-
-
-                
 
 
 
@@ -353,7 +362,16 @@ namespace Bookstore
 
 
 
-                
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -385,6 +403,8 @@ namespace Bookstore
         /// Deletes a record from the database with a Boolean returned status of True or False
         /// </summary>
         /// <param name="vendor">accepts a custom object of that type as a parameter</param>
+        /// <returns>Whether or not the <see cref="Bookstore.Vendor"/> was successfully deleted</returns>
+        /// <exception cref="System.Exception" />
         public static bool DeleteVendor(Vendor vendor)
         {
             string      primary =       string.Empty,
@@ -429,10 +449,6 @@ namespace Bookstore
                     }
                     objConn.Close();
                 }
-
-
-
-
 
 
 
