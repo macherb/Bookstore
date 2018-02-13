@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace Bookstore
 {
+    /// <summary>
+    /// 
+    /// </summary>
     class Movies : BaseTable
     {
         #region Private variables
@@ -30,10 +33,10 @@ namespace Bookstore
         #region Private functions
 
         /// <summary>
-        /// 
+        /// Sets all the non-primary key(s) in a <see cref="Bookstore.Movie"/>
         /// </summary>
-        /// <param name="movieReader"></param>
-        /// <param name="objMovie"></param>
+        /// <param name="movieReader">The <see cref="Bookstore.Movie"/> that was read from</param>
+        /// <param name="objMovie">The <see cref="Bookstore.Movie"/> that will be written to</param>
         private static void SetSecondary(SqlDataReader movieReader, Movie objMovie)
         {
             int                     genre_id,
@@ -58,11 +61,11 @@ namespace Bookstore
         }
 
         /// <summary>
-        /// 
+        /// Writes a <see cref="Bookstore.Movie"/> to the database's table
         /// </summary>
-        /// <param name="SQLStatement"></param>
-        /// <param name="movie"></param>
-        /// <returns></returns>
+        /// <param name="SQLStatement">The command to write a <see cref="Bookstore.Movie"/></param>
+        /// <param name="movie">The <see cref="Bookstore.Movie"/> that will have its data written to the table</param>
+        /// <returns>Whether or not the <see cref="Bookstore.Movie"/> was successfully written</returns>
         private static bool WriteMovie(string SQLStatement, Movie movie)
         {
             SqlCommand  objCommand;
@@ -97,12 +100,12 @@ namespace Bookstore
         }
 
         /// <summary>
-        /// 
+        /// Sets the list of field(s) that will be SELECT'ed
         /// </summary>
-        /// <param name="primary"></param>
-        /// <param name="preprimary"></param>
-        /// <param name="secondary"></param>
-        /// <param name="presecondary"></param>
+        /// <param name="primary">The list of primary key(s)</param>
+        /// <param name="preprimary">What will be placed before every primary key</param>
+        /// <param name="secondary">The list of non-primary key(s)</param>
+        /// <param name="presecondary">What will be placed before every non-primary key</param>
         private static void PrimarySecondary(ref string primary, string preprimary, ref string secondary, string presecondary)
         {
             for (int i = 1                  ; i < lowestSecondary  ; i++)
@@ -127,6 +130,8 @@ namespace Bookstore
         /// <summary>
         /// Returns a list of generic  type objects from the table
         /// </summary>
+        /// <returns>All fields of all <see cref="Bookstore.Movie"/>'s, plus the extras from <see cref="Bookstore.Genre"/></returns>
+        /// <exception cref="System.Exception" />
         public static List<Movie> GetMovies()
         {
             List<Movie>     movies =        new List<Movie>();
@@ -209,6 +214,8 @@ namespace Bookstore
         /// Returns a single record  from the table whose parameter matches a table field condition
         /// </summary>
         /// <param name="parameter">accepts a parameter to return a specific record</param>
+        /// <returns>All the fields (except the primary key) of a <see cref="Bookstore.Movie"/></returns>
+        /// <exception cref="System.Exception" />
         public static Movie GetMovie(int parameter)//string parameter)
         {
             Movie           objMovie =      null;
@@ -277,6 +284,8 @@ namespace Bookstore
         /// Adds a record to the table with a Boolean returned status of True or False.
         /// </summary>
         /// <param name="movie">accepts a custom object of that type as a parameter</param>
+        /// <returns>Whether or not the <see cref="Bookstore.Movie"/> was successfully written</returns>
+        /// <exception cref="System.Exception" />
         public static bool AddMovie(Movie movie)
         {
             string          primary,
@@ -298,11 +307,14 @@ namespace Bookstore
             try
             {
                 movie.movie_number =        GetMax("Movie", key) + 1;
-                
 
 
 
-                
+
+
+
+
+
 
 
 
@@ -329,6 +341,8 @@ namespace Bookstore
         /// Updates a record in the table with a Boolean returned status of True or False
         /// </summary>
         /// <param name="movie">accepts a custom object of that type as a parameter</param>
+        /// <returns>Whether or not the <see cref="Bookstore.Movie"/> was successfully written</returns>
+        /// <exception cref="System.Exception" />
         public static bool UpdateMovie(Movie movie)
         {
 
@@ -359,11 +373,6 @@ namespace Bookstore
 
 
 
-                
-
-
-
-                
 
 
 
@@ -380,7 +389,16 @@ namespace Bookstore
 
 
 
-                
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -412,6 +430,8 @@ namespace Bookstore
         /// Deletes a record from the database with a Boolean returned status of True or False
         /// </summary>
         /// <param name="movie">accepts a custom object of that type as a parameter</param>
+        /// <returns>Whether or not the <see cref="Bookstore.Movie"/> was successfully deleted</returns>
+        /// <exception cref="System.Exception" />
         public static bool DeleteMovie(Movie movie)
         {
             string      primary =       string.Empty,
@@ -456,10 +476,6 @@ namespace Bookstore
                     }
                     objConn.Close();
                 }
-
-
-
-
 
 
 
