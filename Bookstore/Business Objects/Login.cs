@@ -15,11 +15,11 @@ namespace Bookstore
     {
         #region Public variables
 
-        public  string  Credentials { get; set; }
-        public  string  Password    { get; set; }
+        public          string  Credentials         { get; set; }
+        public          string  Password            { get; set; }
 
-        public  static  string      CredentialsTip =    "member login credentials";
-        public  static  string      PasswordTip =       "member login password";
+        public  static  string  CredentialsTip =    "member login credentials";
+        public  static  string  PasswordTip =       "member login password";
 
         #endregion
 
@@ -28,6 +28,8 @@ namespace Bookstore
         /// <summary>
         /// This method should determine if the user logging into the database is valid or not. The method should return a Boolean (True or False).
         /// </summary>
+        /// <returns>Whether or not the password provided matches the password in the table</returns>
+        /// <exception cref="System.Exception" />
         public bool IsValid()
         {
             string          SQLStatement;
