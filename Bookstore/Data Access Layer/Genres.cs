@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace Bookstore
 {
+    /// <summary>
+    /// 
+    /// </summary>
     class Genres : BaseTable
     {
         #region Private variables
@@ -30,21 +33,21 @@ namespace Bookstore
         #region Private functions
 
         /// <summary>
-        /// 
+        /// Sets all the non-primary key(s) in a <see cref="Bookstore.Genre"/>
         /// </summary>
-        /// <param name="genreReader"></param>
-        /// <param name="objGenre"></param>
+        /// <param name="genreReader">The <see cref="Bookstore.Genre"/> that was read from</param>
+        /// <param name="objGenre">The <see cref="Bookstore.Genre"/> that will be written to</param>
         private static void SetSecondary(SqlDataReader genreReader, Genre objGenre)
         {
             objGenre.name = genreReader[parameters[ 1]].ToString();
         }
 
         /// <summary>
-        /// 
+        /// Writes a <see cref="Bookstore.Genre"/> to the database's table
         /// </summary>
-        /// <param name="SQLStatement"></param>
-        /// <param name="genre"></param>
-        /// <returns></returns>
+        /// <param name="SQLStatement">The command to write a <see cref="Bookstore.Genre"/></param>
+        /// <param name="genre">The <see cref="Bookstore.Genre"/> that will have its data written to the table</param>
+        /// <returns>Whether or not the <see cref="Bookstore.Genre"/> was successfully written</returns>
         private static bool WriteGenre(string SQLStatement, Genre genre)
         {
             SqlCommand  objCommand;
@@ -70,12 +73,12 @@ namespace Bookstore
         }
 
         /// <summary>
-        /// 
+        /// Sets the list of field(s) that will be SELECT'ed
         /// </summary>
-        /// <param name="primary"></param>
-        /// <param name="preprimary"></param>
-        /// <param name="secondary"></param>
-        /// <param name="presecondary"></param>
+        /// <param name="primary">The list of primary key(s)</param>
+        /// <param name="preprimary">What will be placed before every primary key</param>
+        /// <param name="secondary">The list of non-primary key(s)</param>
+        /// <param name="presecondary">What will be placed before every non-primary key</param>
         private static void PrimarySecondary(ref string primary, string preprimary, ref string secondary, string presecondary)
         {
             for (int i = 1                  ; i < lowestSecondary  ; i++)
@@ -100,6 +103,8 @@ namespace Bookstore
         /// <summary>
         /// Returns a list of generic  type objects from the table
         /// </summary>
+        /// <returns>All fields of all <see cref="Bookstore.Genre"/>'s</returns>
+        /// <exception cref="System.Exception" />
         public static List<Genre> GetGenres()
         {
             List<Genre>     genres =        new List<Genre>();
@@ -182,6 +187,8 @@ namespace Bookstore
         /// Returns a single record  from the table whose parameter matches a table field condition
         /// </summary>
         /// <param name="parameter">accepts a parameter to return a specific record</param>
+        /// <returns>All the fields (except the primary key) of a <see cref="Bookstore.Genre"/></returns>
+        /// <exception cref="System.Exception" />
         public static Genre GetGenre(int parameter)//string parameter)
         {
             Genre           objGenre =      null;
@@ -250,6 +257,8 @@ namespace Bookstore
         /// Adds a record to the table with a Boolean returned status of True or False.
         /// </summary>
         /// <param name="genre">accepts a custom object of that type as a parameter</param>
+        /// <returns>Whether or not the <see cref="Bookstore.Genre"/> was successfully written</returns>
+        /// <exception cref="System.Exception" />
         public static bool AddGenre(Genre genre)
         {
             string          primary,
@@ -271,11 +280,14 @@ namespace Bookstore
             try
             {
                 genre.id =                  GetMax("Genre", key) + 1;
-                
 
 
 
-                
+
+
+
+
+
 
 
 
@@ -302,6 +314,8 @@ namespace Bookstore
         /// Updates a record in the table with a Boolean returned status of True or False
         /// </summary>
         /// <param name="genre">accepts a custom object of that type as a parameter</param>
+        /// <returns>Whether or not the <see cref="Bookstore.Genre"/> was successfully written</returns>
+        /// <exception cref="System.Exception" />
         public static bool UpdateGenre(Genre genre)
         {
             
@@ -332,11 +346,6 @@ namespace Bookstore
 
 
 
-                
-
-
-
-                
 
 
 
@@ -353,12 +362,21 @@ namespace Bookstore
 
 
 
-                
 
 
 
 
-                
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -385,6 +403,8 @@ namespace Bookstore
         /// Deletes a record from the database with a Boolean returned status of True or False
         /// </summary>
         /// <param name="genre">accepts a custom object of that type as a parameter</param>
+        /// <returns>Whether or not the <see cref="Bookstore.Genre"/> was successfully deleted</returns>
+        /// <exception cref="System.Exception" />
         public static bool DeleteGenre(Genre genre)
         {
             string      primary =       string.Empty,
@@ -429,10 +449,6 @@ namespace Bookstore
                     }
                     objConn.Close();
                 }
-
-
-
-
 
 
 
