@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace Bookstore
 {
+    /// <summary>
+    /// 
+    /// </summary>
     class Rentals
     {
         #region Private variables
@@ -30,10 +33,10 @@ namespace Bookstore
         #region Private functions
 
         /// <summary>
-        /// 
+        /// Sets all the non-primary key(s) in a <see cref="Bookstore.Rental"/>
         /// </summary>
-        /// <param name="rentalReader"></param>
-        /// <param name="objRental"></param>
+        /// <param name="rentalReader">The <see cref="Bookstore.Rental"/> that was read from</param>
+        /// <param name="objRental">The <see cref="Bookstore.Rental"/> that will be written to</param>
         private static void SetSecondary(SqlDataReader rentalReader, Rental objRental)
         {
             DateTime                        media_return_date;
@@ -43,11 +46,11 @@ namespace Bookstore
         }
 
         /// <summary>
-        /// 
+        /// Writes a <see cref="Bookstore.Rental"/> to the database's table
         /// </summary>
-        /// <param name="SQLStatement"></param>
-        /// <param name="rental"></param>
-        /// <returns></returns>
+        /// <param name="SQLStatement">The command to write a <see cref="Bookstore.Rental"/></param>
+        /// <param name="rental">The <see cref="Bookstore.Rental"/> that will have its data written to the table</param>
+        /// <returns>Whether or not the <see cref="Bookstore.Rental"/> was successfully written</returns>
         private static bool WriteRental(string SQLStatement, Rental rental)
         {
             SqlCommand  objCommand;
@@ -75,12 +78,12 @@ namespace Bookstore
         }
 
         /// <summary>
-        /// 
+        /// Sets the list of field(s) that will be SELECT'ed
         /// </summary>
-        /// <param name="primary"></param>
-        /// <param name="preprimary"></param>
-        /// <param name="secondary"></param>
-        /// <param name="presecondary"></param>
+        /// <param name="primary">The list of primary key(s)</param>
+        /// <param name="preprimary">What will be placed before every primary key</param>
+        /// <param name="secondary">The list of non-primary key(s)</param>
+        /// <param name="presecondary">What will be placed before every non-primary key</param>
         private static void PrimarySecondary(ref string primary, string preprimary, ref string secondary, string presecondary)
         {
             for (int i = 1                  ; i < lowestSecondary  ; i++)
@@ -90,21 +93,19 @@ namespace Bookstore
         }
 
         /// <summary>
-        /// 
+        /// Reads from a <see cref="Bookstore.Member"/>, and puts the relevant fields into a <see cref="Bookstore.Rental"/>
         /// </summary>
-        /// <param name="rental"></param>
-        /// <returns></returns>
-        private static bool ReadJoindate(Rental rental)
+        /// <param name="rental">The <see cref="Bookstore.Rental"/> that will be read into</param>
+        private static void ReadMember(Rental rental)
         {
             string          SQLStatement;
             SqlCommand      objCommand;
             SqlDataReader   memberReader;
-            bool            result =        false;
 
             SQLStatement =                  SQLHelper.Select("Member",
                                                             " FROM " + "Member",
                                                             string.Empty,
-                                                            Members.extra1
+                                                            Members.extra1 + ", " + Members.extra2
                                                             ) + " WHERE ";
 
             SQLStatement +=                 "Member." + Members.key + " = @" + Members.key;
@@ -119,28 +120,23 @@ namespace Bookstore
                     {
                         while (memberReader.Read())
                         {
-                            DateTime joindate = new DateTime(1753, 1, 1, 0, 0, 0);
+                            DateTime            joindate =  new DateTime(1753, 1, 1, 0, 0, 0);
 
-                            DateTime.TryParse(memberReader[Members.extra1].ToString(), out joindate);
-                            rental.joindate = joindate;
+                            DateTime.TryParse(              memberReader[Members.extra1].ToString(),    out joindate);
+                            rental.joindate =               joindate;
+                            rental.member_status =          memberReader[Members.extra2].ToString();
                         }
                     }
                 }
                 objConn.Close();
             }
-            if (rental.joindate > rental.media_checkout_date)
-            {
-                result =    true;
-            }
-
-            return  result;
         }
 
         /// <summary>
-        /// 
+        /// Decreases a <see cref="Bookstore.Movie"/>'s copies_on_hand (as long as it's not zero)
         /// </summary>
-        /// <param name="rental"></param>
-        /// <returns></returns>
+        /// <param name="rental">The <see cref="Bookstore.Rental"/> whose associated <see cref="Bookstore.Movie"/>'s copies_on_hand will be decreased</param>
+        /// <returns>Whether or not the <see cref="Bookstore.Movie"/> was successful UPDATE'd</returns>
         private static bool SQLUpdateMovieSubtract(Rental rental)
         {
             string          primary,
@@ -153,9 +149,9 @@ namespace Bookstore
             primary =                       Movies.key   + " = CASE WHEN " + Movies.count + " > 0 THEN @" + Movies.key + " ELSE -1 END";
             secondary =                     Movies.count + " = " + Movies.count + " - 1";
             SQLStatement =                  SQLHelper.Update(   "Movie",
-                                                            primary,
-                                                            secondary//"copies_on_hand = copies_on_hand - CASE WHEN copies_on_hand > 0 THEN 1 ELSE 0 END"
-                                                            );
+                                                                primary,
+                                                                secondary//"copies_on_hand = copies_on_hand - CASE WHEN copies_on_hand > 0 THEN 1 ELSE 0 END"
+                                                                );
 
             using (SqlConnection objConn = AccessDataSQLServer.GetConnection())
             {
@@ -176,10 +172,10 @@ namespace Bookstore
         }
 
         /// <summary>
-        /// 
+        /// Increases a <see cref="Bookstore.Movie"/>'s copies_on_hand
         /// </summary>
-        /// <param name="rental"></param>
-        /// <returns></returns>
+        /// <param name="rental">The <see cref="Bookstore.Rental"/> whose associated <see cref="Bookstore.Movie"/>'s copies_on_hand will be increased</param>
+        /// <returns>Whether or not the <see cref="Bookstore.Movie"/> was successful UPDATE'd</returns>
         private static bool SQLUpdateMovieAdd(Rental rental)
         {
             string          primary,
@@ -221,6 +217,8 @@ namespace Bookstore
         /// <summary>
         /// Returns a list of generic  type objects from the table
         /// </summary>
+        /// <returns>All fields of all <see cref="Bookstore.Rental"/>'s, plus the extras from <see cref="Bookstore.Movie"/> and <see cref="Bookstore.Member"/></returns>
+        /// <exception cref="System.Exception" />
         public static List<Rental> GetRentals()
         {
             List<Rental>    rentals =       new List<Rental>();
@@ -239,7 +237,7 @@ namespace Bookstore
                                                                             SQLHelper.Join(
                                                                                             " FROM " + "((" + "Rental",//TODO call future function that uses parenthesis counter
                                                                                             "Member",
-                                                                                            ", Member." + Members.extra2 + ", Member." + Members.extra1,
+                                                                                            ", Member." + Members.extra3 + ", Member." + Members.extra2 + ", Member." + Members.extra1,
                                                                                             foreignMember,
                                                                                             Members.key
                                                                                           ),
@@ -284,7 +282,8 @@ namespace Bookstore
                                 objRental.movie_title =                             rentalReader[Movies.extra  ].ToString();
                                 DateTime.TryParse(                                  rentalReader[Members.extra1].ToString(),    out joindate            );
                                 objRental.joindate =                                joindate;
-                                objRental.login_name =                              rentalReader[Members.extra2].ToString();
+                                objRental.member_status =                           rentalReader[Members.extra2].ToString();
+                                objRental.login_name =                              rentalReader[Members.extra3].ToString();
                                 rentals.Add(objRental);
                             }
                         }
@@ -309,7 +308,8 @@ namespace Bookstore
         /// <param name="parameter1">accepts a parameter to return a specific record, movie_number</param>
         /// <param name="parameter2">member_number</param>
         /// <param name="parameter3">media_checkout_date</param>
-        /// <returns></returns>
+        /// <returns>All the fields (except the primary keys) of a <see cref="Bookstore.Rental"/></returns>
+        /// <exception cref="System.Exception" />
         public static Rental GetRental(int parameter1, int parameter2, DateTime parameter3)//string parameter)
         {
             Rental          objRental =     null;
@@ -384,7 +384,7 @@ namespace Bookstore
                     }
                     objConn.Close();
                     if (i > 1)
-                        throw new Exception("More than one rental found.");
+                        throw new Exception(Rental.notUnique);
                 }
             }
             catch (SqlException SQLex)
@@ -402,6 +402,8 @@ namespace Bookstore
         /// Adds a record to the table with a Boolean returned status of True or False.
         /// </summary>
         /// <param name="rental">accepts a custom object of that type as a parameter</param>
+        /// <returns>Whether or not the <see cref="Bookstore.Rental"/> was successfully written</returns>
+        /// <exception cref="System.Exception" />
         public static bool AddRental(Rental rental)
         {
             string          primary,
@@ -423,18 +425,21 @@ namespace Bookstore
             try
             {
 
-                result =    ReadJoindate(rental);
-                if (result)
+                ReadMember(rental);
+                if (rental.joindate > rental.media_checkout_date)
                 {
-                    throw new Exception("The check out date is before the join date."); //Record was not added successfully
+                    throw new Exception(Rental.checkoutBeforeJoin); //Record was not added successfully
                 }
-
                 if (rental.media_return_date < rental.media_checkout_date) //Only when the movie hasn't been returned
                 {
+                    if (!rental.member_status.Equals('A'))
+                    {
+                        throw new Exception(Rental.notActive);  //Record was not added successfully
+                    }
                     result =    SQLUpdateMovieSubtract(rental);
                     if (!result)
                     {
-                        throw new Exception("There are no copies of this movie."); //Record was not added successfully
+                        throw new Exception(Rental.noCopies);   //Record was not added successfully
                     }
                 }
                 result =    WriteRental(SQLStatement, rental);
@@ -454,6 +459,8 @@ namespace Bookstore
         /// Updates a record in the table with a Boolean returned status of True or False
         /// </summary>
         /// <param name="newRental">accepts a custom object of that type as a parameter</param>
+        /// <returns>Whether or not the <see cref="Bookstore.Rental"/> was successfully written</returns>
+        /// <exception cref="System.Exception" />
         public static bool UpdateRental(ref Rental newRental)
         {
             Rental          oldRental;
@@ -481,13 +488,13 @@ namespace Bookstore
                 oldRental =                 GetRental(newRental.movie_number, newRental.member_number, newRental.media_checkout_date);
                 if (oldRental == null)
                 {
-                    throw new Exception("This rental does not exist."); //Record was not added successfully
+                    throw new Exception(Rental.doesNotExist);   //Record was not added successfully
                 }
 
-                result =    ReadJoindate(oldRental);
-                if (result)
+                ReadMember(oldRental);
+                if (oldRental.joindate > oldRental.media_checkout_date)
                 {
-                    throw new Exception("The check out date is before the join date."); //Record was not added successfully
+                    throw new Exception(Rental.checkoutBeforeJoin); //Record was not added successfully
                 }
 
                 if (newRental.movie_number <= -1)
@@ -513,10 +520,14 @@ namespace Bookstore
                 else if ((oldRental.media_return_date >= oldRental.media_checkout_date) &&  //Only when the movie hasn't been returned
                          (newRental.media_return_date <  newRental.media_checkout_date)   )
                 {
+                    if (!oldRental.member_status.Equals('A'))
+                    {
+                        throw new Exception(Rental.notActive);  //Record was not added successfully
+                    }
                     result =    SQLUpdateMovieSubtract(newRental);
                     if (!result)
                     {
-                        throw new Exception("There are no copies of this movie."); //Record was not added successfully
+                        throw new Exception(Rental.noCopies);   //Record was not added successfully
                     }
                 }
 
@@ -537,6 +548,8 @@ namespace Bookstore
         /// Deletes a record from the database with a Boolean returned status of True or False
         /// </summary>
         /// <param name="rental">accepts a custom object of that type as a parameter</param>
+        /// <returns>Whether or not the <see cref="Bookstore.Rental"/> was successfully deleted</returns>
+        /// <exception cref="System.Exception" />
         public static bool DeleteRental(ref Rental rental)
         {
             string      primary =       string.Empty,
@@ -559,7 +572,7 @@ namespace Bookstore
                 rental =                GetRental(rental.movie_number, rental.member_number, rental.media_checkout_date);
                 if (rental == null)
                 {
-                    throw new Exception("This rental does not exist."); //Record was not added successfully
+                    throw new Exception(Rental.doesNotExist);   //Record was not added successfully
                 }
 
                 using (SqlConnection objConn = AccessDataSQLServer.GetConnection())
@@ -583,11 +596,7 @@ namespace Bookstore
                     }
                     objConn.Close();
                 }
-                if (!result)
-                {
-                    throw new Exception("This rental does not exist."); //Record was not added successfully
-                }
-                if (rental.media_return_date < rental.media_checkout_date) //Only when the movie hasn't been returned
+                if ((result) && (rental.media_return_date < rental.media_checkout_date)) //Only when the movie hasn't been returned
                 {
                     result =    SQLUpdateMovieAdd(rental);
                 }
