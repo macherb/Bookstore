@@ -23,6 +23,7 @@ namespace Bookstore
         /// <summary>
         /// Returns a database connection from the SQLConnection class.
         /// </summary>
+        /// <returns>Used to initialize a SqlConnection</returns>
         public static SqlConnection GetConnection()
         {
             //You must instantiate the connection object with a supplied/valid connection string.
