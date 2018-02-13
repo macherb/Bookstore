@@ -34,7 +34,7 @@ namespace Bookstore
 
 				List<Member>                    memberList =    Members.GetMembers();
 				cmbMemberNumber.DataSource =                    memberList;
-				cmbMemberNumber.DisplayMember =                 Members.extra2;
+				cmbMemberNumber.DisplayMember =                 Members.extra3;
 				cmbMemberNumber.ValueMember =                   Members.key;
 				cmbMemberNumber.SelectedIndex =                 -1;
 			}
