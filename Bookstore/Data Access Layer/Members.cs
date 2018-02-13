@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace Bookstore
 {
+    /// <summary>
+    /// 
+    /// </summary>
     class Members : BaseTable
     {
         #region Private variables
@@ -23,17 +26,18 @@ namespace Bookstore
 
         public static string    key =               parameters[ 0];
         public static string    extra1 =            parameters[ 1];
-        public static string    extra2 =            parameters[10];
+        public static string    extra2 =            parameters[ 9];
+        public static string    extra3 =            parameters[10];
 
         #endregion
 
         #region Private functions
 
         /// <summary>
-        /// 
+        /// Sets all the non-primary key(s) in a <see cref="Bookstore.Member"/>
         /// </summary>
-        /// <param name="memberReader"></param>
-        /// <param name="objMember"></param>
+        /// <param name="memberReader">The <see cref="Bookstore.Member"/> that was read from</param>
+        /// <param name="objMember">The <see cref="Bookstore.Member"/> that will be written to</param>
         private static void SetSecondary(SqlDataReader memberReader, Member objMember)
         {
             int                     contact_method,
@@ -61,11 +65,11 @@ namespace Bookstore
         }
 
         /// <summary>
-        /// 
+        /// Writes a <see cref="Bookstore.Member"/> to the database's table
         /// </summary>
-        /// <param name="SQLStatement"></param>
-        /// <param name="member"></param>
-        /// <returns></returns>
+        /// <param name="SQLStatement">The command to write a <see cref="Bookstore.Member"/></param>
+        /// <param name="member">The <see cref="Bookstore.Member"/> that will have its data written to the table</param>
+        /// <returns>Whether or not the <see cref="Bookstore.Member"/> was successfully written</returns>
         private static bool WriteMember(string SQLStatement, Member member)
         {
             SqlCommand  objCommand;
@@ -105,12 +109,12 @@ namespace Bookstore
         }
 
         /// <summary>
-        /// 
+        /// Sets the list of field(s) that will be SELECT'ed
         /// </summary>
-        /// <param name="primary"></param>
-        /// <param name="preprimary"></param>
-        /// <param name="secondary"></param>
-        /// <param name="presecondary"></param>
+        /// <param name="primary">The list of primary key(s)</param>
+        /// <param name="preprimary">What will be placed before every primary key</param>
+        /// <param name="secondary">The list of non-primary key(s)</param>
+        /// <param name="presecondary">What will be placed before every non-primary key</param>
         private static void PrimarySecondary(ref string primary, string preprimary, ref string secondary, string presecondary)
         {
             for (int i = 1                  ; i < lowestSecondary  ; i++)
@@ -135,6 +139,8 @@ namespace Bookstore
         /// <summary>
         /// Returns a list of generic  type objects from the table
         /// </summary>
+        /// <returns>All fields of all <see cref="Bookstore.Member"/>'s, plus the extras from <see cref="Bookstore.Subscription"/></returns>
+        /// <exception cref="System.Exception" />
         public static List<Member> GetMembers()
         {
             List<Member>    members =       new List<Member>();
@@ -217,6 +223,8 @@ namespace Bookstore
         /// Returns a single record  from the table whose parameter matches a table field condition
         /// </summary>
         /// <param name="parameter">accepts a parameter to return a specific record</param>
+        /// <returns>All the fields (except the primary key) of a <see cref="Bookstore.Member"/></returns>
+        /// <exception cref="System.Exception" />
         public static Member GetMember(int parameter)//string parameter)
         {
             Member          objMember =     null;
@@ -285,6 +293,8 @@ namespace Bookstore
         /// Adds a record to the table with a Boolean returned status of True or False.
         /// </summary>
         /// <param name="member">accepts a custom object of that type as a parameter</param>
+        /// <returns>Whether or not the <see cref="Bookstore.Member"/> was successfully written</returns>
+        /// <exception cref="System.Exception" />
         public static bool AddMember(Member member)
         {
             string          primary,
@@ -306,11 +316,14 @@ namespace Bookstore
             try
             {
                 member.number =             GetMax("Member", key) + 1;
-                
 
 
 
-                
+
+
+
+
+
 
 
 
@@ -337,6 +350,8 @@ namespace Bookstore
         /// Updates a record in the table with a Boolean returned status of True or False
         /// </summary>
         /// <param name="member">accepts a custom object of that type as a parameter</param>
+        /// <returns>Whether or not the <see cref="Bookstore.Member"/> was successfully written</returns>
+        /// <exception cref="System.Exception" />
         public static bool UpdateMember(Member member)
         {
 
@@ -367,11 +382,6 @@ namespace Bookstore
 
 
 
-                
-
-
-
-                
 
 
 
@@ -388,7 +398,16 @@ namespace Bookstore
 
 
 
-                
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -420,6 +439,8 @@ namespace Bookstore
         /// Deletes a record from the database with a Boolean returned status of True or False
         /// </summary>
         /// <param name="member">accepts a custom object of that type as a parameter</param>
+        /// <returns>Whether or not the <see cref="Bookstore.Member"/> was successfully deleted</returns>
+        /// <exception cref="System.Exception" />
         public static bool DeleteMember(Member member)
         {
             string      primary =       string.Empty,
@@ -464,10 +485,6 @@ namespace Bookstore
                     }
                     objConn.Close();
                 }
-
-
-
-
 
 
 
