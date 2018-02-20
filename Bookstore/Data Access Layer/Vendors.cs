@@ -28,6 +28,25 @@ namespace Bookstore
 
 
 
+        public static string    SQLGetList =        SQLHelper.Select(
+                                                                    "Vendor",
+
+
+                                                                                                    " FROM " + "Vendor"
+
+
+
+
+
+
+
+
+
+                                                                                   ,
+                                                                    Primary(key, ", Vendor."),
+                                                                    Secondary(", Vendor." + parameters[lowestSecondary], ", Vendor.")
+                                                                    );
+            
         #endregion
 
         #region Private functions
@@ -79,12 +98,18 @@ namespace Bookstore
         /// <param name="preprimary">What will be placed before every primary key</param>
         /// <param name="secondary">The list of non-primary key(s)</param>
         /// <param name="presecondary">What will be placed before every non-primary key</param>
-        private static void PrimarySecondary(ref string primary, string preprimary, ref string secondary, string presecondary)
+        /// <returns></returns>
+        private static string Primary(string primary, string preprimary)
         {
             for (int i = 1                  ; i < lowestSecondary  ; i++)
                 primary +=      preprimary + parameters[i];
+            return  primary;
+        }
+        private static string Secondary(string secondary, string presecondary)
+        {
             for (int i = lowestSecondary + 1; i < parameters.Length; i++)
                 secondary +=    presecondary + parameters[i];
+            return  secondary;
         }
 
 
@@ -108,33 +133,10 @@ namespace Bookstore
         public static List<Vendor> GetVendors()
         {
             List<Vendor>    vendors =       new List<Vendor>();
-            string          primary,
-                            secondary,
-                            SQLStatement;
             SqlCommand      objCommand;
             SqlDataReader   vendorReader;
 
-            primary =                       key;
-            secondary =                     ", Vendor." + parameters[lowestSecondary];
-            PrimarySecondary(ref primary, ", Vendor.", ref secondary, ", Vendor.");
-            SQLStatement =                  SQLHelper.Select(
-                                                            "Vendor",
-
-
-                                                                                            " FROM " + "Vendor"
-
-
-
-
-
-
-
-
-
-                                                                           ,
-                                                            primary,
-                                                            secondary
-                                                            );
+            
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -146,7 +148,7 @@ namespace Bookstore
                     //Step #2: Code Logic to create appropriate SQL Server objects calls
                     //         Code Logic to retrieve data from database
                     //         Add Try..Catch appropriate block and throw exception back to calling program
-                    using (objCommand = new SqlCommand(SQLStatement, objConn))
+                    using (objCommand = new SqlCommand(SQLGetList, objConn))
                     {
                         //Step #3: Return the objtemp generic list variable  back to the calling UI 
                         using ((vendorReader = objCommand.ExecuteReader(CommandBehavior.CloseConnection)))
@@ -192,18 +194,18 @@ namespace Bookstore
         public static Vendor GetVendor(int parameter)//(string parameter)
         {
             Vendor          objVendor =     null;
-            string          primary =       string.Empty,
-                            secondary =     string.Empty,
+            string          //primary =       string.Empty,
+                            //secondary =     string.Empty,
                             SQLStatement;
             SqlCommand      objCommand;
             SqlDataReader   vendorReader;
 
-            secondary +=                    parameters[lowestSecondary];
-            PrimarySecondary(ref primary, ", Vendor.", ref secondary, ", Vendor.");
+            //secondary +=                    parameters[lowestSecondary];
+            //PrimarySecondary(ref primary, ", Vendor.", ref secondary, ", Vendor.");
             SQLStatement =                  SQLHelper.Select("Vendor", 
                                                             " FROM " + "Vendor",
-                                                            primary, 
-                                                            secondary
+                                                            Primary(string.Empty,   ", Vendor."), 
+                                                            Secondary(              parameters[lowestSecondary], ", Vendor.")
                                                             ) + " WHERE ";
 
 
@@ -261,18 +263,18 @@ namespace Bookstore
         /// <exception cref="System.Exception" />
         public static bool AddVendor(Vendor vendor)
         {
-            string          primary,
-                            secondary,
+            string          //primary,
+                            //secondary,
                             SQLStatement;
             //TODO what if MAX is 32767
             bool            result;
 
-            primary =                       key;
-            secondary =                     ", @" + parameters[lowestSecondary];
-            PrimarySecondary(ref primary, ", @", ref secondary, ", @");
+            //primary =                       key;
+            //secondary =                     ", @" + parameters[lowestSecondary];
+            //PrimarySecondary(ref primary, ", @", ref secondary, ", @");
             SQLStatement =                  SQLHelper.Insert(   "Vendor",
-                                                                primary,
-                                                                secondary
+                                                                Primary(key, ", @"),
+                                                                Secondary(", @" + parameters[lowestSecondary], ", @")
                                                             );
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
