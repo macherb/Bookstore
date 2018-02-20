@@ -28,6 +28,24 @@ namespace Bookstore
         public static string    extra1 =            parameters[ 1];
         public static string    extra2 =            parameters[ 9];
         public static string    extra3 =            parameters[10];
+        public static string    SQLGetList =        SQLHelper.Select(
+                                                                    "Member",
+                                                                    SQLHelper.Join(
+
+                                                                                                    " FROM " + "(" + "Member"
+
+
+
+
+                                                                                                   ,
+                                                                                    "Subscription",
+                                                                                    ", Subscription." + Subscriptions.extra,
+                                                                                    foreign,
+                                                                                    Subscriptions.key
+                                                                                  ),
+                                                                    Primary(key, ", Member."),
+                                                                    Secondary(", Member." + parameters[lowestSecondary], ", Member.")
+                                                                    );
 
         #endregion
 
@@ -115,12 +133,18 @@ namespace Bookstore
         /// <param name="preprimary">What will be placed before every primary key</param>
         /// <param name="secondary">The list of non-primary key(s)</param>
         /// <param name="presecondary">What will be placed before every non-primary key</param>
-        private static void PrimarySecondary(ref string primary, string preprimary, ref string secondary, string presecondary)
+        /// <returns></returns>
+        private static string Primary(string primary, string preprimary)
         {
             for (int i = 1                  ; i < lowestSecondary  ; i++)
                 primary +=      preprimary + parameters[i];
+            return  primary;
+        }
+        private static string Secondary(string secondary, string presecondary)
+        {
             for (int i = lowestSecondary + 1; i < parameters.Length; i++)
                 secondary +=    presecondary + parameters[i];
+            return  secondary;
         }
 
 
@@ -144,33 +168,10 @@ namespace Bookstore
         public static List<Member> GetMembers()
         {
             List<Member>    members =       new List<Member>();
-            string          primary,
-                            secondary,
-                            SQLStatement;
             SqlCommand      objCommand;
             SqlDataReader   memberReader;
             
-            primary =                       key;
-            secondary =                     ", Member." + parameters[lowestSecondary];
-            PrimarySecondary(ref primary, ", Member.", ref secondary, ", Member.");
-            SQLStatement =                  SQLHelper.Select(
-                                                            "Member",
-                                                            SQLHelper.Join(
-
-                                                                                            " FROM " + "(" + "Member"
-
-
-
-
-                                                                                           ,
-                                                                            "Subscription",
-                                                                            ", Subscription." + Subscriptions.extra,
-                                                                            foreign,
-                                                                            Subscriptions.key
-                                                                          ),
-                                                            primary,
-                                                            secondary
-                                                            );
+            
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -182,7 +183,7 @@ namespace Bookstore
                     //Step #2: Code Logic to create appropriate SQL Server objects calls
                     //         Code Logic to retrieve data from database
                     //         Add Try..Catch appropriate block and throw exception back to calling program
-                    using (objCommand = new SqlCommand(SQLStatement, objConn))
+                    using (objCommand = new SqlCommand(SQLGetList, objConn))
                     {
                         //Step #3: Return the objtemp generic list variable  back to the calling UI 
                         using ((memberReader = objCommand.ExecuteReader(CommandBehavior.CloseConnection)))
@@ -228,18 +229,18 @@ namespace Bookstore
         public static Member GetMember(int parameter)//string parameter)
         {
             Member          objMember =     null;
-            string          primary =       string.Empty,
-                            secondary =     string.Empty,
+            string          //primary =       string.Empty,
+                            //secondary =     string.Empty,
                             SQLStatement;
             SqlCommand      objCommand;
             SqlDataReader   memberReader;
 
-            secondary +=                    parameters[lowestSecondary];
-            PrimarySecondary(ref primary, ", Member.", ref secondary, ", Member.");
+            //secondary +=                    parameters[lowestSecondary];
+            //PrimarySecondary(ref primary, ", Member.", ref secondary, ", Member.");
             SQLStatement =                  SQLHelper.Select("Member", 
                                                             " FROM " + "Member",
-                                                            primary, 
-                                                            secondary
+                                                            Primary(string.Empty,   ", Member."), 
+                                                            Secondary(              parameters[lowestSecondary], ", Member.")
                                                             ) + " WHERE ";
 
 
@@ -297,18 +298,18 @@ namespace Bookstore
         /// <exception cref="System.Exception" />
         public static bool AddMember(Member member)
         {
-            string          primary,
-                            secondary,
+            string          //primary,
+                            //secondary,
                             SQLStatement;
             
             bool            result;
 
-            primary =                       key;
-            secondary =                     ", @" + parameters[lowestSecondary];
-            PrimarySecondary(ref primary, ", @", ref secondary, ", @");
+            //primary =                       key;
+            //secondary =                     ", @" + parameters[lowestSecondary];
+            //PrimarySecondary(ref primary, ", @", ref secondary, ", @");
             SQLStatement =                  SQLHelper.Insert(   "Member",
-                                                                primary,
-                                                                secondary
+                                                                Primary(key, ", @"),
+                                                                Secondary(", @" + parameters[lowestSecondary], ", @")
                                                             );
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
