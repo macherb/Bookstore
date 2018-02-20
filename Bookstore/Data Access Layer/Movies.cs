@@ -28,6 +28,25 @@ namespace Bookstore
         public static string    extra =             parameters[ 1];
         public static string    count =             parameters[ 8];
 
+        public static string    SQLGetList =        SQLHelper.Select(
+                                                                    "Movie",
+                                                                    SQLHelper.Join(
+
+                                                                                                    " FROM " + "(" + "Movie"
+
+
+
+
+                                                                                           ,
+                                                                                    "Genre",
+                                                                                    ", Genre." + Genres.extra,
+                                                                                    foreign,
+                                                                                    Genres.key
+                                                                                  ),
+                                                                    Primary(key, ", Movie."),
+                                                                    Secondary(", Movie." + parameters[lowestSecondary], ", Movie.")
+                                                                    );
+            
         #endregion
 
         #region Private functions
@@ -106,12 +125,18 @@ namespace Bookstore
         /// <param name="preprimary">What will be placed before every primary key</param>
         /// <param name="secondary">The list of non-primary key(s)</param>
         /// <param name="presecondary">What will be placed before every non-primary key</param>
-        private static void PrimarySecondary(ref string primary, string preprimary, ref string secondary, string presecondary)
+        /// <returns></returns>
+        private static string Primary(string primary, string preprimary)
         {
             for (int i = 1                  ; i < lowestSecondary  ; i++)
                 primary +=      preprimary + parameters[i];
+            return  primary;
+        }
+        private static string Secondary(string secondary, string presecondary)
+        {
             for (int i = lowestSecondary + 1; i < parameters.Length; i++)
                 secondary +=    presecondary + parameters[i];
+            return  secondary;
         }
 
 
@@ -135,33 +160,10 @@ namespace Bookstore
         public static List<Movie> GetMovies()
         {
             List<Movie>     movies =        new List<Movie>();
-            string          primary,
-                            secondary,
-                            SQLStatement;
             SqlCommand      objCommand;
             SqlDataReader   movieReader;
             
-            primary =                       key;
-            secondary =                     ", Movie." + parameters[lowestSecondary];
-            PrimarySecondary(ref primary, ", Movie.", ref secondary, ", Movie.");
-            SQLStatement =                  SQLHelper.Select(
-                                                            "Movie",
-                                                            SQLHelper.Join(
-
-                                                                                            " FROM " + "(" + "Movie"
-
-
-
-
-                                                                                           ,
-                                                                            "Genre",
-                                                                            ", Genre." + Genres.extra,
-                                                                            foreign,
-                                                                            Genres.key
-                                                                          ),
-                                                            primary,
-                                                            secondary
-                                                            );
+            
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -173,7 +175,7 @@ namespace Bookstore
                     //Step #2: Code Logic to create appropriate SQL Server objects calls
                     //         Code Logic to retrieve data from database
                     //         Add Try..Catch appropriate block and throw exception back to calling program
-                    using (objCommand = new SqlCommand(SQLStatement, objConn))
+                    using (objCommand = new SqlCommand(SQLGetList, objConn))
                     {
                         //Step #3: Return the objtemp generic list variable  back to the calling UI
                         using ((movieReader = objCommand.ExecuteReader(CommandBehavior.CloseConnection)))
@@ -219,18 +221,18 @@ namespace Bookstore
         public static Movie GetMovie(int parameter)//string parameter)
         {
             Movie           objMovie =      null;
-            string          primary =       string.Empty,
-                            secondary =     string.Empty,
+            string          //primary =       string.Empty,
+                            //secondary =     string.Empty,
                             SQLStatement;
             SqlCommand      objCommand;
             SqlDataReader   movieReader;
 
-            secondary +=                    parameters[lowestSecondary];
-            PrimarySecondary(ref primary, ", Movie.", ref secondary, ", Movie.");
+            //secondary +=                    parameters[lowestSecondary];
+            //PrimarySecondary(ref primary, ", Movie.", ref secondary, ", Movie.");
             SQLStatement =                  SQLHelper.Select("Movie", 
                                                             " FROM " + "Movie",
-                                                            primary, 
-                                                            secondary
+                                                            Primary(string.Empty, ", Movie."), 
+                                                            Secondary(              parameters[lowestSecondary], ", Movie.")
                                                             ) + " WHERE ";
 
 
@@ -288,18 +290,18 @@ namespace Bookstore
         /// <exception cref="System.Exception" />
         public static bool AddMovie(Movie movie)
         {
-            string          primary,
-                            secondary,
+            string          //primary,
+                            //secondary,
                             SQLStatement;
             
             bool            result;
 
-            primary =                       key;
-            secondary =                     ", @" + parameters[lowestSecondary];
-            PrimarySecondary(ref primary, ", @", ref secondary, ", @");
+            //primary =                       key;
+            //secondary =                     ", @" + parameters[lowestSecondary];
+            //PrimarySecondary(ref primary, ", @", ref secondary, ", @");
             SQLStatement =                  SQLHelper.Insert(   "Movie",
-                                                                primary,
-                                                                secondary
+                                                                Primary(key, ", @"),
+                                                                Secondary(", @" + parameters[lowestSecondary], ", @")
                                                             );
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
