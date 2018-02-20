@@ -28,6 +28,25 @@ namespace Bookstore
 
 
 
+        public static string    SQLGetList =        SQLHelper.Select(
+                                                                    "Rental",
+                                                                    SQLHelper.Join(
+                                                                                    SQLHelper.Join(
+                                                                                                    " FROM " + "((" + "Rental",//TODO call future function that uses parenthesis counter
+                                                                                                    "Member",
+                                                                                                    ", Member." + Members.extra3 + ", Member." + Members.extra2 + ", Member." + Members.extra1,
+                                                                                                    foreignMember,
+                                                                                                    Members.key
+                                                                                                  ),
+                                                                                    "Movie",
+                                                                                    ", Movie." + Movies.extra,
+                                                                                    foreignMovie,
+                                                                                    Movies.key
+                                                                                  ),
+                                                                    Primary(key, ", Rental."),
+                                                                    Secondary(", Rental." + parameters[lowestSecondary], ", Rental.")
+                                                                    );
+
         #endregion
 
         #region Private functions
@@ -84,12 +103,18 @@ namespace Bookstore
         /// <param name="preprimary">What will be placed before every primary key</param>
         /// <param name="secondary">The list of non-primary key(s)</param>
         /// <param name="presecondary">What will be placed before every non-primary key</param>
-        private static void PrimarySecondary(ref string primary, string preprimary, ref string secondary, string presecondary)
+        /// <returns></returns>
+        private static string Primary(string primary, string preprimary)
         {
             for (int i = 1                  ; i < lowestSecondary  ; i++)
                 primary +=      preprimary + parameters[i];
+            return  primary;
+        }
+        private static string Secondary(string secondary, string presecondary)
+        {
             for (int i = lowestSecondary + 1; i < parameters.Length; i++)
                 secondary +=    presecondary + parameters[i];
+            return  secondary;
         }
 
         /// <summary>
@@ -105,7 +130,7 @@ namespace Bookstore
             SQLStatement =                  SQLHelper.Select("Member",
                                                             " FROM " + "Member",
                                                             string.Empty,
-                                                            Members.extra1 + ", " + Members.extra2
+                                                            Members.extra1 + ", Member." + Members.extra2
                                                             ) + " WHERE ";
 
             SQLStatement +=                 "Member." + Members.key + " = @" + Members.key;
@@ -222,33 +247,10 @@ namespace Bookstore
         public static List<Rental> GetRentals()
         {
             List<Rental>    rentals =       new List<Rental>();
-            string          primary,
-                            secondary,
-                            SQLStatement;
             SqlCommand      objCommand;
             SqlDataReader   rentalReader;
 
-            primary =                       key;
-            secondary =                     ", Rental." + parameters[lowestSecondary];
-            PrimarySecondary(ref primary, ", Rental.", ref secondary, ", Rental.");
-            SQLStatement =                  SQLHelper.Select(
-                                                            "Rental",
-                                                            SQLHelper.Join(
-                                                                            SQLHelper.Join(
-                                                                                            " FROM " + "((" + "Rental",//TODO call future function that uses parenthesis counter
-                                                                                            "Member",
-                                                                                            ", Member." + Members.extra3 + ", Member." + Members.extra2 + ", Member." + Members.extra1,
-                                                                                            foreignMember,
-                                                                                            Members.key
-                                                                                          ),
-                                                                            "Movie",
-                                                                            ", Movie." + Movies.extra,
-                                                                            foreignMovie,
-                                                                            Movies.key
-                                                                          ),
-                                                            primary,
-                                                            secondary
-                                                            );
+            
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -260,7 +262,7 @@ namespace Bookstore
                     //Step #2: Code Logic to create appropriate SQL Server objects calls
                     //         Code Logic to retrieve data from database
                     //         Add Try..Catch appropriate block and throw exception back to calling program
-                    using (objCommand = new SqlCommand(SQLStatement, objConn))
+                    using (objCommand = new SqlCommand(SQLGetList, objConn))
                     {
                         //Step #3: Return the objtemp generic list variable  back to the calling UI 
                         using ((rentalReader = objCommand.ExecuteReader(CommandBehavior.CloseConnection)))
@@ -313,18 +315,18 @@ namespace Bookstore
         public static Rental GetRental(int parameter1, int parameter2, DateTime parameter3)//string parameter)
         {
             Rental          objRental =     null;
-            string          primary =       key,
-                            secondary =     ", Rental.",
+            string          //primary =       key,
+                            //secondary =     ", Rental.",
                             SQLStatement;
             SqlCommand      objCommand;
             SqlDataReader   rentalReader;
 
-            secondary +=                    parameters[lowestSecondary];
-            PrimarySecondary(ref primary, ", Rental.", ref secondary, ", Rental.");
+            //secondary +=                    parameters[lowestSecondary];
+            //PrimarySecondary(ref primary, ", Rental.", ref secondary, ", Rental.");
             SQLStatement =                  SQLHelper.Select("Rental", 
                                                             " FROM " + "Rental", 
-                                                            primary, 
-                                                            secondary
+                                                            Primary(key,        ", Rental."), 
+                                                            Secondary(", Rental." + parameters[lowestSecondary], ", Rental.")
                                                             ) + " WHERE ";
             if (parameter1 > -1)
             {
@@ -406,18 +408,18 @@ namespace Bookstore
         /// <exception cref="System.Exception" />
         public static bool AddRental(Rental rental)
         {
-            string          primary,
-                            secondary,
+            string          //primary,
+                            //secondary,
                             SQLStatement; 
 
-            bool            result =        false;
+            bool            result;
 
-            primary =                       key;
-            secondary =                     ", @" + parameters[lowestSecondary];
-            PrimarySecondary(ref primary, ", @", ref secondary, ", @");
+            //primary =                       key;
+            //secondary =                     ", @" + parameters[lowestSecondary];
+            //PrimarySecondary(ref primary, ", @", ref secondary, ", @");
             SQLStatement =                  SQLHelper.Insert(   "Rental",
-                                                                primary,
-                                                                secondary
+                                                                Primary(key, ", @"),
+                                                                Secondary(", @" + parameters[lowestSecondary], ", @")
                                                             );//TODO make sure not before joindate, and if not returned make sure number of copies not zero
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
