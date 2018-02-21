@@ -24,39 +24,49 @@ namespace Bookstore
 
         #region Public variables
 
-        public static string    key =               parameters[ 0];
-        public static string    extra =             parameters[ 1];
+        public static string    key =                   parameters[ 0];
+        public static string    extra =                 parameters[ 1];
 
 
-        public static string    SQLGetList =        SQLHelper.Select(
-                                                                    "Subscription",
+        public static string    SQLGetList =            SQLHelper.Select(
+                                                                        "Subscription",
 
 
-                                                                                                    " FROM " + "Subscription"
-
-
-
+                                                                                                        " FROM " + "Subscription"
 
 
 
 
 
 
-                                                                                   ,
-                                                                    Primary(key, ", Subscription."),
-                                                                    Secondary(", Subscription." + parameters[lowestSecondary], ", Subscription.")
-                                                                    );
 
-        public static string    SQLGetSubscription =SQLHelper.Select("Subscription", 
-                                                                    " FROM " + "Subscription",
-                                                                    Primary(string.Empty,       ", Subscription."), 
-                                                                    Secondary(                  parameters[lowestSecondary], ", Subscription.")
-                                                                    ) + " WHERE ";
 
-        public static string    SQLAddSubscription =SQLHelper.Insert(   "Subscription",
-                                                                        Primary(key, ", @"),
-                                                                        Secondary(", @" + parameters[lowestSecondary], ", @")
-                                                                    );
+
+                                                                                    ,
+                                                                        Primary(key, ", Subscription."),
+                                                                        Secondary(", Subscription." + parameters[lowestSecondary], ", Subscription.")
+                                                                        );
+
+        public static string    SQLGetSubscription =    SQLHelper.Select("Subscription", 
+                                                                        " FROM " + "Subscription",
+                                                                        Primary(string.Empty,       ", Subscription."), 
+                                                                        Secondary(                  parameters[lowestSecondary], ", Subscription.")
+                                                                        ) + " WHERE ";
+
+        public static string    SQLAddSubscription =    SQLHelper.Insert(   "Subscription",
+                                                                            Primary(key, ", @"),
+                                                                            Secondary(", @" + parameters[lowestSecondary], ", @")
+                                                                        );
+
+        public static string    SQLUpdateSubscription = SQLHelper.Update(   "Subscription",
+                                                                            key + " = @" + key,
+                                                                            AdditionalSecondary()
+                                                                        );
+
+        public static string    SQLDeleteSubscription = SQLHelper.Delete("Subscription",
+                                                                        key,
+                                                                        string.Empty
+                                                                        );
 
         #endregion
 
@@ -120,6 +130,9 @@ namespace Bookstore
             return  primary;
         }
 
+
+
+
         /// <summary>
         /// Sets the list of non-primary key field(s) that will be SELECT'ed
         /// </summary>
@@ -130,6 +143,19 @@ namespace Bookstore
         {
             for (int i = lowestSecondary + 1; i < parameters.Length; i++)
                 secondary +=    presecondary + parameters[i];
+            return  secondary;
+        }
+
+        /// <summary>
+        /// Sets the list of non-primary key field(s) and value(s) that will be UPDATE'd
+        /// </summary>
+        /// <returns>A list of non-primary key field(s) and value(s)</returns>
+        private static string AdditionalSecondary()
+        {
+            string  secondary = parameters[lowestSecondary] + " = @" + parameters[lowestSecondary];
+
+            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
+                secondary +=    ", " + parameters[i] + " = @" + parameters[i];
             return  secondary;
         }
 
@@ -321,22 +347,7 @@ namespace Bookstore
         public static bool UpdateSubscription(Subscription subscription)
         {
 
-            string          primary,
-                            secondary,                            
-                            SQLStatement;            
             bool            result;
-
-            primary =                       key                         + " = @" + key                        ;
-            secondary =                     parameters[lowestSecondary] + " = @" + parameters[lowestSecondary];
-
-
-            
-            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
-                secondary +=                ", " + parameters[i] + " = @" + parameters[i];
-            SQLStatement =                  SQLHelper.Update(   "Subscription",
-                                                                primary,
-                                                                secondary
-                                                            );
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -388,7 +399,7 @@ namespace Bookstore
 
 
 
-                result =    WriteSubscription(SQLStatement, subscription);
+                result =    WriteSubscription(SQLUpdateSubscription, subscription);
             }
             catch (SqlException SQLex)
             {
@@ -409,19 +420,10 @@ namespace Bookstore
         /// <exception cref="System.Exception" />
         public static bool DeleteSubscription(Subscription subscription)
         {
-            string      primary =       string.Empty,
-                        SQLStatement;
             SqlCommand  objCommand;
             int         rowsAffected;
             bool        result =        false;
-
-
-
-            SQLStatement =              SQLHelper.Delete("Subscription",
-                                                        key,
-                                                        primary
-                                                        );
-
+            
             //Step# 1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
             try
@@ -438,7 +440,7 @@ namespace Bookstore
                     //Step #2: Code logic to create appropriate SQL Server objects calls
                     //         Code logic to retrieve data from database
                     //         Add Try..Catch appropriate block and throw exception back to calling program
-                    using (objCommand = new SqlCommand(SQLStatement, objConn))
+                    using (objCommand = new SqlCommand(SQLDeleteSubscription, objConn))
                     {
                         objCommand.Parameters.AddWithValue('@' + parameters[ 0],    subscription.id );
                         //Step #3: return false if record was not added successfully
