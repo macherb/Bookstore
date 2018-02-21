@@ -58,6 +58,16 @@ namespace Bookstore
                                                                         Secondary(", @" + parameters[lowestSecondary], ", @")
                                                                     );//TODO make sure not before joindate, and if not returned make sure number of copies not zero
 
+        public static string    SQLUpdateRental =   SQLHelper.Update(  "Rental",
+                                                                        AdditionalPrimary(key + " = @" + key),
+                                                                        AdditionalSecondary()
+                                                                    );
+
+        public static string    SQLDeleteRental =   SQLHelper.Delete("Rental",//"SELECT media_return_date FROM "
+                                                                    key,
+                                                                    AdditionalPrimary(string.Empty)
+                                                                    );
+
         #endregion
 
         #region Private functions
@@ -121,6 +131,18 @@ namespace Bookstore
         }
 
         /// <summary>
+        /// Gets a list of all primary field(s) and value(s) beyond the first
+        /// </summary>
+        /// <param name="primary">The list of primary key(s) and value(s)</param>
+        /// <returns>A list of primary key field(s) and value(s)</returns>
+        private static string AdditionalPrimary(string primary)
+        {
+            for (int i = 1                  ; i < lowestSecondary   ; i++)
+                primary +=  " AND " + parameters[i] + " = @" + parameters[i];
+            return  primary;
+        }
+
+        /// <summary>
         /// Sets the list of non-primary key field(s) that will be SELECT'ed
         /// </summary>
         /// <param name="secondary">The list of non-primary key(s)</param>
@@ -128,8 +150,21 @@ namespace Bookstore
         /// <returns>A list of non-primary key field(s)</returns>
         private static string Secondary(string secondary, string presecondary)
         {
-            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
+            for (int i = lowestSecondary + 1; i < parameters.Length ; i++)
                 secondary +=    presecondary + parameters[i];
+            return  secondary;
+        }
+
+        /// <summary>
+        /// Sets the list of non-primary key field(s) and value(s) that will be UPDATE'd
+        /// </summary>
+        /// <returns>A list of non-primary key field(s) and value(s)</returns>
+        private static string AdditionalSecondary()
+        {
+            string  secondary = parameters[lowestSecondary] + " = @" + parameters[lowestSecondary];
+
+            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
+                secondary +=    ", " + parameters[i] + " = @" + parameters[i];
             return  secondary;
         }
 
@@ -461,22 +496,8 @@ namespace Bookstore
         public static bool UpdateRental(ref Rental newRental)
         {
             Rental          oldRental;
-            string          primary,
-                            secondary,
-                            SQLStatement;
             bool            result;
 
-            primary =                       key                         + " = @" + key                        ;
-            secondary =                     parameters[lowestSecondary] + " = @" + parameters[lowestSecondary];
-
-            for (int i = 1; i < lowestSecondary; i++)
-                primary +=                  " AND " + parameters[i] + " = @" + parameters[i];
-            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
-                secondary +=                ", " + parameters[i] + " = @" + parameters[i];
-            SQLStatement =                  SQLHelper.Update(  "Rental",
-                                                                primary,
-                                                                secondary//TODO only if not blank
-                                                            );
             //TODO exclude one of the WHERE's
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -528,7 +549,7 @@ namespace Bookstore
                     }
                 }
 
-                result =    WriteRental(SQLStatement, newRental);
+                result =    WriteRental(SQLUpdateRental, newRental);
             }
             catch (SqlException SQLex)
             {
@@ -549,18 +570,9 @@ namespace Bookstore
         /// <exception cref="System.Exception" />
         public static bool DeleteRental(ref Rental rental)
         {
-            string      primary =       string.Empty,
-                        SQLStatement;
             SqlCommand  objCommand;
             int         rowsAffected;
             bool        result =        false;
-
-            for (int i = 1; i < lowestSecondary; i++)
-                primary +=              " AND " + parameters[i] + " = @" + parameters[i];
-            SQLStatement =              SQLHelper.Delete("Rental",//"SELECT media_return_date FROM "
-                                                        key,
-                                                        primary
-                                                        );
 
             //Step# 1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -578,7 +590,7 @@ namespace Bookstore
                     //Step #2: Code logic to create appropriate SQL Server objects calls
                     //         Code logic to retrieve data from database
                     //         Add Try..Catch appropriate block and throw exception back to calling program
-                    using (objCommand = new SqlCommand(SQLStatement, objConn))
+                    using (objCommand = new SqlCommand(SQLDeleteRental, objConn))
                     {
                         objCommand.Parameters.AddWithValue('@' + parameters[ 0],    rental.movie_number         );
                         objCommand.Parameters.AddWithValue('@' + parameters[ 1],    rental.member_number        );
