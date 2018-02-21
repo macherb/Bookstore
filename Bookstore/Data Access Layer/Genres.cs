@@ -46,7 +46,18 @@ namespace Bookstore
                                                                     Primary(key, ", Genre."),
                                                                     Secondary(", Genre." + parameters[lowestSecondary], ", Genre.")
                                                                     );
+
+        public static string    SQLGetGenre =       SQLHelper.Select("Genre",
+                                                                    " FROM " + "Genre",
+                                                                    Primary(string.Empty,   ", Genre."),
+                                                                    Secondary(              parameters[lowestSecondary], ", Genre.")
+                                                                    ) + " WHERE ";
         
+        public static string    SQLAddGenre =       SQLHelper.Insert(   "Genre",
+                                                                        Primary(key, ", @"),
+                                                                        Secondary(", @" + parameters[lowestSecondary], ", @")
+                                                                    );
+
         #endregion
 
         #region Private functions
@@ -92,19 +103,24 @@ namespace Bookstore
         }
 
         /// <summary>
-        /// Sets the list of field(s) that will be SELECT'ed
+        /// Sets the list of primary key field(s) that will be SELECT'ed
         /// </summary>
         /// <param name="primary">The list of primary key(s)</param>
         /// <param name="preprimary">What will be placed before every primary key</param>
-        /// <param name="secondary">The list of non-primary key(s)</param>
-        /// <param name="presecondary">What will be placed before every non-primary key</param>
-        /// <returns></returns>
+        /// <returns>A list of primary key field(s)</returns>
         private static string Primary(string primary, string preprimary)
         {
             for (int i = 1                  ; i < lowestSecondary  ; i++)
                 primary +=      preprimary + parameters[i];
             return  primary;
         }
+
+        /// <summary>
+        /// Sets the list of non-primary key field(s) that will be SELECT'ed
+        /// </summary>
+        /// <param name="secondary">The list of non-primary key(s)</param>
+        /// <param name="presecondary">What will be placed before every non-primary key</param>
+        /// <returns>A list of non-primary key field(s)</returns>
         private static string Secondary(string secondary, string presecondary)
         {
             for (int i = lowestSecondary + 1; i < parameters.Length; i++)
@@ -135,8 +151,6 @@ namespace Bookstore
             List<Genre>     genres =        new List<Genre>();
             SqlCommand      objCommand;
             SqlDataReader   genreReader;
-
-            
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -194,19 +208,11 @@ namespace Bookstore
         public static Genre GetGenre(int parameter)//string parameter)
         {
             Genre           objGenre =      null;
-            string          //primary =       string.Empty,
-                            //secondary =     string.Empty,
-                            SQLStatement;
+            string          SQLStatement;
             SqlCommand      objCommand;
             SqlDataReader   genreReader;
 
-            //secondary +=                    parameters[lowestSecondary];
-            //PrimarySecondary(ref primary, ", Genre.", ref secondary, ", Genre.");
-            SQLStatement =                  SQLHelper.Select("Genre",
-                                                            " FROM " + "Genre",
-                                                            Primary(string.Empty,   ", Genre."),
-                                                            Secondary(              parameters[lowestSecondary], ", Genre.")
-                                                            ) + " WHERE ";
+            SQLStatement =                  SQLGetGenre;
 
 
             SQLStatement +=                 "Genre." + parameters[ 0] + " = @" + parameters[ 0];
@@ -263,19 +269,8 @@ namespace Bookstore
         /// <exception cref="System.Exception" />
         public static bool AddGenre(Genre genre)
         {
-            string          //primary,
-                            //secondary,
-                            SQLStatement;
             //TODO what if MAX is 32767
             bool            result;
-
-            //primary =                       key;
-            //secondary =                     ", @" + parameters[lowestSecondary];
-            //PrimarySecondary(ref primary, ", @", ref secondary, ", @");
-            SQLStatement =                  SQLHelper.Insert(   "Genre",
-                                                                Primary(key, ", @"),
-                                                                Secondary(", @" + parameters[lowestSecondary], ", @")
-                                                            );
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -299,7 +294,7 @@ namespace Bookstore
 
 
 
-                result =    WriteGenre(SQLStatement, genre);
+                result =    WriteGenre(SQLAddGenre, genre);
             }
             catch (SqlException SQLex)
             {
