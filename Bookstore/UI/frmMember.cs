@@ -89,6 +89,9 @@ namespace Bookstore
 
             toolTip.SetToolTip(cmbSubscriptionID, Member.subscription_idTip);
             toolTip.SetToolTip(lblSubscriptionID, Member.subscription_idTip);
+
+            memberDataGridView.Width =  43 + 10 * 100 + 17;
+            memberDataGridView.Height = 23 +  4 *  22 + 17;
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
