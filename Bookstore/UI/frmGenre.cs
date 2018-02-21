@@ -42,6 +42,9 @@ namespace Bookstore
 
             toolTip.SetToolTip(txtName, Genre.nameTip);
             toolTip.SetToolTip(lblName, Genre.nameTip);
+
+            genreDataGridView.Width =   43 +  2 * 100 + 17  ;
+            genreDataGridView.Height =  23 +  8 *  22       ;
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
