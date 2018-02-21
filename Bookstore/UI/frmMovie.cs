@@ -77,6 +77,9 @@ namespace Bookstore
 
             toolTip.SetToolTip(txtTrailer, Movie.trailerTip);
             toolTip.SetToolTip(lblTrailer, Movie.trailerTip);
+
+            movieDataGridView.Width =   43 +  9 * 100 + 17  ;
+            movieDataGridView.Height =  23 +  3 *  22 + 17  ;
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
