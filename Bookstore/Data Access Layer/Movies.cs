@@ -58,6 +58,16 @@ namespace Bookstore
                                                                         Secondary(", @" + parameters[lowestSecondary], ", @")
                                                                     );
 
+        public static string    SQLUpdateMovie =    SQLHelper.Update(   "Movie",
+                                                                        key + " = @" + key,
+                                                                        AdditionalSecondary()
+                                                                    );
+
+        public static string    SQLDeleteMovie =    SQLHelper.Delete("Movie",
+                                                                    key,
+                                                                    string.Empty
+                                                                    );
+
         #endregion
 
         #region Private functions
@@ -142,6 +152,9 @@ namespace Bookstore
             return  primary;
         }
 
+
+
+
         /// <summary>
         /// Sets the list of non-primary key field(s) that will be SELECT'ed
         /// </summary>
@@ -152,6 +165,19 @@ namespace Bookstore
         {
             for (int i = lowestSecondary + 1; i < parameters.Length; i++)
                 secondary +=    presecondary + parameters[i];
+            return  secondary;
+        }
+
+        /// <summary>
+        /// Sets the list of non-primary key field(s) and value(s) that will be UPDATE'd
+        /// </summary>
+        /// <returns>A list of non-primary key field(s) and value(s)</returns>
+        private static string AdditionalSecondary()
+        {
+            string  secondary = parameters[lowestSecondary] + " = @" + parameters[lowestSecondary];
+
+            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
+                secondary +=    ", " + parameters[i] + " = @" + parameters[i];
             return  secondary;
         }
 
@@ -343,22 +369,7 @@ namespace Bookstore
         public static bool UpdateMovie(Movie movie)
         {
 
-            string          primary,
-                            secondary,                        
-                            SQLStatement;
             bool            result;
-
-            primary =                       key                         + " = @" + key                        ;
-            secondary =                     parameters[lowestSecondary] + " = @" + parameters[lowestSecondary];
-
-
-
-            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
-                secondary +=                ", " + parameters[i] + " = @" + parameters[i];
-            SQLStatement =                  SQLHelper.Update(   "Movie",
-                                                                primary,
-                                                                secondary
-                                                            );
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -410,7 +421,7 @@ namespace Bookstore
 
 
 
-                result =    WriteMovie(SQLStatement, movie);
+                result =    WriteMovie(SQLUpdateMovie, movie);
             }
             catch (SqlException SQLex)
             {
@@ -431,18 +442,9 @@ namespace Bookstore
         /// <exception cref="System.Exception" />
         public static bool DeleteMovie(Movie movie)
         {
-            string      primary =       string.Empty,
-                        SQLStatement;
             SqlCommand  objCommand;
             int         rowsAffected;
             bool        result =        false;
-
-
-
-            SQLStatement =              SQLHelper.Delete("Movie",
-                                                        key,
-                                                        primary
-                                                        );
 
             //Step# 1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -460,7 +462,7 @@ namespace Bookstore
                     //Step #2: Code logic to create appropriate SQL Server objects calls
                     //         Code logic to retrieve data from database
                     //         Add Try..Catch appropriate block and throw exception back to calling program
-                    using (objCommand = new SqlCommand(SQLStatement, objConn))
+                    using (objCommand = new SqlCommand(SQLDeleteMovie, objConn))
                     {
                         objCommand.Parameters.AddWithValue('@' + parameters[ 0],    movie.movie_number  );
                         //Step #3: return false if record was not added successfully
