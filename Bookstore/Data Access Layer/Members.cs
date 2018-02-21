@@ -58,6 +58,16 @@ namespace Bookstore
                                                                         Secondary(", @" + parameters[lowestSecondary], ", @")
                                                                     );
 
+        public static string    SQLUpdateMember =   SQLHelper.Update(   "Member",
+                                                                        key + " = @" + key,
+                                                                        AdditionalSecondary()
+                                                                    );
+
+        public static string    SQLDeleteMember =   SQLHelper.Delete("Member",
+                                                                    key,
+                                                                    string.Empty
+                                                                    );
+
         #endregion
 
         #region Private functions
@@ -150,6 +160,9 @@ namespace Bookstore
             return  primary;
         }
 
+
+
+
         /// <summary>
         /// Sets the list of non-primary key field(s) that will be SELECT'ed
         /// </summary>
@@ -160,6 +173,19 @@ namespace Bookstore
         {
             for (int i = lowestSecondary + 1; i < parameters.Length; i++)
                 secondary +=    presecondary + parameters[i];
+            return  secondary;
+        }
+
+        /// <summary>
+        /// Sets the list of non-primary key field(s) and value(s) that will be UPDATE'd
+        /// </summary>
+        /// <returns>A list of non-primary key field(s) and value(s)</returns>
+        private static string AdditionalSecondary()
+        {
+            string  secondary = parameters[lowestSecondary] + " = @" + parameters[lowestSecondary];
+
+            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
+                secondary +=    ", " + parameters[i] + " = @" + parameters[i];
             return  secondary;
         }
 
@@ -351,22 +377,7 @@ namespace Bookstore
         public static bool UpdateMember(Member member)
         {
 
-            string          primary,
-                            secondary,
-                            SQLStatement;
             bool            result;
-
-            primary =                       key                         + " = @" + key                        ;
-            secondary =                     parameters[lowestSecondary] + " = @" + parameters[lowestSecondary];
-
-
-            
-            for (int i = lowestSecondary + 1; i < parameters.Length; i++)
-                secondary +=                ", " + parameters[i] + " = @" + parameters[i];
-            SQLStatement =                  SQLHelper.Update(   "Member",
-                                                                primary,
-                                                                secondary
-                                                            );
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -418,7 +429,7 @@ namespace Bookstore
 
 
 
-                result =    WriteMember(SQLStatement, member);
+                result =    WriteMember(SQLUpdateMember, member);
             }
             catch (SqlException SQLex)
             {
@@ -439,19 +450,10 @@ namespace Bookstore
         /// <exception cref="System.Exception" />
         public static bool DeleteMember(Member member)
         {
-            string      primary =       string.Empty,
-                        SQLStatement;
             SqlCommand  objCommand;
             int         rowsAffected;
             bool        result =        false;
-
-
-
-            SQLStatement =              SQLHelper.Delete("Member",
-                                                        key,
-                                                        primary
-                                                        );
-
+            
             //Step# 1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
             try
@@ -468,7 +470,7 @@ namespace Bookstore
                     //Step #2: Code logic to create appropriate SQL Server objects calls
                     //         Code logic to retrieve data from database
                     //         Add Try..Catch appropriate block and throw exception back to calling program
-                    using (objCommand = new SqlCommand(SQLStatement, objConn))
+                    using (objCommand = new SqlCommand(SQLDeleteMember, objConn))
                     {
                         objCommand.Parameters.AddWithValue('@' + parameters[ 0],    member.number   );
                         //Step #3: return false if record was not added successfully
