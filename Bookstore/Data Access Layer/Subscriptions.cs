@@ -46,7 +46,18 @@ namespace Bookstore
                                                                     Primary(key, ", Subscription."),
                                                                     Secondary(", Subscription." + parameters[lowestSecondary], ", Subscription.")
                                                                     );
-            
+
+        public static string    SQLGetSubscription =SQLHelper.Select("Subscription", 
+                                                                    " FROM " + "Subscription",
+                                                                    Primary(string.Empty,       ", Subscription."), 
+                                                                    Secondary(                  parameters[lowestSecondary], ", Subscription.")
+                                                                    ) + " WHERE ";
+
+        public static string    SQLAddSubscription =SQLHelper.Insert(   "Subscription",
+                                                                        Primary(key, ", @"),
+                                                                        Secondary(", @" + parameters[lowestSecondary], ", @")
+                                                                    );
+
         #endregion
 
         #region Private functions
@@ -97,19 +108,24 @@ namespace Bookstore
         }
 
         /// <summary>
-        /// Sets the list of field(s) that will be SELECT'ed
+        /// Sets the list of primary key field(s) that will be SELECT'ed
         /// </summary>
         /// <param name="primary">The list of primary key(s)</param>
         /// <param name="preprimary">What will be placed before every primary key</param>
-        /// <param name="secondary">The list of non-primary key(s)</param>
-        /// <param name="presecondary">What will be placed before every non-primary key</param>
-        /// <returns></returns>
+        /// <returns>A list of primary key field(s)</returns>
         private static string Primary(string primary, string preprimary)
         {
             for (int i = 1                  ; i < lowestSecondary  ; i++)
                 primary +=      preprimary + parameters[i];
             return  primary;
         }
+
+        /// <summary>
+        /// Sets the list of non-primary key field(s) that will be SELECT'ed
+        /// </summary>
+        /// <param name="secondary">The list of non-primary key(s)</param>
+        /// <param name="presecondary">What will be placed before every non-primary key</param>
+        /// <returns>A list of non-primary key field(s)</returns>
         private static string Secondary(string secondary, string presecondary)
         {
             for (int i = lowestSecondary + 1; i < parameters.Length; i++)
@@ -141,8 +157,6 @@ namespace Bookstore
             SqlCommand          objCommand;
             SqlDataReader       subscriptionReader;
             
-            
-
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
             try
@@ -199,19 +213,11 @@ namespace Bookstore
         public static Subscription GetSubscription(int parameter)//(string parameter)
         {
             Subscription    objSubscription =   null;
-            string          //primary =           string.Empty,
-                            //secondary =         string.Empty,
-                            SQLStatement;
+            string          SQLStatement;
             SqlCommand      objCommand;
             SqlDataReader   subscriptionReader;
 
-            //secondary +=                        parameters[lowestSecondary];
-            //PrimarySecondary(ref primary, ", Subscription.", ref secondary, ", Subscription.");
-            SQLStatement =                      SQLHelper.Select("Subscription", 
-                                                                " FROM " + "Subscription",
-                                                                Primary(string.Empty,   ", Subscription."), 
-                                                                Secondary(              parameters[lowestSecondary], ", Subscription.")
-                                                                ) + " WHERE ";
+            SQLStatement =                     SQLGetSubscription;
 
 
             SQLStatement +=                     "Subscription." + parameters[ 0] + " = @" + parameters[ 0];
@@ -268,19 +274,8 @@ namespace Bookstore
         /// <exception cref="System.Exception" />
         public static bool AddSubscription(Subscription subscription)
         {
-            string          //primary,
-                            //secondary,
-                            SQLStatement;
             //TODO what if MAX is 32767            
             bool            result;
-
-            //primary =                       key;
-            //secondary =                     ", @" + parameters[lowestSecondary];
-            //PrimarySecondary(ref primary, ", @", ref secondary, ", @");
-            SQLStatement =                  SQLHelper.Insert(   "Subscription",
-                                                                Primary(key, ", @"),
-                                                                Secondary(", @" + parameters[lowestSecondary], ", @")
-                                                            );
 
             //Step #1: Add code to call the appropriate method from the inherited AccessDataSQLServer class
             //To return a database connection object
@@ -304,7 +299,7 @@ namespace Bookstore
                 
                 
                 //
-                result =    WriteSubscription(SQLStatement, subscription);
+                result =    WriteSubscription(SQLAddSubscription, subscription);
             }
             catch (SqlException SQLex)
             {
