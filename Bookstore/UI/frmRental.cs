@@ -62,6 +62,9 @@ namespace Bookstore
 
             toolTip.SetToolTip(dtpMediaReturnDate, Rental.media_return_dateTip);
             toolTip.SetToolTip(lblMediaReturnDate, Rental.media_return_dateTip);
+
+            rentalDataGridView.Width =  43 +  3 * 100 + 17;
+            rentalDataGridView.Height = 23 +  3 *  22 + 17;
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
